@@ -5,7 +5,7 @@ from bottle import get, response
 @get('/<name>')
 def index(name='World'):
     response.content_type = 'text/plain'
-    return 'Hello %s!' % name
+    return 'Hello %s from Bottle!' % name
 
 
 if __name__ == "__main__":

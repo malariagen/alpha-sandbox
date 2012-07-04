@@ -60,9 +60,9 @@ if __name__ == '__main__':
                 with open(ZIPFILE, 'w') as f:
                     log('downloading from %s' % URL)
                     f.write(u.read())
-                with ZipFile(ZIPFILE) as z:
-                    log('extracting zip file')
-                    z.extract(FILE)
+                z = ZipFile(ZIPFILE)
+                log('extracting zip file')
+                z.extract(FILE)
     
             log('set up the database')
             schema = """

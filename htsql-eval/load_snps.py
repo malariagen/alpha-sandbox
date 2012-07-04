@@ -177,7 +177,7 @@ CREATE TABLE snp (
             log('all done')
 
         except Exception as e:    
-            log(str(e))
+            log('Error: %s' % str(e))
             raise
 
 

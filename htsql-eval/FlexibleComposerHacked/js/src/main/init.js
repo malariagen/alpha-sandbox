@@ -20,13 +20,14 @@ INIT_TEST.init = function(addButton, testButton) {
     var SNPDataTable = function() {
     	
     	var node = "#example";
-    	var htsqlUrlBase = "/api/pfpg/2.0.draft";
+    	var htsqlUrlBase = "../htsql";
     	var htsqlQuery = "/snp";
 		query = manager.generateCQLCode();
 		if (query != "") {
 			htsqlQuery += ".filter(" + query + ")";	
 		}
 		console.log(htsqlQuery);
+		$("#echoQuery").html('<a href="' + htsqlUrlBase + htsqlQuery + '/:raw">' + htsqlQuery + '</a>');
 
     	// custom datatable initialisation 
     	var dataTableInit = {

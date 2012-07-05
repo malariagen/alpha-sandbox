@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+  
+<head>
+    <title> All SNPs, server-side paging and sorting (datatables demo) </title>
+</head>
+<body id="dt_example">
+    <div id="container">
+		<h1>All SNPs, server-side paging and sorting</h1>
+		<p>Below is a table of all SNPs in the 2.0.draft dataset. Both paging
+		and sorting are done server-side via HTSQL queries.</p>
+        <table cellpadding="0" cellspacing="0" border="0" class="display" id="example">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Chromosome</th>
+                    <th>Position</th>
+                    <th>SNP Name</th>
+                    <th>Gene</th>
+                    <th>Amino Acid</th>
+                    <th>NRAF AFR</th>
+                    <th>NRAF SEA</th>
+                    <th>NRAF PNG</th>
+                    <th>LCAF AFR</th>
+                    <th>LCAF SEA</th>
+                    <th>LCAF PNG</th>
+                    <th>MAF AFR</th>
+                    <th>MAF SEA</th>
+                    <th>MAF PNG</th>
+                    <th>DAF AFR</th>
+                    <th>DAF SEA</th>
+                    <th>DAF PNG</th>
+                    <th>Mutation</th>
+                    <th>Ref Allele</th>
+                    <th>Non-ref Allele</th>
+                    <th>Outgroup Allele</th>
+                    <th>Ancestral Allele</th>
+                    <th>Derived Allele</th>
+                    <th>Private Allele</th>
+                    <th>Private Population</th>
+                    <th>Gene ID</th>
+                    <th>Gene Aliases</th>
+                    <th>Gene Description</th>
+                    <th>Links</th>
+                    <th>Gene Text</th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+        
+    </div>
+
+    <style type="text/css">
+      @import "DataTables-1.9.2/media/css/demo_page.css";
+      @import "DataTables-1.9.2/media/css/demo_table.css";
+      tr.even { background-color: #fff; }
+      tr.odd { background-color: #fff; }
+      tr.odd td.sorting_1 { background-color: #fff; }
+      tr.even td.sorting_1 { background-color: #fff; }
+      tr.odd td.sorting_2 { background-color: #fff; }
+      tr.even td.sorting_2 { background-color: #fff; }
+      th { text-align: left; }
+    </style>
+    <script type="text/javascript" src="DataTables-1.9.2/media/js/jquery.js"></script>
+    <script type="text/javascript" src="DataTables-1.9.2/media/js/jquery.dataTables.js"></script>
+    <script type="text/javascript" src="htsql-datatables.js"></script>
+    <script type="text/javascript">
+
+	var SNPDataTable = function() {
+
+	var node = "#example";
+	var htsqlUrlBase = "htsql";
+	var htsqlQuery = "/snp"; // retrieve SNPs
+
+	// custom datatable initialisation 
+	var dataTableInit = {
+		"bProcessing": true,
+		"sScrollX": "100%",
+		"sScrollXInner": "400%", // needed so gene description doesn't wrap
+		"bScrollCollapse": true,
+		"bAutoWidth": false,
+		"aoColumnDefs": [
+			{"bVisible": false, "aTargets": [0, 3, 9, 10, 11, 30]} // hide some columns
+		],
+		"aaSorting": [[1, "asc"], [2, "asc"]] // default sort
+	};
+	
+	HTSQLDataTable(node, htsqlUrlBase, htsqlQuery, dataTableInit);
+	
+};
+
+$(document).ready(function(){
+	SNPDataTable();
+});	
+
+    </script>
+
+<hr/>
+<p><strong>WARNING: Everything on <a href="http://alpha.malariagen.net/">alpha.malariagen.net</a> is an experimental prototype. Web applications may be broken and data may be wrong. Use at your own risk.</strong></p>
+
+</body>
+</html>

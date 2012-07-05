@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+  
+<head>
+    <title>Search by population (datatables demo) </title>
+</head>
+<body id="dt_example">
+    <div id="container">
+		<h1>Search by population</h1>
+		<p>This app integrates a form with datatables and HTSQL via a bit of JavaScript. 
+		Paging and sorting is done server-side, so large result-sets can be handled.</p>
+
+<p>Find SNPs where <select id="var1"><option>daf</option><option>nraf</option><option>maf</option></select> in <select id="pop1"><option>sea</option><option>afr</option><option>png</option></select> is <select id="comp1"><option>&gt;</option><option>&lt;</option></select> <input id="val1" type="text" value="0.9"></input> <br>
+and <select id="var2"><option>daf</option><option>nraf</option><option>maf</option></select> in <select id="pop2"><option>sea</option><option selected>afr</option><option>png</option></select> is <select id="comp2"><option>&gt;</option><option selected>&lt;</option></select> <input id="val2" type="text" value="0.1"></input> <br>
+<input id="search" type="button" value="search"></input></p>
+
+        <table cellpadding="0" cellspacing="0" border="0" class="display" id="example">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Chromosome</th>
+                    <th>Position</th>
+                    <th>SNP Name</th>
+                    <th>Gene</th>
+                    <th>Amino Acid</th>
+                    <th>NRAF AFR</th>
+                    <th>NRAF SEA</th>
+                    <th>NRAF PNG</th>
+                    <th>LCAF AFR</th>
+                    <th>LCAF SEA</th>
+                    <th>LCAF PNG</th>
+                    <th>MAF AFR</th>
+                    <th>MAF SEA</th>
+                    <th>MAF PNG</th>
+                    <th>DAF AFR</th>
+                    <th>DAF SEA</th>
+                    <th>DAF PNG</th>
+                    <th>Mutation</th>
+                    <th>Ref Allele</th>
+                    <th>Non-ref Allele</th>
+                    <th>Outgroup Allele</th>
+                    <th>Ancestral Allele</th>
+                    <th>Derived Allele</th>
+                    <th>Private Allele</th>
+                    <th>Private Population</th>
+                    <th>Gene ID</th>
+                    <th>Gene Aliases</th>
+                    <th>Gene Description</th>
+                    <th>Links</th>
+                    <th>Gene Text</th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+        
+    </div>
+    <style type="text/css">
+      @import "DataTables-1.9.2/media/css/demo_page.css";
+      @import "DataTables-1.9.2/media/css/demo_table.css";
+      tr.even { background-color: #fff; }
+      tr.odd { background-color: #fff; }
+      tr.odd td.sorting_1 { background-color: #fff; }
+      tr.even td.sorting_1 { background-color: #fff; }
+      tr.odd td.sorting_2 { background-color: #fff; }
+      tr.even td.sorting_2 { background-color: #fff; }
+      th { text-align: left; }
+    </style>
+    <script type="text/javascript" src="DataTables-1.9.2/media/js/jquery.js"></script>
+    <script type="text/javascript" src="DataTables-1.9.2/media/js/jquery.dataTables.js"></script>
+    <script type="text/javascript" src="htsql-datatables.js"></script>
+    <script type="text/javascript">
+    var SNPDataTable = function() {
+
+    	var node = "#example";
+    	var htsqlUrlBase = "htsql";
+        var var1 = $('#var1').val();
+        var pop1 = $('#pop1').val();
+        var comp1 = $('#comp1').val();
+        var val1 = $('#val1').val();
+        var var2 = $('#var2').val();
+        var pop2 = $('#pop2').val();
+        var comp2 = $('#comp2').val();
+        var val2 = $('#val2').val();
+        var htsqlQuery = '/snp.filter(' + var1 + '_' + pop1 + comp1 + val1 + '&' + var2 + '_' + pop2 + comp2 + val2 + ')';
+
+    	// custom datatable initialisation 
+    	var dataTableInit = {
+    		"bProcessing": true,
+    		"sScrollX": "100%",
+    		"sScrollXInner": "400%", // needed so gene description doesn't wrap
+    		"bScrollCollapse": true,
+    		"bAutoWidth": false,
+    		"aoColumnDefs": [
+    			{"bVisible": false, "aTargets": [0, 3, 9, 10, 11, 30]} // hide some columns
+    		],
+    		"aaSorting": [[1, "asc"], [2, "asc"]] // default sort
+    	};
+    	
+    	HTSQLDataTable(node, htsqlUrlBase, htsqlQuery, dataTableInit);
+    	
+    };
+
+    $(document).ready(function(){
+    	SNPDataTable();
+    	$("#search").click(function() { 
+    		SNPDataTable(); 
+    	});
+    });	
+    </script>
+
+<hr/>
+<p><strong>WARNING: Everything on <a href="http://alpha.malariagen.net/">alpha.malariagen.net</a> is an experimental prototype. Web applications may be broken and data may be wrong. Use at your own risk.</strong></p>
+</body>
+</html>

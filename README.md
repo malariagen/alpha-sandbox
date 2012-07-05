@@ -1,15 +1,15 @@
 alpha-sandbox
 =============
 
-Files for alpha.malariagen.net/sandbox.
+Files for [alpha.malariagen.net/sandbox](http://alpha.malariagen.net/sandbox).
 
 All files should carry the following health warning:
 
     <strong>WARNING: Everything on <a href="http://alpha.malariagen.net/">alpha.malariagen.net</a> is an experimental prototype. Web applications may be broken and data may be wrong. Use at your own risk.</strong>
 
-N.B., CGI scripts must be given executable permission (`chmod +x`) or they won't run.
+CGI scripts must be given executable permission (`chmod +x`) or they won't run.
 
-N.B., please test any server-side CGI or WSGI scripts locally before pushing to 
+Please test any server-side CGI or WSGI scripts locally before pushing to 
 this repository. You can test locally by adding the following directives to your 
 Apache configuration:
 
@@ -36,4 +36,4 @@ installed, e.g.:
 	sudo apt-get install python-pip
 	sudo pip install bottle flask htsql
 	
-**Do not commit any large files (more than a few MB) to this repository.**
+Do not commit any large files (more than a few MB) to this repository.

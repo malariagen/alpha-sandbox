@@ -36,4 +36,4 @@ installed, e.g.:
 	sudo apt-get install python-pip
 	sudo pip install bottle flask htsql
 	
-**Do not commit any large files (more than a few MB) to this repository.***
+**Do not commit any large files (more than a few MB) to this repository.**

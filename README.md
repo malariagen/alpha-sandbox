@@ -5,8 +5,7 @@ Files for alpha.malariagen.net/sandbox.
 
 All files should carry the following health warning:
 
-    <strong>WARNING: Everything on <a href="http://alpha.malariagen.net/">alpha.malariagen.net</a> is an experimental prototype. 
-    Web applications may be broken and data may be wrong. Use at your own risk.</strong>
+    <strong>WARNING: Everything on <a href="http://alpha.malariagen.net/">alpha.malariagen.net</a> is an experimental prototype. Web applications may be broken and data may be wrong. Use at your own risk.</strong>
 
 N.B., CGI scripts must be given executable permission (`chmod +x`) or they won't run.
 

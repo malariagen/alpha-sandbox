@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+  
+<head>
+    <title>Search by region (HTRAF demo)</title>
+</head>
+
+<body>
+
+	<h3>Search by region</h3>
+	<p>This app uses HTRAF to implement search by genome region.</p>
+	<hr>
+	
+	<p>
+	    <select id="chromosome" data-htsql="/snp^chromosome"></select> 
+	    <label>start:</label> <input id="start" type="text" value="1"></input> 
+	    <label>stop:</label> <input id="stop" type="text" value="100000"></input> 
+	    <input type="button" value="search"></input>
+	</p>
+	<br/>
+	
+	<div style="width: 800px; max-height: 400px; overflow: scroll;">
+	    <table id="snps"
+	           data-htsql="/snp.filter(chromosome=$chromosome&position>=$start&position<=$stop).sort(chromosome,position)"
+	           data-hide-column-0="true"
+	           data-ref="chromosome start stop"
+	           style="width: 400%;">
+	    </table>
+	</div>
+
+    <script type="text/javascript" 
+            src="HTRAF-2.0.0b3/htraf/htraf.js"
+            data-htsql-version="2"
+            data-htsql-prefix="htsql">
+    </script>
+
+	<style type="text/css">
+		@import "HTRAF-2.0.0b3/demo/css/htraf-02.css";
+	</style>
+
+</body>
+
+</html>

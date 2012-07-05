@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Search genes (HTRAF demo)</title>
+</head>
+<body>
+
+	<h3>Search genes</h3>
+	<p>This app uses HTRAF to search for genes.</p>
+	<hr>
+	
+	<p><input id="query" value="pfmdr"> <input type="button" value="search"></p>
+	<br>
+	
+    <table id="genes"
+           data-htsql="/gene.filter(fulltext~$query).sort(chromosome,start)"
+           data-ref="query">
+    </table>
+	<br/>
+	<p>Selection: <span data-htsql="/$genes" data-ref="genes"></span></p>
+
+    <script type="text/javascript" 
+            src="HTRAF-2.0.0b3/htraf/htraf.js"
+            data-htsql-version="2"
+            data-htsql-prefix="htsql">
+    </script>
+
+	<style type="text/css">
+		@import "HTRAF-2.0.0b3/demo/css/htraf-02.css";
+	</style>
+
+</body>
+</html>

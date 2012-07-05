@@ -1,0 +1,13 @@
+/*
+ * HTRAF Toolkit
+ * Copyright (c) 2011 Prometheus Research
+ * Released under dual MIT/GPL license; see `LICENSE` for details
+ */
+
+.htraf-selected {
+    background: #888888;
+}
+
+.htraf-hover {
+    background: #DDDDDD;
+}

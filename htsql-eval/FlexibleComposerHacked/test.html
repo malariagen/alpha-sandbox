@@ -1,0 +1,109 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en-US" xml:lang="en-US">
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1"/>
+		<title>Prototype for Table Explorer</title>
+		<meta http-equiv="Content-Type" charset="utf-8" content="text/html"/>
+		<link rel="stylesheet" type="text/css" href="css/reset.css" media="all"/>
+		<link rel="stylesheet" type="text/css" href="css/general.css" media="all"/>
+	    <style type="text/css">
+	      @import "/DataTables-1.9.2/media/css/demo_page.css";
+	      @import "/DataTables-1.9.2/media/css/demo_table.css";
+	      tr.even { background-color: #fff; }
+	      tr.odd { background-color: #fff; }
+	      tr.odd td.sorting_1 { background-color: #fff; }
+	      tr.even td.sorting_1 { background-color: #fff; }
+	      tr.odd td.sorting_2 { background-color: #fff; }
+	      tr.even td.sorting_2 { background-color: #fff; }
+	      th { text-align: left; }
+	    </style>
+	    <script type="text/javascript" src="/DataTables-1.9.2/media/js/jquery.js"></script>
+	    <script type="text/javascript" src="/DataTables-1.9.2/media/js/jquery.dataTables.js"></script>
+	    <script type="text/javascript" src="/htsql-datatables.js"></script>
+
+		<script type="text/javascript" src="js/src/main/expcat.js"></script>
+		<script type="text/javascript" src="js/src/main/expcat.cql.js"></script>
+		<script type="text/javascript" src="js/src/main/expcat.cql.Type.js"></script>
+		<script type="text/javascript" src="js/src/main/expcat.cql.Operator.js"></script>
+		<script type="text/javascript" src="js/src/main/expcat.cql.Value.js"></script>
+		<script type="text/javascript" src="js/src/main/expcat.cql.Property.js"></script>
+		<script type="text/javascript" src="js/src/main/expcat.cql.Clause.js"></script>
+		<script type="text/javascript" src="js/src/main/expcat.cql.QueryBuilder.js"></script>
+		<script type="text/javascript" src="js/src/main/expcat.plugins.ConditionBar.js"></script>
+		<script type="text/javascript" src="js/src/main/expcat.plugins.OperatorBar.js"></script>
+		<script type="text/javascript" src="js/src/main/expcat.plugins.QueryComposerUI.js"></script>
+		<script type="text/javascript" src="js/src/main/expcat.plugins.QueryComposerUIManager.js"></script>
+		<script type="text/javascript" src="js/src/main/init.js"></script>
+		<script type="text/javascript">
+			
+			$(document).ready(function() {
+				INIT_TEST.init($("#addButton"), $("#testButton"));
+			});
+			
+		</script>
+	</head>
+	<body id="dt_example">
+		<div id="container">
+			<div class="main">
+				<div class="content">
+					<h1>Advanced Query</h1>
+					<div class="queryPanel" id="query-container">
+						<div class="delimiter" id="query-delimiter"></div>
+					</div>
+					<div id="cqlCode" style="display: none;">
+						Generated query
+					</div>
+					<br/>
+					<center>					
+					<button id="addButton">
+						Add Condition
+					</button>
+					<button id="testButton">Search</button></center>
+					<div class="separator"></div>
+					<div>
+				        <table cellpadding="0" cellspacing="0" border="0" class="display" id="example" style="display: none">
+				            <thead>
+				                <tr>
+				                    <th>ID</th>
+				                    <th>Chromosome</th>
+				                    <th>Position</th>
+				                    <th>SNP Name</th>
+				                    <th>Gene</th>
+				                    <th>Amino Acid</th>
+				                    <th>NRAF AFR</th>
+				                    <th>NRAF SEA</th>
+				                    <th>NRAF PNG</th>
+				                    <th>LCAF AFR</th>
+				                    <th>LCAF SEA</th>
+				                    <th>LCAF PNG</th>
+				                    <th>MAF AFR</th>
+				                    <th>MAF SEA</th>
+				                    <th>MAF PNG</th>
+				                    <th>DAF AFR</th>
+				                    <th>DAF SEA</th>
+				                    <th>DAF PNG</th>
+				                    <th>Mutation</th>
+				                    <th>Ref Allele</th>
+				                    <th>Non-ref Allele</th>
+				                    <th>Outgroup Allele</th>
+				                    <th>Ancestral Allele</th>
+				                    <th>Derived Allele</th>
+				                    <th>Private Allele</th>
+				                    <th>Private Population</th>
+				                    <th>Gene ID</th>
+				                    <th>Gene Aliases</th>
+				                    <th>Gene Description</th>
+				                    <th>Links</th>
+				                    <th>Gene Text</th>
+				                </tr>
+				            </thead>
+				            <tbody>
+				            </tbody>
+				        </table>
+					
+					</div>
+				</div>
+			</div>
+		</div>
+	</body>
+</html>

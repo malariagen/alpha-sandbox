@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+  
+<head>
+    <title>SNPs by chromosome and mutation type (HTRAF demo)</title>
+</head>
+
+<body>
+
+	<h1>SNPs by chromosome and mutation type</h1>
+	<p>This app uses HTRAF to plot number of SNPs by chromosome and mutation type.</p>
+	<hr>
+	
+	<div style="width: 800px; height: 400px"
+	     data-widget="chart"
+	     data-type="bar"
+	     data-yint="true"
+	     data-title="Number of SNPs by Chromosome and Mutation Type"
+	     data-htsql="/snp^chromosome{chromosome,count(snp.filter(mutation='SYN')) :as syn,count(snp.filter(mutation='NON')) :as non}">
+	</div>
+ 
+    <script type="text/javascript" 
+            src="HTRAF-2.0.0b3/htraf/htraf.js"
+            data-htsql-version="2"
+            data-htsql-prefix="htsql">
+    </script>
+
+	<style type="text/css">
+		@import "HTRAF-2.0.0b3/demo/css/htraf-02.css";
+	</style>
+
+</body>
+
+</html>

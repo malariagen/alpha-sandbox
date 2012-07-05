@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Differentiated SNPs (HTRAF demo)</title>
+</head>
+<body>
+
+	<h1>Differentiated SNPs</h1>
+	<p>This app uses HTRAF to count the number of SNPs on each chromosome that are
+	at high frequency in SEA and low frequency in AFR then plot that as a percentage
+	of total SNPs on a bar chart.</p>
+	<hr>
+	<table data-htsql="/snp^chromosome{chromosome,count(snp.filter(daf_sea>0.8&daf_afr<0.2)),count(snp)}">
+	</table>
+	<br/><br/>
+	<div style="width: 800px; height: 350px"
+	     data-widget="chart"
+	     data-type="bar"
+	     data-yint="false"
+	     data-title="Percentage of Differentiated SNPs"
+	     data-htsql="/snp^chromosome{chromosome,100*(count(snp.filter(daf_sea>0.8&daf_afr<0.2))/count(snp))}">
+	</div>
+
+    <script type="text/javascript" 
+            src="HTRAF-2.0.0b3/htraf/htraf.js"
+            data-htsql-version="2"
+            data-htsql-prefix="htsql">
+    </script>
+
+	<style type="text/css">
+		@import "HTRAF-2.0.0b3/demo/css/htraf-02.css";
+	</style>
+ 
+</body>
+</html>

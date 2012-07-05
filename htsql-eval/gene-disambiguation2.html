@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Search SNPs by gene with disambiguation (HTRAF demo)</title>
+</head>
+<body>
+
+	<h1>Search SNPs by gene with disambiguation</h1>
+	<hr>
+	
+	<p><input id="query" value="pfmdr"> <input type="button" value="search"></p>
+	<br>
+	
+	<h3>Genes</h3>
+	<ul id="gene"
+	    data-htsql="/gene.filter(fulltext~$query).sort(chromosome,start){name,name+' ('+chromosome+':'+ str(start) +'-'+ str(end) +')'}"
+	    data-ref="query">
+	</ul>
+	<br/>
+	<h3>SNPs</h3>
+	<div style="width: 800px; max-height: 400px; overflow: scroll;">
+	    <table id="snp"
+	           data-htsql="/snp.filter(geneid=$gene).sort(chromosome,position)"
+	           data-hide-column-0="true"
+	           data-ref="gene"
+	           style="width: 400%;">
+	    </table>
+	</div>
+
+    <script type="text/javascript" 
+            src="HTRAF-2.0.0b3/htraf/htraf.js"
+            data-htsql-version="2"
+            data-htsql-prefix="htsql">
+    </script>
+
+	<style type="text/css">
+		@import "HTRAF-2.0.0b3/demo/css/htraf-02.css";
+	    ul.htraf li {
+	        display: inline;
+	        padding-left: 0;
+	    }
+	</style>
+
+</body>
+</html>

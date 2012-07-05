@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Search by population (HTRAF demo)</title>
+</head>
+<body>
+
+	<h3>Search by population</h3>
+	<p>This demo uses HTRAF with a very small amount of javascript to
+		build the HTSQL query from the values in the form.</p>
+	<hr />
+
+	<p>
+		Find SNPs where <select id="var1"><option>daf</option>
+			<option>nraf</option>
+			<option>maf</option>
+		</select> in <select id="pop1"><option>sea</option>
+			<option>afr</option>
+			<option>png</option>
+		</select> is <select id="comp1"><option>&gt;</option>
+			<option>&lt;</option>
+		</select> <input id="val1" type="text" value="0.9"></input> <br /> and <select
+			id="var2"><option>daf</option>
+			<option>nraf</option>
+			<option>maf</option>
+		</select> in <select id="pop2"><option>sea</option>
+			<option selected>afr</option>
+			<option>png</option>
+		</select> is <select id="comp2"><option>&gt;</option>
+			<option selected>&lt;</option>
+		</select> <input id="val2" type="text" value="0.1"></input> <br /> ordered by
+		<select id="sortpop">
+			<option selected>daf</option>
+			<option>nraf</option>
+			<option>maf</option>
+		</select> in <select id="sortvar">
+			<option>afr</option>
+			<option selected>sea</option>
+			<option>png</option>
+		</select> <select id="sortdir">
+			<option value="+">ascending</option>
+			<option value="-" selected>descending</option>
+		</select> <br /> <input id="search" type="button" value="search"></input><br />
+	</p>
+	<br />
+
+	<div style="width: 800px; max-height: 400px; overflow: scroll;">
+		<table id="snps"
+			data-htsql="/snp.filter(daf_sea>0.9&daf_afr<0.1).sort(daf_sea-)"
+			data-hide-column-0="true" style="width: 400%;">
+		</table>
+	</div>
+
+	<script type="text/javascript">
+		$('#search').click(
+				function() {
+					var1 = $('#var1').val();
+					pop1 = $('#pop1').val();
+					comp1 = $('#comp1').val();
+					val1 = $('#val1').val();
+					var2 = $('#var2').val();
+					pop2 = $('#pop2').val();
+					comp2 = $('#comp2').val();
+					val2 = $('#val2').val();
+					sortpop = $('#sortpop').val();
+					sortvar = $('#sortvar').val();
+					sortdir = $('#sortdir').val();
+					// build the HTSQL query
+					query = '/snp.filter(' + var1 + '_' + pop1 + comp1 + val1
+							+ '&' + var2 + '_' + pop2 + comp2 + val2
+							+ ').sort(' + sortpop + '_' + sortvar + sortdir
+							+ ')';
+					console.log(query);
+					// get hold of the HTRAF table widget
+					widget = $('#snps').data('table');
+					widget._source = query;
+					widget.load();
+				});
+	</script>
+
+    <script type="text/javascript" 
+            src="HTRAF-2.0.0b3/htraf/htraf.js"
+            data-htsql-version="2"
+            data-htsql-prefix="htsql">
+    </script>
+
+	<style type="text/css">
+		@import "HTRAF-2.0.0b3/demo/css/htraf-02.css";
+	</style>
+
+</body>
+
+</html>

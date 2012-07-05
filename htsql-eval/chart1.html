@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+  
+<head>
+    <title>SNPs by chromosome (HTRAF demo)</title>
+</head>
+
+<body>
+
+	<h1>SNPs by chromosome</h1>
+	<p>This app uses HTRAF to plot the number of SNPs per chromosome in two different chart types.</p>
+	<hr>
+	<div style="width: 700px; height: 350px"
+	     data-widget="chart"
+	     data-type="bar"
+	     data-yint="true"
+	     data-title="Number of SNPs by Chromosome"
+	     data-htsql="/snp^chromosome{chromosome,count(snp)}">
+	</div>
+	<br/><br/>
+	<div style="width: 700px; height: 350px"
+	     data-widget="chart"
+	     data-type="pie"
+	     data-yint="true"
+	     data-title="Number of SNPs by Chromosome"
+	     data-htsql="/snp^chromosome{chromosome,count(snp)}">
+	</div>
+
+    <script type="text/javascript" 
+            src="HTRAF-2.0.0b3/htraf/htraf.js"
+            data-htsql-version="2"
+            data-htsql-prefix="htsql">
+    </script>
+
+	<style type="text/css">
+		@import "HTRAF-2.0.0b3/demo/css/htraf-02.css";
+	</style>
+ 
+</body>
+
+</html>

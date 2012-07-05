@@ -1,0 +1,239 @@
+body {
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+	font-size: 10pt;
+	color: #333333;
+	margin: 0;
+	padding: 0;
+	background-color: #4F81BD;
+}
+.main {
+	width: 960px;
+	min-height: 550px;
+	margin-left: auto;
+	margin-right: auto;
+	background-color: white;
+	border: none;
+}
+.main .content {
+	width: 910px;
+	margin-left: auto;
+	margin-right: auto;
+}
+.main .separator {
+	width: 920px;
+	margin-left: auto;
+	margin-right: auto;
+	margin-top: 20px;
+	margin-bottom: 25px;
+	height: 4px;
+	background-color: navy;
+}
+/**
+ * 	Query panel, conditions and operators.
+ */
+
+.queryPanel, .delimiter .nestedPanel {
+	padding-left: 0px;
+	margin-left: auto;
+	margin-right: auto;
+	width: 660px;
+}
+.delimiter .nestedPanel {
+	padding-left: 30px;
+}
+.queryPanel .delimiter, .nestedPanel .nestedDelimiter {
+	width: 582px;
+	padding-left: 5px;
+	margin-left: 0px;
+	border-left: 3px solid silver;
+	border-radius: 10px;
+	-webkit-border-radius: 10px;
+	-moz-border-radius: 10px;
+}
+.nestedPanel .nestedDelimiter {
+	margin-left: 0px;
+}
+.delimiter .conditionPanel, .delimiter .operatorPanel {
+	width: 582px;
+	margin-left: auto;
+	margin-right: auto;
+	margin-bottom: 1px;
+	margin-top: 8px;
+	background-color: #ffffcc;
+	height: 50px;
+	border-radius: 5px;
+	border: solid 3px;
+	border-color: #ffa800;
+	-webkit-border-radius: 5px;
+	-moz-border-radius: 5px;
+}
+.delimiter .operatorPanel {
+	height: 35px;
+	background-color: white;
+	border: 0px;
+}
+.operatorPanel .operatorLine {
+	/*width: 50%;
+	 float: left; */
+	width: 280px;
+	margin-left: -5px;
+	margin-top: 16px;
+	height: 3px;
+	background-color: silver;
+	float: left;
+}
+.operatorPanel .operator {
+	width: 100px;
+	float: left;
+}
+.operatorPanel .operator select {
+	font-size: 14px;
+	height: 28px;
+	margin-top: 4px;
+	margin-left: 3px;
+	width: 90px;
+	position: relative;
+}
+/**
+ * 	Condition elements.
+ */
+
+.nestButton, .unnestButton, .negationButton, .removeButton, .helpButton {
+	width: 28px;
+	height: 28px;
+	float: left;
+	margin-top: 4px;
+	margin-left: 4px;
+	border-radius: 5px;
+	-webkit-border-radius: 5px;
+	-moz-border-radius: 5px;
+}
+.helpButton {
+	float: right;
+	width: 20px;
+	height: 20px;
+	margin-top: 7px;
+	margin-left: 0px;
+	margin-right: 5px;
+	background: url("img/help.png");
+}
+.helpButton:hover {
+	background: url("img/helpHover.png");
+	cursor: pointer;
+}
+.negationButton {
+	background: url("img/not.png");
+	cursor: pointer;
+}
+.negationButton:hover {
+	background: url("img/notHover.png");
+}
+.removeButton {
+	background: url("img/remove.png");
+	cursor: pointer;
+}
+.removeButton:hover {
+	background: url("img/removeHover.png");
+}
+.nestButton, .unnestButton {
+	width: 24px;
+	height: 24px;
+}
+.nestButton {
+	background: url("img/nest.png");
+	background-position: -2px -3px;
+	cursor: pointer;
+}
+.nestButton:hover {
+	background: url("img/nestHover.png");
+	background-position: -2px -3px;
+}
+.unnestButton {
+	background: url("img/unnest.png");
+	background-position: -2px -3px;
+	cursor: pointer;
+}
+.unnestButton:hover {
+	background: url("img/unnestHover.png");
+	background-position: -2px -3px;
+}
+.conditionPanel .negation, .conditionPanel .property, .conditionPanel .operator, .conditionPanel .value, .conditionPanel .grouping {
+	float: left;
+	height: 35px;
+	margin-top: 7px;
+	margin-left: 7px;
+	background: #ffffcc;
+	border-right: 3px dotted #ffa800;
+}
+.conditionPanel .negation {
+	width: 45px
+}
+.conditionPanel .property {
+	width: 160px;
+	padding-left: 5px;
+	padding-right: 3px;
+}
+.property select {
+	font-size: 14px;
+	height: 28px;
+	margin-top: 3px;
+	width: 130px;
+}
+.conditionPanel .operator {
+	width: 110px;
+	padding-left: 5px;
+	padding-right: 3px;
+}
+.operator select {
+	font-size: 14px;
+	height: 28px;
+	margin-top: 3px;
+	width: 100px;
+}
+.conditionPanel .value {
+	width: 140px;
+	padding-left: 5px;
+	padding-right: 3px;
+}
+.value input {
+	font-size: 14px;
+	height: 20px;
+	margin-top: 3px;
+	margin-right: 5px;
+	width: 140px;
+}
+.conditionPanel .grouping {
+	width: 50px;
+	padding-left: 5px;
+	padding-right: 0px;
+	border-right: none;
+}
+#cqlCode {
+	margin-left: auto;
+	margin-right: auto;
+	margin-top: 100px;
+	margin-bottom: 100px;
+	text-align: left;
+	width: 500px;
+	font-weight: bolder;
+	font-size: 15px;
+	border: dotted 2px gray;
+	background-color: silver;
+	padding: 10px;
+	min-height: 100px;
+}
+.helpTooltip {
+	display: none;
+	font-weight: bold;
+	padding: 5px;
+	border-radius: 5px;
+	-webkit-border-radius: 5px;
+	-moz-border-radius: 5px;
+	box-shadow: 2px 3px 4px #999;
+	-moz-box-shadow: 2px 3px 10px #999;
+	-webkit-box-shadow: 2px 3px 10px #999;
+	background-color: #ffa800;
+	max-width: 380px;
+	text-align: left;
+}
+

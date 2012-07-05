@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Search by gene (HTRAF demo)</title>
+</head>
+<body>
+
+	<h3>Search by gene</h3>
+	<p>This app uses HTRAF to implement search by gene.</p>
+	<hr>
+
+	<p><input id="gene" value="pfcrt"> <input type="button" value="search"></p>
+	<br>
+	
+	<div style="width: 800px; max-height: 400px; overflow: scroll;">
+	    <table id="snps-by-gene"
+	           data-htsql="/snp.filter(genetext~$gene).sort(chromosome,position)"
+	           data-hide-column-0="true"
+	           data-ref="gene"
+	           style="width: 400%;">
+	    </table>
+	</div>
+
+    <script type="text/javascript" 
+            src="HTRAF-2.0.0b3/htraf/htraf.js"
+            data-htsql-version="2"
+            data-htsql-prefix="htsql">
+    </script>
+
+	<style type="text/css">
+		@import "HTRAF-2.0.0b3/demo/css/htraf-02.css";
+	</style>
+
+</body>
+</html>

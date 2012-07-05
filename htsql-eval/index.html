@@ -5,10 +5,75 @@
 </head>
 <body>
 <h1>HTSQL Evaluation | <a href="/">alpha.malariagen.net</a></h1>
-<form action="load_launcher/load_snps" method="post">
-  <p><input type="submit" value="load snps"/></p>
-</form>
+	<h2>HTSQL Web Service</h2>
+	<p>You can play with the HTSQL web service directly, e.g., try the following queries:</p>
+	<ul>
+		<li><a href="htsql/snp.limit(10)">/snp.limit(10)</a></li>
+		<li><a href="htsql/snp.limit(10)/:json">/snp.limit(10)/:json</a> (JSON objects)</li>
+		<li><a href="htsql/snp.limit(10)/:raw">/snp.limit(10)/:raw</a> (JSON arrays)</li>
+		<li><a href="htsql/snp.limit(10)/:csv">/snp.limit(10)/:csv</a></li>
+		<li><a href="htsql/snp.limit(10)/:tsv">/snp.limit(10)/:tsv</a></li>
+		<li><a href="htsql/snp.limit(10)/:sql">/snp.limit(10)/:sql</a> - see the actual SQL that the HTSQL query is rewritten to</li>
+		<li><a href="htsql/snp.filter(daf_sea>0.9&daf_afr<0.1).sort(daf_sea-)">/snp.filter(daf_sea>0.9&daf_afr<0.1).sort(daf_sea-)</a></li>
+		<li><a href="htsql/snp.filter(genetext~'pfcrt').sort(chromosome,position)">/snp.filter(genetext~'pfcrt').sort(chromosome,position)</a></li>
+		<li><a href="htsql/snp.filter(chromosome='MAL1'&position>=1&position<=100000).sort(chromosome,position)">/snp.filter(chromosome='MAL1'&position>=1&position<=100000).sort(chromosome,position)</a></li>
+		<li><a href="htsql/snp^chromosome">/snp^chromosome</a></li>
+		<li><a href="htsql/snp^chromosome{chromosome,count(snp)}">/snp^chromosome{chromosome,count(snp)}</a> or equivalent <a href="htsql/snp^chromosome{*,count(^)}">/snp^chromosome{*,count(^)}</a></li>
+		<li><a href="htsql/snp^chromosome{chromosome,count(snp.filter(mutation='SYN')) :as syn,count(snp.filter(mutation='NON')) :as non}">/snp^chromosome{chromosome,count(snp.filter(mutation='SYN')) :as syn,count(snp.filter(mutation='NON')) :as non}</a></li>
+		<li><a href="htsql/snp^chromosome{chromosome,100*(count(snp.filter(daf_sea>0.8&daf_afr<0.2))/count(snp))}">/snp^chromosome{chromosome,100*(count(snp.filter(daf_sea>0.8&daf_afr<0.2))/count(snp))}</a></li>
+		<li><a href="htsql/gene.limit(10)">/gene.limit(10)</a></li>
+		<li><a href="htsql/gene.filter(fulltext~'pfmdr').sort(chromosome,start)">/gene.filter(fulltext~'pfmdr').sort(chromosome,start)</a></li>
+		<li><a href="htsql/gene.filter(fulltext~'transport').sort(chromosome,start)">/gene.filter(fulltext~'transport').sort(chromosome,start)</a></li>
+	</ul>
+	<h2>HTRAF Demos</h2>
+	<p>The following demo applications use <a href="http://htsql.org/htraf/index.html">HTRAF</a> only, or HTRAF plus a
+		very small amount of JavaScript:</p>
+
+	<ul>
+		<li><a href="population.html">search by population</a>
+		</li>
+		<li><a href="gene.html">search by gene</a>
+		</li>
+		<li><a href="region.html">search by region</a>
+		</li>
+		<li><a href="chart1.html">chart of SNP counts by chromosome</a>
+		</li>
+		<li><a href="chart2.html">chart of SNP counts by chromosome
+				and mutation type</a>
+		</li>
+        <li><a href="chart3.html">chart of differentiated SNP counts
+        </a>
+        </li>
+        <li><a href="gene-search.html">text search genes table</a>
+        </li>
+        <li><a href="gene-disambiguation.html">search SNPs by gene with gene disambiguation (table)</a>
+        </li>
+        <li><a href="gene-disambiguation2.html">search SNPs by gene with gene disambiguation (inline)</a>
+        </li>
+	</ul>
+	<h2>jQuery Datatables Demos</h2>
+	<p>The following demo apps use jQuery with the <a href="http://datatables.net/">datatables</a> plug-in
+		and a bit of custom JavaScript to adapt datatables to talk to the
+		HTSQL web service:</p>
+		
+	<ul>
+		<li><a href="dt-htsql1.html">all SNPs,
+				server-side paging and sorting</a>
+		</li>
+		<li><a href="dt-htsql2.html">all SNPs,
+				infinite scrolling</a>
+		</li>
+		<li><a href="dt-population.html">search by population with
+				datatable</a>
+		</li>
+		<li><a href="dt-gene.html">search by gene with datatable</a>
+		</li>
+		<li><a href="dt-region.html">search by region with datatable</a>
+		</li>		
+		<li><a href="FlexibleComposerHacked/test.html">advanced query with datatable</a>
+		</li>		
+	</ul>
 <hr/>
-<p>WARNING: Everything on this server is an experimental prototype. Web applications may be broken and data may be wrong. Use at your own risk.</p>
+<p><strong>WARNING: Everything on <a href="http://alpha.malariagen.net/">alpha.malariagen.net</a> is an experimental prototype. Web applications may be broken and data may be wrong. Use at your own risk.</strong></p>
 </body>
 </html>

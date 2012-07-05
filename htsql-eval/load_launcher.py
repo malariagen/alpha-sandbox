@@ -15,4 +15,9 @@ def load_snps():
     pid = Popen(["./load_snps.py"]).pid
     redirect("../log_load_snps?pid=%s" % pid)
 
+@app.post('/load_genes')
+def load_genes():
+    pid = Popen(["./load_genes.py"]).pid
+    redirect("../log_load_genes?pid=%s" % pid)
+
 application = app

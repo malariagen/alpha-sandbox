@@ -1,7 +1,7 @@
 alpha-sandbox
 =============
 
-Files for [alpha.malariagen.net/sandbox](http://alpha.malariagen.net/sandbox).
+Files for [alpha.malariagen.net/sandbox/](http://alpha.malariagen.net/sandbox/).
 
 All files should carry the following health warning:
 

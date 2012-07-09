@@ -13,9 +13,9 @@ Please test any server-side CGI or WSGI scripts locally before pushing to
 this repository. You can test locally by adding the following directives to your 
 Apache configuration:
 
-	WSGIDaemonProcess default processes=2 threads=25
+	WSGIDaemonProcess default processes=2 threads=10
 	WSGIProcessGroup default
-	WSGIApplicationGroup %{GLOBAL}
+	WSGIApplicationGroup %{RESOURCE}
 	WSGIScriptReloading On
 	
 	Alias /sandbox/ /path/to/local/git/malariagen/alpha-sandbox/

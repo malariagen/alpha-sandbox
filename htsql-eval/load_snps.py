@@ -6,6 +6,7 @@
 # 
 
 # dependencies from standard python libraries
+import os
 import sqlite3
 import urllib2
 from zipfile import ZipFile
@@ -29,6 +30,7 @@ class Unbuffered:
 # main routine
 if __name__ == '__main__':
 
+    os.chdir(os.path.dirname(__file__)) # change working directory
     with open('log_load_snps.html', 'w') as logfile:
         
         # set up logging

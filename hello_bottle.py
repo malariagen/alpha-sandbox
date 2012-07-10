@@ -14,10 +14,5 @@ def index(name):
 
 
 # N.B., assume we're running via WSGI
-
-# change working directory so relative paths (and template lookup) work again
-import os
-os.chdir(os.path.dirname(__file__))
-
 # provide WSGI application
 application = app

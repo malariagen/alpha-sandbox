@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+  
+<head>
+    <title>Summarise by region (HTRAF demo)</title>
+</head>
+
+<body>
+
+	<h3>Summarise by region</h3>
+	<p>This app illustrates HTSQL queries that summarise data over numeric ranges.</p>
+	<hr>
+	
+	<p>
+	    <select id="chromosome" data-htsql="/snp^chromosome"></select> 
+	    start: <input id="start" type="text" value="100000"></input> 
+	    stop: <input id="stop" type="text" value="200000"></input>
+	    bins: <input id="bins" type="text" value="10"></input>
+	    <input type="button" value="search"></input>
+	</p>
+	<br/>
+	
+	<div style="width: 800px; max-height: 400px; overflow: auto;">
+	    <table id="snps"
+	           data-htsql="
+/snp
+.filter(chromosome=$chromosome & position>int($start) & position<int($stop))
+^{bin := trunc((position-int($start))/$width)}
+{bin, $chromosome :as chr, int($start) + bin*$width :as from, int($start) + (bin+1)*$width :as to, count(snp), max(snp.daf_sea), min(snp.daf_sea), sum(snp.daf_sea), avg(snp.daf_sea)}  
+:where($width := (int($stop) - int($start))/int($bins))
+"
+	           data-ref="chromosome start stop bins"
+	           style="width: 100%;">
+	    </table>
+	</div>
+<br>
+	<div style="width: 800px; height: 400px"
+	          data-widget="chart"
+	          data-type="bar"
+	          data-yint="true"
+	          data-title="Number of SNPs"
+	          data-ref="chromosome start stop bins"
+	          data-htsql="
+/snp                                                                                                                                              
+.filter(chromosome=$chromosome & position>int($start) & position<int($stop))                                                                      
+^{bin := trunc((position-int($start))/$width)}                                                                                                    
+{int($start) + bin*$width :as from, count(snp)}                                                                                                   
+:where($width := (int($stop) - int($start))/int($bins))
+">
+	  </div>
+	<hr/>
+	<p>Here's an example of an HTSQL query to summarise values over numeric bins (click to run in the HTSQL query editor shell):</p>
+	<pre style="padding: 0.4em; background-color: #ddd; border: 1px solid #aaa"><a href="htsql/shell('/snp%0A.filter(chromosome=$chr%20&%20position>$start%20&%20position<$stop)%0A%5E%7Bbin%20:=%20trunc((position-$start)/$width)%7D%0A%7Bbin,%20$start%20+%20bin*$width%20:as%20from,%20$start%20+%20(bin+1)*$width%20:as%20to,%20count(snp),%20max(snp.daf_sea),%20min(snp.daf_sea),%20sum(snp.daf_sea),%20avg(snp.daf_sea)%7D%20%0A:where($chr%20:=%20''MAL1'',%20$start%20:=%20200000,%20$stop%20:=%20300000,%20$bins%20:=%2010,%20$width%20:=%20($stop%20-%20$start)/$bins)')">/snp
+.filter(chromosome=$chr & position>$start & position<$stop)
+^{bin := trunc((position-$start)/$width)}
+{bin, $start + bin*$width :as from, $start + (bin+1)*$width :as to, count(snp), max(snp.daf_sea), min(snp.daf_sea), sum(snp.daf_sea), avg(snp.daf_sea)} 
+:where($chr := 'MAL1', $start := 200000, $stop := 300000, $bins := 10, $width := ($stop - $start)/$bins)</a></pre>
+    <script type="text/javascript" 
+            src="HTRAF-2.0.0b3/htraf/htraf.js"
+            data-htsql-version="2"
+            data-htsql-prefix="htsql">
+    </script>
+
+	<style type="text/css">
+		@import "HTRAF-2.0.0b3/demo/css/htraf-02.css";
+	</style>
+
+<hr/>
+<p><strong>WARNING: Everything on <a href="http://alpha.malariagen.net/">alpha.malariagen.net</a> is an experimental prototype. Web applications may be broken and data may be wrong. Use at your own risk.</strong></p>
+
+</body>
+
+</html>

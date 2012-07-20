@@ -29,8 +29,7 @@ Apache configuration:
 		allow from all         
 	</Directory>
 
-To get the Python examples running you will need mod_wsgi, Bottle, Flask and HTSQL 
-installed, e.g.: 
+You will need mod_wsgi, Bottle, Flask and HTSQL installed, e.g.:
 
 	sudo apt-get install libapache2-mod-wsgi 
 	sudo apt-get install python-pip

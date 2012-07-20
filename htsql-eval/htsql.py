@@ -9,5 +9,6 @@ DB = 'sqlite:' + os.path.dirname(__file__) + '/db.sqlite3'
 application = HTSQL(DB, {
 	    'tweak.autolimit': {'limit': 1000},
 	    'tweak.cors': {'origin': '*'},
-	    'tweak.meta': {}	     
+	    'tweak.meta': {},
+            'tweak.shell': {}
 	    })

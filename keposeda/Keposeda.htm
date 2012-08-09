@@ -1,0 +1,174 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+
+<head>
+
+    <meta http-equiv="Expires" content="-1" />
+    <meta http-equiv="Pragma" content="no-cache" />
+    <meta http-equiv="CACHE-CONTROL" content="NO-CACHE" />
+
+    <title></title>
+    <link href="common.css" rel="stylesheet" type="text/css" />
+    <link href="Styles/jquery-ui-1.8.21.custom.css" rel="stylesheet" type="text/css"/>
+
+    <!--[if IE]><script src="excanvas.js"></script><![endif]-->
+    <script src="Scripts/jquery-1.4.1.js" type="text/javascript"></script>
+    <script src="Scripts/jquery-ui-1.8.21.custom.min.js" type="text/javascript"></script>
+    <script src="Scripts/base64.js" type="text/javascript"></script>
+
+    <script src="Scripts/jquery.dragndrop.js?<?=time()?" type="text/javascript"></script>
+
+    <script src="Scripts/Utils.js?<?=time()?" type="text/javascript"></script>
+    <script src="Scripts/DataDecoders.js?<?=time()?" type="text/javascript"></script>
+    <script src="Scripts/DataFetchers.js?<?=time()?" type="text/javascript"></script>
+    <script src="Scripts/ChannelPlotChannel.js?<?=time()?" type="text/javascript"></script>
+    <script src="Scripts/ChannelPlotChannelScale.js?<?=time()?" type="text/javascript"></script>
+    <script src="Scripts/ChannelPlotChannelYVals.js?<?=time()?" type="text/javascript"></script>
+    <script src="Scripts/ChannelPlotChannelAnnotation.js?<?=time()?" type="text/javascript"></script>
+    <script src="Scripts/ChannelPlot.js?<?=time()?" type="text/javascript"></script>
+    <script src="Scripts/ChromoPlotter.js?<?=time()?" type="text/javascript"></script>
+
+    <script src="Scripts/DQXQueryTable.js?<?=time()?" type="text/javascript"></script>
+
+    <script src="Scripts/DQXScroller.js?<?=time()?" type="text/javascript"></script>
+
+    <script src="Scripts/Keposeda.js?<?=time()?" type="text/javascript"></script>
+    <script src="Scripts/KeposedaPlot.js?<?=time()?" type="text/javascript"></script>
+    <script src="Scripts/KeposedaTable.js?<?=time()?" type="text/javascript"></script>
+</head>
+
+<body>
+
+
+
+
+<div style="float:left;width:100%">
+<div class="shadow" style="background-color:#333333;float:left;padding:6px;width:790px">
+
+<div style="float:left;width:100%">
+<div style="color:#BBBBBB;background-color:#333333;float:left;width:778px;height:50px;padding:6px;font-weight:bold;">
+
+
+<select id="Cnv1ChromoPicker" style="background-color:#CCCCCC;border-width:0px">
+  <option value="1">Chromosome 1</option>
+  <option value="2">Chromosome 2</option>
+  <option value="3">Chromosome 3</option>
+  <option value="4">Chromosome 4</option>
+  <option value="5">Chromosome 5</option>
+  <option value="6">Chromosome 6</option>
+  <option value="7">Chromosome 7</option>
+  <option value="8">Chromosome 8</option>
+  <option value="9">Chromosome 9</option>
+  <option value="10">Chromosome 10</option>
+  <option value="11">Chromosome 11</option>
+  <option value="12">Chromosome 12</option>
+  <option value="13">Chromosome 13</option>
+  <option value="14">Chromosome 14</option>
+  <option value="15">Chromosome 15</option>
+  <option value="16">Chromosome 16</option>
+  <option value="17">Chromosome 17</option>
+  <option value="18">Chromosome 18</option>
+  <option value="19">Chromosome 19</option>
+  <option value="20">Chromosome 20</option>
+  <option value="21">Chromosome 21</option>
+  <option value="22">Chromosome 22</option>
+</select> 
+&nbsp;
+<select id="stat" onchange="OnChangeStat()" style="background-color:#CCCCCC;border-width:0px">
+  <option value="IHS">iHS</option>
+  <option value="XPEHH">XP-EHH</option>
+  <option value="BOTH">iHS and XP-EHH</option>
+</select> 
+&nbsp;
+<button type="button" onclick="OnAllPops()">All populations</button>
+&nbsp;
+<button type="button" onclick="OnNoPops()">Clear populations</button>
+
+<p />
+<div id="Controls"></div>
+<p></p>
+
+</div>
+</div>
+
+
+
+<div>
+<canvas id="Cnv1Left" width=90 height=450></canvas><canvas id="Cnv1Center" width=700 height=450></canvas>
+</div>
+<div>
+<canvas id="Cnv1HScroller" width=790 height=30></canvas>
+</div>
+
+<div style="float:left;width:100%">
+
+<div style="color:#EEEEBB;background-color:#333333;float:left;width:778px;height:22px;padding:6px;">
+<span>Find gene, SNP or position:</span>&nbsp;&nbsp;
+<input id="Cnv1FindGene" type="text" name="findgene" style="background-color:#CCCCCC;border-width:0px"
+   title="You can enter a gene name, a SNP RS number, or a chromosome position in the format chr5:50000000"/>
+&nbsp;&nbsp;
+<span id="Cnv1GeneHits"></span>
+</div>
+
+</div>
+
+<!-- Closing the shadowed box -->
+</div>
+</div>
+
+<div id="DQXFloatBoxHolder" style="float:left;margin-top:17px;width:100%"></div>
+
+
+
+
+<!------------------------------------------- The table part --------------------------------------------------->
+
+
+<div class="shadow" style="color:#BBBBBB;background-color:#333333;float:left;width:794px;border-style:solid;border-width:5px;border-color:#333333;padding-bottom:20px;"">
+<h2>Query for significant windows</h2>
+
+Minimum number of
+<select id="QueryStat" style="background-color:#CCCCCC;border-width:0px" onchange="OnUpdateQuery()">
+  <option value="IHS">IHS</option>
+  <option value="XPEHH">XPEHH</option>
+</select> 
+populations in top 1%:  
+<input id="QueryVal" type="text" maxlength="2" size="2" value="0" style="background-color:#CCCCCC;border-width:0px" onkeyup="OnUpdateQuery()"/>
+<p />
+<span id="QueryPopChecks"></span>
+<!--<button type="button" onclick="OnUpdateQuery()">Run query</button>-->
+<p/>
+
+
+<div style="float:left;width:100%;height:30px;">
+<span id="TablePager"></span>
+&nbsp;&nbsp;&nbsp;
+Sort by: <select id="TableSortOptions" style="background-color:#CCCCCC;border-width:0px"></select> 
+&nbsp;
+<input type="checkbox" id="TableSortDir" />Inverted
+</div>
+
+
+<div style="float:left;width:100%;">
+<div id="Div1" style="float:left;overflow:auto;width:291px;border-style:solid;border-width:0px;border-right-width:2px;border-color:#444444">
+<div id="TableBody1" style="float:left;"></div>
+</div>
+<div id="Div2" style="float:left;overflow:auto;width:500px;border-style:solid;border-width:0px;border-color:#444444">
+<div id="TableBody2" style="float:left;"></div>
+</div>
+</div>
+</div>
+
+<div style="float:left;width:100%;height:30px;"></div>
+
+
+
+
+
+</body>
+</html>
+
+

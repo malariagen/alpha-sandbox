@@ -1,0 +1,108 @@
+﻿body, div.pagebody, div.pagebodylarge, div.pagebodylarge2, div.topics, div.topicslarge, div.topicslarge2, div.topiccolumnleft, div.topiccolumnright, div.topic , div.topicimage, div.topictitle, div.footer
+{
+	background-color:rgb(210,210,210);
+	color:#000000;
+}
+
+body
+{
+	font-size:8pt;
+	font-family: Verdana, Arial, Helvetica, sans-serif;
+    margin: 20px;
+    margin-bottom:20px;
+	padding:0 0 0 0;
+	height:100%;
+}
+
+h2 
+{
+    font-size:10pt;
+    font-weight:bold;
+    color:rgb(255,230,200);
+}
+
+
+table { border-width: 1px; border-style: solid;
+        border-collapse:collapse;
+        border-color: #FF0000; }
+th    { border-width: 1px; border-style: solid;
+        border-color: #000000;
+        background-color:rgb(100,100,100);
+        color:rgb(220,220,220);
+        text-align: center; width: 80px; 
+        padding: 4px;
+        }
+td    { border-width: 1px; border-style: solid;
+        border-color: rgb(210,210,210);
+        text-align: center; width: 80px; 
+        padding-left: 3px;
+        padding-right: 3px;
+        padding-top: 2px;
+        padding-bottom: 2px;
+        color:rgb(0,0,0);
+        }
+        
+        
+table.fixed th { text-align:left;}
+table.fixed td { white-space:nowrap; text-align:left;}
+
+
+a:link {
+COLOR: #FF6666;
+}
+a:visited {
+COLOR: #FF6666;
+}
+
+
+div.item
+{
+	height:33px;
+	vertical-align:middle;
+	font-weight:bold;
+	font-size:18pt;
+}
+
+div.item1
+{
+	background:#AAAAAA;
+}
+
+
+div.item2
+{
+	background:#AAAAFF;
+}
+
+
+.shadow {
+-moz-box-shadow: 3px 3px 4px #000;
+-webkit-box-shadow: 3px 3px 4px #000;
+box-shadow: 5px 5px 10px #555555;
+/* For IE 8 */
+-ms-filter: "progid:DXImageTransform.Microsoft.Shadow(Strength=4, Direction=135, Color='#000000')";
+/* For IE 5.5 - 7 */
+filter: progid:DXImageTransform.Microsoft.Shadow(Strength=4, Direction=135, Color='#000000');
+}
+
+
+/* For draggable floatboxes */
+/*
+Author : Onextrapixel
+URL: http://www.onextrapixel.com
+*/
+.FloatBox { width:200px; background-color:rgb(230,230,230); border:1px solid black; position:absolute; left:850px; top:100px; box-shadow: 5px 5px 10px #000000; }
+.FloatBox h2 { background-color:rgb(40,40,40); padding:5px;  margin:1px; cursor:move; }
+.FloatBox div { padding:5px; margin-bottom:10px; cursor:text; }
+
+.querybox
+{
+background: rgb(206,220,231); /* Old browsers */
+background: -moz-linear-gradient(top,  rgba(206,220,231,1) 0%, rgba(139,164,175,1) 100%); /* FF3.6+ */
+background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,rgba(206,220,231,1)), color-stop(100%,rgba(139,164,175,1))); /* Chrome,Safari4+ */
+background: -webkit-linear-gradient(top,  rgba(206,220,231,1) 0%,rgba(139,164,175,1) 100%); /* Chrome10+,Safari5.1+ */
+background: -o-linear-gradient(top,  rgba(206,220,231,1) 0%,rgba(139,164,175,1) 100%); /* Opera 11.10+ */
+background: -ms-linear-gradient(top,  rgba(206,220,231,1) 0%,rgba(139,164,175,1) 100%); /* IE10+ */
+background: linear-gradient(to bottom,  rgba(206,220,231,1) 0%,rgba(139,164,175,1) 100%); /* W3C */
+filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#cedce7', endColorstr='#8ba4af',GradientType=0 ); /* IE6-9 */
+}

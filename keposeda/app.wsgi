@@ -15,11 +15,9 @@ except ImportError:
 import simplejson
 
 
-
-
 def DownloadTable(meta,returndata,start_response):
     status = '200 OK'
-    output='testit'
+    output=''
     for item in responders.DownloadTable_Generator(meta,returndata):
         output=output + item
     response_headers = [('Content-type', 'text/plain'),('Content-Disposition','attachment; filename=download.txt'),('Content-Length', str(len(output)))]

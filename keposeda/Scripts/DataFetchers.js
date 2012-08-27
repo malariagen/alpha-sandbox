@@ -275,6 +275,7 @@ function CurveDataFetcher(iserverurl, itablename, ipositionfield) {
 
             if (collist.length > 0) {//launch the ajax request
                 this.IsFetching = true;
+				myurl=myurl.toString();
                 $.ajax({
                     url: myurl,
                     context: this,

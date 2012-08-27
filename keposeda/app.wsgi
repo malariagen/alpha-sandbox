@@ -17,7 +17,7 @@ except ImportError:
 import simplejson
 
 
-def DownloadTable(meta,returndata):
+def DownloadTable(meta,returndata,start_response):
     status = '200 OK'
     output='testit'
     response_headers = [('Content-type', 'text/plain'),('Content-Disposition','attachment; filename=download.txt'),('Content-Length', str(len(output)))]
@@ -46,7 +46,7 @@ def application(environ, start_response):
         mydatatype=returndata['datatype']
 
         if mydatatype=="downloadtable":
-            return DownloadTable(meta,returndata)
+            return DownloadTable(meta,returndata,start_response)
 
         resplist=responders.GetRespList()
         if not(mydatatype in resplist):

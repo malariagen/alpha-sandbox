@@ -42,17 +42,17 @@ def application(environ, start_response):
 
     output=""
     try:
-    returndata=Environ2RequestQuery(environ)
-    mydatatype=returndata['datatype']
+        returndata=Environ2RequestQuery(environ)
+        mydatatype=returndata['datatype']
 
-    if mydatatype=="downloadtable":
-        return DownloadTable(meta,returndata)
+        if mydatatype=="downloadtable":
+            return DownloadTable(meta,returndata)
 
-    resplist=responders.GetRespList()
-    if not(mydatatype in resplist):
-        raise Exception("Unknown request {0}".format(mydatatype))
-    else:
-        returndata=resplist[mydatatype](meta,returndata)
+        resplist=responders.GetRespList()
+        if not(mydatatype in resplist):
+            raise Exception("Unknown request {0}".format(mydatatype))
+        else:
+            returndata=resplist[mydatatype](meta,returndata)
 
     except Exception, err:
         returndata['Error']=str(err)

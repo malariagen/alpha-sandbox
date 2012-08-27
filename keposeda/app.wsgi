@@ -4,7 +4,6 @@ from cgi import parse_qs, escape
 import sys
 import os
 
-
 #!!! The following is necessary to make sure we can import from files in the local directory !!!
 try:
     import responders

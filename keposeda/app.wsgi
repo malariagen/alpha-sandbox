@@ -19,9 +19,12 @@ import simplejson
 
 def DownloadTable(meta,returndata,start_response):
     status = '200 OK'
-    response_headers = [('Content-type', 'text/plain'),('Content-Disposition','attachment; filename=download.txt')]
+    output='testit'
+    for item in responders.DownloadTable_Generator(meta,returndata):
+        output=output + item
+    response_headers = [('Content-type', 'text/plain'),('Content-Disposition','attachment; filename=download.txt'),('Content-Length', str(len(output)))]
     start_response(status, response_headers)
-    responders.DownloadTable_Generator(meta,returndata)
+    return [output]
 
 
 def Environ2RequestQuery(environ):
@@ -44,8 +47,7 @@ def application(environ, start_response):
         mydatatype=returndata['datatype']
 
         if mydatatype=="downloadtable":
-            DownloadTable(meta,returndata,start_response)
-            return
+            return DownloadTable(meta,returndata,start_response)
 
         resplist=responders.GetRespList()
         if not(mydatatype in resplist):

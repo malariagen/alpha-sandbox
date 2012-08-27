@@ -21,7 +21,7 @@ def DownloadTable(meta,returndata):
     status = '200 OK'
     response_headers = [('Content-type', 'text/plain'),('Content-Disposition','attachment; filename=download.txt')]
     start_response(status, response_headers)
-	return ['testit']
+    return ['testit']
     #responders.DownloadTable_Generator(meta,returndata)
 
 

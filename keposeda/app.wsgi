@@ -41,7 +41,7 @@ def application(environ, start_response):
     meta=environ
 
     output=""
-#    try:
+    try:
     returndata=Environ2RequestQuery(environ)
     mydatatype=returndata['datatype']
 
@@ -53,10 +53,9 @@ def application(environ, start_response):
         raise Exception("Unknown request {0}".format(mydatatype))
     else:
         returndata=resplist[mydatatype](meta,returndata)
-#    returndata['something']='some extra data'
 
-#    except Exception, err:
-#        returndata['Error']=str(err)
+    except Exception, err:
+        returndata['Error']=str(err)
 
     output=simplejson.dumps(returndata)
     status = '200 OK'

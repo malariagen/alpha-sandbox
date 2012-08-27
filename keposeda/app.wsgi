@@ -13,12 +13,12 @@ except ImportError:
     import responders
     sys.path.remove(os.path.dirname(__file__))
 
-try:
-	import Download
-except ImportError:
-    sys.path.append(os.path.dirname(__file__))
-	import Download
-    sys.path.remove(os.path.dirname(__file__))
+#try:
+#	import Download
+#except ImportError:
+#    sys.path.append(os.path.dirname(__file__))
+#	import Download
+#    sys.path.remove(os.path.dirname(__file__))
 	
 import simplejson
 

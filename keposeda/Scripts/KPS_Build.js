@@ -110,32 +110,33 @@ function isCanvasSupported() {
 }
 
 
+
 $(function () {
 
     //Global initialisation of utilities
     DQX.Init();
 
-    theserverurl = "/sandbox/keposeda/app";
+    theserverurl = "http://localhost:8000/app01";
 
 
     //////////////////////////////////////////////////////////////////////////////////////////////
     // Build the components
     //////////////////////////////////////////////////////////////////////////////////////////////
 
-	if (isCanvasSupported())
-		Build_ChromoView();
+    if (isCanvasSupported())
+        Build_ChromoView();
 
 
     Build_SimpleQueryWins();
     elemTableWindowSimple = Build_TableWins('IDTableWinsSimple');
-    elemTableWindowSimple.myTable.FindColumn('pos').MakeHyperlink(OnTableClick_WinSimple, '#');
+    elemTableWindowSimple.myTable.FindColumn('pos').MakeHyperlink(OnTableClick_WinSimple, "javascript:void(0)");
     //Automatically run the default query at start (as set on the page html controls)
     UpdateQueryWinsSimple();
 
 
     Build_AdvancedQueryWins();
     elemTableWindowAdvanced = Build_TableWins('IDTableWinsAdvanced');
-    elemTableWindowAdvanced.myTable.FindColumn('pos').MakeHyperlink(OnTableClick_WinAdvanced, '#');
+    elemTableWindowAdvanced.myTable.FindColumn('pos').MakeHyperlink(OnTableClick_WinAdvanced, "javascript:void(0)");
     //we start by defining a query that returns nothing
     elemTableWindowAdvanced.myTable.myDataFetcher.SetUserQuery(DQX.SQL.WhereClause.None());
     elemTableWindowAdvanced.myTable.Render();
@@ -146,7 +147,7 @@ $(function () {
 
     Build_AdvancedQuerySNPs();
     elemTableSNPAdvanced = Build_TableSNPs('IDTableSNPAdvanced');
-    elemTableSNPAdvanced.myTable.FindColumn('pos').MakeHyperlink(OnTableClick_SNPAdvanced, '#');
+    elemTableSNPAdvanced.myTable.FindColumn('pos').MakeHyperlink(OnTableClick_SNPAdvanced, "javascript:void(0)");
     //we start by defining a query that returns nothing
     elemTableSNPAdvanced.myTable.myDataFetcher.SetUserQuery(DQX.SQL.WhereClause.None());
     elemTableSNPAdvanced.myTable.Render();

@@ -185,6 +185,27 @@ DQX.showHelp = function (id) {
     DQX.CreateFloatBox("Help", helpcontent, "Help");
 }
 
+DQX.updateURL = function(currUrl, param, paramVal) {
+    var url = currUrl
+    var newAdditionalURL = "";
+    var tempArray = url.split("?");
+    var baseURL = tempArray[0];
+    var aditionalURL = tempArray[1];
+    var temp = "";
+    if (aditionalURL) {
+        var tempArray = aditionalURL.split("&");
+        for (i = 0; i < tempArray.length; i++) {
+            if (tempArray[i].split('=')[0] != param) {
+                newAdditionalURL += temp + tempArray[i];
+                temp = "&";
+            }
+        }
+    }
+    var rows_txt = temp + "" + param + "=" + paramVal;
+    var finalURL = baseURL + "?" + newAdditionalURL + rows_txt;
+    return finalURL;
+}
+
 
 //This function should be called *after* the creation of all initial dynamic html
 DQX.initPostCreate = function () {

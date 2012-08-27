@@ -86,7 +86,7 @@ function Build_TableSNPs(baseid) {
 
     var colinfo = datafetcher.ColumnAdd("snpid", "String", "rgb(0,0,0)");
     var comp = mytable.AddColumn(DQX.QueryTable.Column("Snp", "snpid", 0));
-    comp.myComment = 'The RS identifier of the snip';
+    comp.myComment = 'The RS identifier of the snp';
     comp.CellToColor = returnLightGray;
 
     var colinfo = datafetcher.ColumnAdd("allele1", "String", "rgb(0,0,0)");

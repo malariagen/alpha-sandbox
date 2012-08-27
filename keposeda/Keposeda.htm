@@ -6,7 +6,7 @@
     <meta http-equiv="CACHE-CONTROL" content="NO-CACHE" />
     <title></title>
 
-    <link href="DQXGlobal.css" rel="stylesheet" type="text/css" />
+    <link href="DQXCommon.css" rel="stylesheet" type="text/css" />
 
     <!-- jQuery sources -->
     <script src="Scripts/jquery-1.4.1.js" type="text/javascript"></script>
@@ -53,7 +53,7 @@
     <div style="height: 14px"></div>
     <div style="background-color: rgb(0,0,180); height: 4px"></div>
     <div style="height: 14px"></div>
-    12 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras sagittis pharetra
+    42 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras sagittis pharetra
     enim, at convallis nisl rhoncus quis. Nam arcu magna, pulvinar faucibus commodo
     eget, ultrices vitae neque. Ut mollis bibendum ultricies. Curabitur varius justo
     in enim tincidunt pulvinar. Integer semper adipiscing nisi, ut blandit arcu porttitor
@@ -209,34 +209,46 @@
             <div class="DQXHelp" style="width: 600px">
                 <b>The chromosome browser</b>
                 <p />
-                This shows some help about the chromosome browser
+                This interactive browser displays the windowed data and the individual SNP data, mapped on the genome.
                 <p />
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras sagittis pharetra
-                enim, at convallis nisl rhoncus quis. Nam arcu magna, pulvinar faucibus commodo
-                eget, ultrices vitae neque.
+                The controls on the top allow you to choose
+                <ul>
+                <li>what statistic(s) to display</li>
+                <li>what population(s) to display</li>
+                <li>what chromosome to display</li>
+                </ul>
                 <p />
-                Ut mollis bibendum ultricies. Curabitur varius justo in enim tincidunt pulvinar.
-                Integer semper adipiscing nisi, ut blandit arcu porttitor ut. Phasellus et sem risus.
+                Note that the SNP information and annotation are only displayed when sufficiently zoomed in.
+                You can also click on a window point, a SNP point, or an annotation feature to bring up a popup window with additional information.
                 <p />
                 <b>Zooming</b><br />
                 You can zoom using the scroll wheel, or by dragging the zoom slider in the bottom left of the image.
                 <p />
                 <b>Scrolling</b><br />
                 You pan the image to a new position by clicking and dragging with the mouse. Alternatively, you can drag the scroll bar at the bottom right to a new position.
+                <p/>
+                <b>Finding a feature</b><br />
+                You can use the edit box on the bottom of the viewer to locate and jump to a specific feature on the genome.
             </div>
         </div>
 
 
         <div id="HelpTableWINSimple">
             <div class="DQXHelp" style="width: 600px">
-                This is some help about the significant window query table
+                This tool reports windows that have one or more population statistics with a rank in the top 1%, and hence are likely to be significant.
+                <p />
+                You can specify the minimum total number of populations that must occur in the top 1%. (Note that, if you set this value to '8', this will reproduce the data from table XXX in the paper).
+                <p/>
+                In addition, you can specify individually for each population whether or not it should appear in the top 1%, using the check boxes.
+                <p />
+                Note that you can specify this query to act on iHS or XP-EHH data.
             </div>
         </div>
 
 
         <div id="HelpTableWINdvanced">
             <div class="DQXHelp" style="width: 600px">
-                This is some help about the interactive query builder for windows
+                This tool reports data for windows, and allows you to define a custom query to filter the results.
                 <p />
                 <span class="DQXInclude">IncludeHelpQueryBuilder</span>
             </div>
@@ -245,7 +257,7 @@
 
         <div id="HelpTableSNPAdvanced">
             <div class="DQXHelp" style="width: 600px">
-                This is some help about the interactive query builder for SNPs
+                This tool reports data for individual SNPs, and allows you to define a custom query to filter the results.
                 <p />
                 <span class="DQXInclude">IncludeHelpQueryBuilder</span>
             </div>
@@ -260,6 +272,7 @@
                     <li>A SNP RS id</li>
                     <li>A chromosome position in the format <b>chr7:10000000</b></li>
                 </ul>
+                When start typing in the edit box, a set of compatible features with your search text is automatically shown on the right. You can click on any of these items to make the browser jump to it.
             </div>
         </div>
     </div>
@@ -270,26 +283,43 @@
     <div style="display: none">
 
         <div id="IncludeHelpQueryBuilder">
-            <h3>
-                How to use the interactive query builder</h3>
-            <img src="Bitmaps/adddown.png" style="float: left" alt="Add Down" />This adds a
-            new statement as an extra condition in the flow. Ut mollis bibendum ultricies. Curabitur
-            varius justo in enim tincidunt pulvinar. Integer semper adipiscing nisi, ut blandit
-            arcu porttitor ut. Phasellus et sem risus.
+            <h3>How to use the interactive query builder</h3>
+            The interactive query builder allows you to create complex queries and visualise them in an intuitive way, as a vertical flow.
+            The top node represents the complete data set, and the bottom node stands for the final filtered set.
+            Each item in the vertical stack represents an extra condition that must be fulfilled (i.e. combined with an <b>AND</b> condition).
             <p />
-            <img src="Bitmaps/addright.png" style="float: left; margin-right: 5px" alt="Add Right" />Phasellus
-            et sem risus. Donec placerat, libero nec posuere commodo, dolor metus hendrerit
-            eros, ut faucibus mi urna id purus. Pellentesque habitant morbi tristique senectus
-            et netus et malesuada fames ac turpis egestas. Vivamus neque urna, rutrum sit amet
-            porta at, volutpat in eros. Phasellus eu elit ante, vel iaculis nisi. Nullam id
-            metus erat.
+            In addition, you can create alternative paths that are represented as parallel blocks aligned horizontally. At least one of the parallel paths must be fulfilled (i.e. combined with an <b>OR</b> condition).
             <p />
-            <img src="Bitmaps/close.png" style="float: left; margin-right: 5px" alt="Close" />Phasellus
-            et sem risus. Donec placerat, libero nec posuere commodo, dolor metus hendrerit
-            eros, ut faucibus mi urna id purus. Pellentesque habitant morbi tristique senectus
-            et netus et malesuada fames ac turpis egestas. Vivamus neque urna, rutrum sit amet
-            porta at, volutpat in eros. Phasellus eu elit ante, vel iaculis nisi. Nullam id
-            metus erat.
+            Note that, for each individual statement in the query, you can modify its definition by using the pull down boxes to change the field it acts on, and the type of comparison used.
+            <p />
+
+            <table cellpadding="3" valign="middle">
+                <tr>
+                    <td>
+                        <img src="Bitmaps/adddown.png" alt="Add Down" width="40px" height="20px"/>
+                    </td>
+                    <td>
+                        Adds a new statement as an extra condition in the vertical flow.<br />
+                        <b>All blocks</b> in a <b>vertical</b> stack of components must be fullfilled.
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <img src="Bitmaps/addright.png" alt="Add Right" width="40px" height="20px"/>
+                    </td>
+                    <td>
+                        Adds a new statement as a new, alternative flow, represented horizontally.<br /> <b>At least one block</b> in a set of <b>horizontal</b> components mush be fulfilled.
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <img src="Bitmaps/close.png" alt="Close" width="20px" height="20px" />
+                    </td>
+                    <td>
+                        Removes a statement from the flow.
+                    </td>
+                </tr>
+            </table>
         </div>
 
 

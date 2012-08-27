@@ -5,7 +5,7 @@ import MySQLdb
 
 
 def OpenDatabase(meta):
-    return MySQLdb.connect(host=meta['DBSRV'], user=meta['DBUSER'], passwd=meta['DBPASS'], 'test')
+    return MySQLdb.connect(host=meta['DBSRV'], user=meta['DBUSER'], passwd=meta['DBPASS'], db='test')
 
 
 def ToSafeIdentifier(st):

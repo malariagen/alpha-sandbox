@@ -23,6 +23,8 @@ except ImportError:
 import simplejson
 
 
+def tryit():
+	yield 'test'
 
 #def DownloadTable(meta,returndata):
 #    status = '200 OK'

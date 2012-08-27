@@ -251,7 +251,7 @@ DQX.DataFetcher.Curve = function (iserverurl, itablename, ipositionfield) {
                 this.IsFetching = true;
                 var thethis = this;
                 $.ajax({
-                    url: myurl,
+                    url: myurl.toString(),
                     success: function (resp) { thethis.AjaxResponse_FetchRange(resp) },
                     error: function (resp) { thethis.AjaxFailure_FetchRange(resp) }
                 });
@@ -366,7 +366,7 @@ DQX.DataFetcher.Curve = function (iserverurl, itablename, ipositionfield) {
             CallbackFunction(DQX.ParseResponse(resp).Data);
         }
         $.ajax({
-            url: myurl,
+            url: myurl.toString(),
             success: AjaxResponse_FetchPoint,
             error: FailFunction
         });
@@ -460,7 +460,7 @@ DQX.DataFetcher.Annot = function (iconfig) {
             this.IsFetching = true;
             var thethis = this;
             $.ajax({
-                url: myurl,
+                url: myurl.toString(),
                 dataType: 'TEXT',
                 type: 'get',
                 success: function (resp) { thethis.AjaxResponse(resp); },
@@ -511,7 +511,7 @@ DQX.DataFetcher.Annot = function (iconfig) {
             CallbackFunction(DQX.ParseResponse(resp).Data);
         }
         $.ajax({
-            url: myurl,
+            url: myurl.toString(),
             success: AjaxResponse_FetchPoint,
             error: FailFunction
         });

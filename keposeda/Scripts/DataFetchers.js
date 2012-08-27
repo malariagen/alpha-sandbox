@@ -273,9 +273,9 @@ function CurveDataFetcher(iserverurl, itablename, ipositionfield) {
             if (this.UseLimit)
                 myurl += "&limit="+rangemin+"~"+rangemax;
 
+            myurl=myurl.toString();
             if (collist.length > 0) {//launch the ajax request
                 this.IsFetching = true;
-				myurl=myurl.toString();
                 $.ajax({
                     url: myurl,
                     context: this,

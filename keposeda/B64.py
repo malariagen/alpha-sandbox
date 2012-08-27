@@ -12,7 +12,7 @@ class B64:
             return '###'
         rs=''
         cnt=0
-        while (val>0) or ((maxcnt>0) and (cnt<maxcnt)):
+        while (val>0) or (cnt==0) or ((maxcnt>0) and (cnt<maxcnt)):
             rs=self.encodestr[val & 63]+rs
             val=val >> 6
             cnt+=1

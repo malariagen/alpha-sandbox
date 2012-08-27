@@ -85,8 +85,8 @@ function CallBackPointInfoFetched_Win(data) {
     var xpehh = {};
     for (popnr in popnamelist) {
         popname = popnamelist[popnr];
-        ihs[popname] = (100.0 * data["WIHS_" + popname]).toFixed(2) + "%";
-        xpehh[popname] = (100.0 * data["WXPEHH_" + popname]).toFixed(2) + "%";
+        ihs['R('+popname+')'] = (100.0 * data["WIHS_" + popname]).toFixed(2) + "%";
+        xpehh['R(' + popname+')'] = (100.0 * data["WXPEHH_" + popname]).toFixed(2) + "%";
     }
     content += myChromoPlot.CreateLinkToRegion(data['chrom'], wincenter, winsize, "Show in plot") + "<br/>";
     content += "<br/><b>IHS</b><br/>"
@@ -127,7 +127,7 @@ function GenerateToolTipInfo_Window(thefetcher, index, compid) {
         if (compidx != "winsize")
             if (thefetcher.Columns[compidx].IsActive()) {
                 vl = thefetcher.GetColumnPoint(index, compidx);
-                var linetext = compidx + "=" + toPercentageString(vl);
+                var linetext = 'R('+compidx + ")=" + toPercentageString(vl);
                 var linecolor = "rgb(100,100,100)";
                 if (compidx == compid) linecolor = "rgb(192,0,0)";
                 lines.push({ Text: linetext, Color: linecolor });

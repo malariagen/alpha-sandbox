@@ -203,6 +203,7 @@ DQX.SQL.WhereClause.EqualsField = function () {
         ctrl_otherfield.setID(querybuilder.getControlID(ID,"OtherField"));
         ctrl_otherfield.setWidthPx(150);
         ctrl_otherfield.setCssClass('DQXQBQueryboxControl');
+        querybuilder.decorateQueryStatementControl(ctrl_otherfield, ID);
         elem.addElem(ctrl_otherfield);
     }
 
@@ -236,6 +237,7 @@ DQX.SQL.WhereClause.DiffersField = function () {
         ctrl_otherfield.setID(querybuilder.getControlID(ID,"OtherField"));
         ctrl_otherfield.setWidthPx(150);
         ctrl_otherfield.setCssClass('DQXQBQueryboxControl');
+        querybuilder.decorateQueryStatementControl(ctrl_otherfield, ID);
         elem.addElem(ctrl_otherfield);
     }
 
@@ -265,6 +267,7 @@ DQX.SQL.WhereClause.CompareField = function (icomptype) {
         ctrl_factor.setID(querybuilder.getControlID(ID,"Factor"));
         ctrl_factor.setWidthPx(50);
         ctrl_factor.setCssClass('DQXQBQueryboxControl');
+        querybuilder.decorateQueryStatementControl(ctrl_factor, ID);
         elem.addElem(ctrl_factor);
 
         elem.addElem(" x ");
@@ -278,6 +281,7 @@ DQX.SQL.WhereClause.CompareField = function (icomptype) {
         ctrl_otherfield.setID(querybuilder.getControlID(ID,"OtherField"));
         ctrl_otherfield.setWidthPx(150);
         ctrl_otherfield.setCssClass('DQXQBQueryboxControl');
+        querybuilder.decorateQueryStatementControl(ctrl_otherfield, ID);
         elem.addElem(ctrl_otherfield);
 
         elem.addElem(" + ");
@@ -286,6 +290,7 @@ DQX.SQL.WhereClause.CompareField = function (icomptype) {
         ctrl_offset.setID(querybuilder.getControlID(ID,"Offset"));
         ctrl_offset.setWidthPx(50);
         ctrl_offset.setCssClass('DQXQBQueryboxControl');
+        querybuilder.decorateQueryStatementControl(ctrl_offset, ID);
         elem.addElem(ctrl_offset);
 
     }

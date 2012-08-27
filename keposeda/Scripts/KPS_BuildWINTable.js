@@ -80,14 +80,14 @@ function Build_AdvancedQueryWins() {
     elem_builder.myBuilder.AddColumn(DQX.SQL.TableColInfo("IHSTop1", "IHS top 1%", "Float"));
     for (i in popnamelist) {
         var ID = "WIHS_" + popnamelist[i];
-        var colname = "iHS " + popnamelist[i];
+        var colname = "R(iHS) " + popnamelist[i];
         elem_builder.myBuilder.AddColumn(DQX.SQL.TableColInfo(ID, colname, "Float"));
     }
 
     elem_builder.myBuilder.AddColumn(DQX.SQL.TableColInfo("XPEHHTop1", "XPEHH top 1%", "Float"));
     for (i in popnamelist) {
         var ID = "WXPEHH_" + popnamelist[i];
-        var colname = "XPEHH " + popnamelist[i];
+        var colname = "R(XPEHH) " + popnamelist[i];
         elem_builder.myBuilder.AddColumn(DQX.SQL.TableColInfo(ID, colname, "Float"));
     }
 
@@ -135,24 +135,24 @@ function Build_TableWins(baseid) {
     var comp = mytable.AddColumn(DQX.QueryTable.Column("Overlapping&nbsp;genes", "overlapgenes", 0));
     comp.CellToColor = returnLightGray;
 
-    var comp = mytable.AddColumn(DQX.QueryTable.Column("IHS top&nbsp;1%", "IHSTop1", 1));
+    var comp = mytable.AddColumn(DQX.QueryTable.Column("IHS<br/>top 1%", "IHSTop1", 1));
     mytable.AddSortOption("IHS top 1% populations", DQX.SQL.TableSort(["IHSTop1"]));
 
     for (i in popnamelist) {
         var ID = "WIHS_" + popnamelist[i];
-        var colname = "iHS<br/>" + abbrpopnamelist[i];
+        var colname = "R(iHS)<br/>" + abbrpopnamelist[i];
         var comp = mytable.AddColumn(DQX.QueryTable.Column(colname, ID, 1));
         comp.CellToText = PVal2Text;
         comp.CellToColor = PVal2ColorIHS;
         mytable.AddSortOption(colname, DQX.SQL.TableSort([ID]));
     }
 
-    var comp = mytable.AddColumn(DQX.QueryTable.Column("XPEHH top&nbsp;1%", "XPEHHTop1", 1));
+    var comp = mytable.AddColumn(DQX.QueryTable.Column("XPEHH<br/>top 1%", "XPEHHTop1", 1));
     mytable.AddSortOption("XPEHH top 1% populations", DQX.SQL.TableSort(["XPEHHTop1"]));
 
     for (i in popnamelist) {
         var ID = "WXPEHH_" + popnamelist[i];
-        var colname = "XPEHH<br/>" + abbrpopnamelist[i];
+        var colname = "R(XPEHH)<br/>" + abbrpopnamelist[i];
         var comp = mytable.AddColumn(DQX.QueryTable.Column(colname, ID, 1));
         comp.CellToText = PVal2Text;
         comp.CellToColor = PVal2ColorXPEHH;

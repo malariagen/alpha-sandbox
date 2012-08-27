@@ -98,7 +98,7 @@ function Build_TableSNPs(baseid) {
 
     for (i in popnamelist) {
         var ID = "Freq_" + popnamelist[i];
-        var colname = "Frequency " + popnamelist[i];
+        var colname = "Freq.<br/>" + abbrpopnamelist[i];
         var colinfo = datafetcher.ColumnAdd(ID, "Float3", popcollist[i]);
         var comp = mytable.AddColumn(DQX.QueryTable.Column(colname, ID, 1));
         comp.CellToText = Freq2Text;
@@ -108,7 +108,7 @@ function Build_TableSNPs(baseid) {
 
     for (i in popnamelist) {
         var ID = "IHS_" + popnamelist[i];
-        var colname = "iHS " + popnamelist[i];
+        var colname = "iHS<br/>" + abbrpopnamelist[i];
         var colinfo = datafetcher.ColumnAdd(ID, "Float3", popcollist[i]);
         var comp = mytable.AddColumn(DQX.QueryTable.Column(colname, ID, 1));
         comp.CellToText = StatVal2Text;
@@ -119,7 +119,7 @@ function Build_TableSNPs(baseid) {
 
     for (i in popnamelist) {
         var ID = "XPEHH_" + popnamelist[i];
-        var colname = "XPEHH " + popnamelist[i];
+        var colname = "XPEHH<br/>" + abbrpopnamelist[i];
         var colinfo = datafetcher.ColumnAdd(ID, "Float3", popcollist[i]);
         var comp = mytable.AddColumn(DQX.QueryTable.Column(colname, ID, 1));
         comp.CellToText = StatVal2Text;

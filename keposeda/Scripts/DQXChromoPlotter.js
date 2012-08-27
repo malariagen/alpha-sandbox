@@ -161,7 +161,7 @@ function ChromoPlotter(imyID, iconfig) {
             this.GetElement("GeneHits").html("Fetching data...");
 
             $.ajax({
-                url: myurl,
+                url: myurl.toString(),
                 success: function (resp) { that._AjaxResponse_FindGene(resp); },
                 error: function (resp) { that._AjaxFailure_FindGene(resp); }
             });

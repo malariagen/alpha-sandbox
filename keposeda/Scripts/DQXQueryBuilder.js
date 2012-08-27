@@ -299,9 +299,15 @@ DQX.QueryBuilder = function (iDivID) {
 
         var compatops = DQX.SQL.WhereClause.GetCompatibleFieldOperators(this.GetColumn(myOperator.ColName).datatype);
         var cmpselectlist = [];
+        var foundinlist = false;
         for (var operatornr in compatops) {
             var op = compatops[operatornr];
             cmpselectlist.push({ id: op.ID, name: op.name });
+            if (myOperator.Tpe == op.ID) foundinlist = true;
+        }
+        if (!foundinlist) {
+            myOperator.Tpe = cmpselectlist[0].id;
+            this._needRebuild = true;
         }
         var comptype = DQX.DocEl.Select(cmpselectlist, myOperator.Tpe);
         comptype.setID(this.getControlID(comp.ID, "Type"));
@@ -601,8 +607,13 @@ DQX.QueryBuilder = function (iDivID) {
     }
 
     this.ReRender = function () {
+        this._needRebuild = false;
         this._fetchStatementContent(this.root);
         this.Render();
+        if (this._needRebuild) {
+            this._fetchStatementContent(this.root);
+            this.Render();
+        }
     }
 
     this._extractQueryContent = function (comp) {

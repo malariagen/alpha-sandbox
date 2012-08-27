@@ -135,7 +135,7 @@ function Build_TableWins(baseid) {
     var comp = mytable.AddColumn(DQX.QueryTable.Column("Overlapping&nbsp;genes", "overlapgenes", 0));
     comp.CellToColor = returnLightGray;
 
-    var comp = mytable.AddColumn(DQX.QueryTable.Column("IHS<br/>top 1%", "IHSTop1", 1));
+    var comp = mytable.AddColumn(DQX.QueryTable.Column("IHS<br/>top&nbsp;1%", "IHSTop1", 1));
     mytable.AddSortOption("IHS top 1% populations", DQX.SQL.TableSort(["IHSTop1"]));
 
     for (i in popnamelist) {
@@ -147,7 +147,7 @@ function Build_TableWins(baseid) {
         mytable.AddSortOption(colname, DQX.SQL.TableSort([ID]));
     }
 
-    var comp = mytable.AddColumn(DQX.QueryTable.Column("XPEHH<br/>top 1%", "XPEHHTop1", 1));
+    var comp = mytable.AddColumn(DQX.QueryTable.Column("XPEHH<br/>top&nbsp;1%", "XPEHHTop1", 1));
     mytable.AddSortOption("XPEHH top 1% populations", DQX.SQL.TableSort(["XPEHHTop1"]));
 
     for (i in popnamelist) {

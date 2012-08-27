@@ -11,7 +11,6 @@ try:
 except ImportError:
     sys.path.append(os.path.dirname(__file__))
     import responders
-	import Download
     sys.path.remove(os.path.dirname(__file__))
 
 #try:

@@ -13,16 +13,15 @@ except ImportError:
     import responders
     sys.path.remove(os.path.dirname(__file__))
 
-	
+
 import simplejson
 
 
 def DownloadTable(meta,returndata):
     status = '200 OK'
-    response_headers = [('Content-type', 'text/plain'),
-						('Content-Disposition','attachment; filename=download.txt')]
+    response_headers = [('Content-type', 'text/plain'),('Content-Disposition','attachment; filename=download.txt')]
     start_response(status, response_headers)
-	responders.DownloadTable_Generator(meta,returndata)
+    responders.DownloadTable_Generator(meta,returndata)
 
 
 def Environ2RequestQuery(environ):
@@ -43,11 +42,11 @@ def application(environ, start_response):
 #    try:
     returndata=Environ2RequestQuery(environ)
     mydatatype=returndata['datatype']
-	
-	if mydatatype=="downloadtable":
-		DownloadTable(meta,returndata)
-		return
-	
+
+    if mydatatype=="downloadtable":
+        DownloadTable(meta,returndata)
+    return
+
     resplist=responders.GetRespList()
     if not(mydatatype in resplist):
         raise Exception("Unknown request {0}".format(mydatatype))

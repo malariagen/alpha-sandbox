@@ -44,7 +44,8 @@ def application(environ, start_response):
         mydatatype=returndata['datatype']
 
         if mydatatype=="downloadtable":
-            return DownloadTable(meta,returndata,start_response)
+            DownloadTable(meta,returndata,start_response)
+            return
 
         resplist=responders.GetRespList()
         if not(mydatatype in resplist):

@@ -125,23 +125,29 @@ function Build_TableWins(baseid) {
     //Create the columns of the table
     var comp = mytable.AddColumn(DQX.QueryTable.Column("Chr.", "chrom", 0));
     comp.CellToColor = returnLightGray;
+    comp.myComment = 'The chromosome';
 
     var comp = mytable.AddColumn(DQX.QueryTable.Column("Position", "pos", 0));
     comp.CellToColor = returnLightGray;
+    comp.myComment = 'The position on the chromosome of the centre of the window, in base pairs';
 
     var comp = mytable.AddColumn(DQX.QueryTable.Column("Window<br/>size", "winsize", 0));
     comp.CellToColor = returnLightGray;
+    comp.myComment = 'The size of the window, in base pairs';
 
     var comp = mytable.AddColumn(DQX.QueryTable.Column("Overlapping&nbsp;genes", "overlapgenes", 0));
     comp.CellToColor = returnLightGray;
+    comp.myComment = 'The names of the genes that (partially) overlap this window';
 
     var comp = mytable.AddColumn(DQX.QueryTable.Column("IHS<br/>top&nbsp;1%", "IHSTop1", 1));
     mytable.AddSortOption("IHS top 1% populations", DQX.SQL.TableSort(["IHSTop1"]));
+    comp.myComment = 'The number of populations for which the iHS statistic is in the top 1%';
 
     for (i in popnamelist) {
         var ID = "WIHS_" + popnamelist[i];
         var colname = "R(iHS)<br/>" + abbrpopnamelist[i];
         var comp = mytable.AddColumn(DQX.QueryTable.Column(colname, ID, 1));
+        comp.myComment = 'The rank of the iHS statistic for the population {pop} (0 indicates smallest value, 1 indicates largest value)'.DQXformat({ pop: popnamelist[i] });
         comp.CellToText = PVal2Text;
         comp.CellToColor = PVal2ColorIHS;
         mytable.AddSortOption(colname, DQX.SQL.TableSort([ID]));
@@ -149,11 +155,13 @@ function Build_TableWins(baseid) {
 
     var comp = mytable.AddColumn(DQX.QueryTable.Column("XPEHH<br/>top&nbsp;1%", "XPEHHTop1", 1));
     mytable.AddSortOption("XPEHH top 1% populations", DQX.SQL.TableSort(["XPEHHTop1"]));
+    comp.myComment = 'The number of populations for which the XP-EHH statistic is in the top 1%';
 
     for (i in popnamelist) {
         var ID = "WXPEHH_" + popnamelist[i];
         var colname = "R(XPEHH)<br/>" + abbrpopnamelist[i];
         var comp = mytable.AddColumn(DQX.QueryTable.Column(colname, ID, 1));
+        comp.myComment = 'The rank of the XP-EHH statistic for the population {pop} (0 indicates smallest value, 1 indicates largest value)'.DQXformat({ pop: popnamelist[i] });
         comp.CellToText = PVal2Text;
         comp.CellToColor = PVal2ColorXPEHH;
         mytable.AddSortOption(colname, DQX.SQL.TableSort([ID]));

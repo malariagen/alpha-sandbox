@@ -13,11 +13,11 @@ function CallBackPointInfoFetched_Snp(data) {
 
     content += myChromoPlot.CreateLinkToRegion(data['chrom'], data['pos'], 0, "Show in plot") + "<p/>";
 
-    content += DQX.HtmlWriteKeyValuePair("Chromosome", data['chrom']) + "<br>";
-    content += DQX.HtmlWriteKeyValuePair("Position", data['pos']) + "<br>";
-    content += DQX.HtmlWriteKeyValuePair("Anc. allele", data['ancallele']) + "<br>";
-    content += DQX.HtmlWriteKeyValuePair("Allele 1", data['allele1']) + "<br>";
-    content += DQX.HtmlWriteKeyValuePair("Allele 2", data['allele2']) + "<br>";
+    content += DQX.HtmlWriteKeyValuePair("Chromosome", data['chrom']) + "<br/>";
+    content += DQX.HtmlWriteKeyValuePair("Position", data['pos']) + "<br/>";
+    content += DQX.HtmlWriteKeyValuePair("Anc. allele", data['ancallele']) + "<br/>";
+    content += DQX.HtmlWriteKeyValuePair("Allele 1", data['allele1']) + "<br/>";
+    content += DQX.HtmlWriteKeyValuePair("Allele 2", data['allele2']) + "<br/>";
 
     var freq = {};
     var ihs = {};
@@ -94,7 +94,7 @@ function CallBackPointInfoFetched_Win(data) {
     content += "<br/><b>XP-EHH</b><br/>"
     content += DQX.CreateKeyValueTable(xpehh);
     DQX.CreateFloatBox(
-        'Window<br>Chr' + data['chrom'] + ":" + (((wincenter - winsize / 2)) / 1.0e6).toFixed(3) + "-" + (((wincenter + winsize / 2)) / 1.0e6).toFixed(3) + "MB",
+        'Window<br/>Chr' + data['chrom'] + ":" + (((wincenter - winsize / 2)) / 1.0e6).toFixed(3) + "-" + (((wincenter + winsize / 2)) / 1.0e6).toFixed(3) + "MB",
         content);
 
 }

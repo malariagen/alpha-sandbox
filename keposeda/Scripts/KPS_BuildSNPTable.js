@@ -29,12 +29,14 @@ function Build_AdvancedQuerySNPs() {
     for (var i = 1; i <= 22; i++)
         chromlist.push({ id: i, name: "Chromosome " + i });
 
+    var baselist = [{ id: 'A', name: 'A' }, { id: 'C', name: 'C' }, { id: 'G', name: 'G' }, { id: 'T', name: 'T' }, { id: '-', name: '-' }, ];
+
     builder.AddColumn(DQX.SQL.TableColInfo("chrom", "Chromosome", "MultiChoiceInt", chromlist));
     builder.AddColumn(DQX.SQL.TableColInfo("pos", "Position", "Integer"));
     builder.AddColumn(DQX.SQL.TableColInfo("snpid", "Snp", "String"));
-    builder.AddColumn(DQX.SQL.TableColInfo("allele1", "Allele 1", "String"));
-    builder.AddColumn(DQX.SQL.TableColInfo("allele2", "Allele 2", "String"));
-    builder.AddColumn(DQX.SQL.TableColInfo("ancallele", "Ancestral allele", "String"));
+    builder.AddColumn(DQX.SQL.TableColInfo("allele1", "Allele 1", "MultiChoiceInt", baselist));
+    builder.AddColumn(DQX.SQL.TableColInfo("allele2", "Allele 2", "MultiChoiceInt", baselist));
+    builder.AddColumn(DQX.SQL.TableColInfo("ancallele", "Ancestral allele", "MultiChoiceInt", baselist));
 
     for (i in popnamelist) {
         var ID = "Freq_" + popnamelist[i];
@@ -74,26 +76,32 @@ function Build_TableSNPs(baseid) {
 
     var colinfo = datafetcher.ColumnAdd("chrom", "IntB64", "rgb(0,0,0)");
     var comp = mytable.AddColumn(DQX.QueryTable.Column("Chr.", "chrom", 0));
+    comp.myComment = 'The chromosome';
     comp.CellToColor = returnLightGray;
 
     var colinfo = datafetcher.ColumnAdd("pos", "IntB64", "rgb(0,0,0)");
     var comp = mytable.AddColumn(DQX.QueryTable.Column("Position", "pos", 0));
+    comp.myComment = 'The position on the chromosome, in base pairs';
     comp.CellToColor = returnLightGray;
 
     var colinfo = datafetcher.ColumnAdd("snpid", "String", "rgb(0,0,0)");
     var comp = mytable.AddColumn(DQX.QueryTable.Column("Snp", "snpid", 0));
+    comp.myComment = 'The RS identifier of the snip';
     comp.CellToColor = returnLightGray;
 
     var colinfo = datafetcher.ColumnAdd("allele1", "String", "rgb(0,0,0)");
-    var comp = mytable.AddColumn(DQX.QueryTable.Column("Allele 1", "allele1", 0));
+    var comp = mytable.AddColumn(DQX.QueryTable.Column("Allele<br/>1", "allele1", 0));
+    comp.myComment = 'Allele 1, as defined on the Illumina chip';
     comp.CellToColor = returnLightGray;
 
     var colinfo = datafetcher.ColumnAdd("allele2", "String", "rgb(0,0,0)");
-    var comp = mytable.AddColumn(DQX.QueryTable.Column("Allele 2", "allele2", 0));
+    var comp = mytable.AddColumn(DQX.QueryTable.Column("Allele<br/>2", "allele2", 0));
+    comp.myComment = 'Allele 2, as defined on the Illumina chip';
     comp.CellToColor = returnLightGray;
 
     var colinfo = datafetcher.ColumnAdd("ancallele", "String", "rgb(0,0,0)");
-    var comp = mytable.AddColumn(DQX.QueryTable.Column("Anc. Allele", "ancallele", 0));
+    var comp = mytable.AddColumn(DQX.QueryTable.Column("Anc.<br/>Allele", "ancallele", 0));
+    comp.myComment = 'The ancestral allele';
     comp.CellToColor = returnLightGray;
 
     for (i in popnamelist) {
@@ -101,6 +109,7 @@ function Build_TableSNPs(baseid) {
         var colname = "Freq.<br/>" + abbrpopnamelist[i];
         var colinfo = datafetcher.ColumnAdd(ID, "Float3", popcollist[i]);
         var comp = mytable.AddColumn(DQX.QueryTable.Column(colname, ID, 1));
+        comp.myComment = 'Frequency of occurrence of allele 1 for population {pop}, scaled between 0 and 1'.DQXformat({pop:popnamelist[i]});
         comp.CellToText = Freq2Text;
         comp.CellToColor = Freq2Color;
         mytable.AddSortOption(colname, DQX.SQL.TableSort([ID]));
@@ -111,6 +120,7 @@ function Build_TableSNPs(baseid) {
         var colname = "iHS<br/>" + abbrpopnamelist[i];
         var colinfo = datafetcher.ColumnAdd(ID, "Float3", popcollist[i]);
         var comp = mytable.AddColumn(DQX.QueryTable.Column(colname, ID, 1));
+        comp.myComment = 'The normalised iHS statistic for population {pop}'.DQXformat({ pop: popnamelist[i] });
         comp.CellToText = StatVal2Text;
         comp.CellToColor = StatVal2ColorIHS;
         mytable.AddSortOption(colname, DQX.SQL.TableSort([ID]));
@@ -122,6 +132,7 @@ function Build_TableSNPs(baseid) {
         var colname = "XPEHH<br/>" + abbrpopnamelist[i];
         var colinfo = datafetcher.ColumnAdd(ID, "Float3", popcollist[i]);
         var comp = mytable.AddColumn(DQX.QueryTable.Column(colname, ID, 1));
+        comp.myComment = 'The normalised XP-EHH statistic for population {pop}'.DQXformat({ pop: popnamelist[i] });
         comp.CellToText = StatVal2Text;
         comp.CellToColor = StatVal2ColorXPEHH;
         mytable.AddSortOption(colname, DQX.SQL.TableSort([ID]));

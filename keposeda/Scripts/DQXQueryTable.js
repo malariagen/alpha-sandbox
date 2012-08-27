@@ -6,6 +6,7 @@ DQX.QueryTable.Column = function (iName, iCompID, iTablePart) {
     var that = {};
     that.myName = iName;
     that.myCompID = iCompID;
+    that.myComment = '';
     that.TablePart = iTablePart;
     that.Collapsed = false;
     that.HyperlinkCallBack = null;
@@ -219,7 +220,7 @@ DQX.QueryTable.Table = function (iBaseID, iDataFetcher) {
         for (var colnr in this.myColumns) {
             var thecol = this.myColumns[colnr];
             var tbnr = thecol.TablePart;
-            rs_table[tbnr] += "<th>";
+            rs_table[tbnr] += '<th TITLE="{comment}">'.DQXformat({comment:thecol.myComment});
             if (!thecol.Collapsed) {
                 rs_table[tbnr] += thecol.myName;
                 rs_table[tbnr] += '&nbsp;<a onclick=\"DQX.QueryTable._reflectOwnMessage(\'' + this.myBaseID + '\',\'Collapse\',\'' + thecol.myCompID + '\')\" href=\"javascript:void(0)\"><</a>'

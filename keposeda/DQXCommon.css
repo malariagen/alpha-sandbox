@@ -220,6 +220,7 @@ body
 .DQXQBQuerybox
 {
     border-radius: 5px;
+    background-color:rgb(140,170,190) !important;/*Fallback mechanism form IE8*/
     background-color:rgba(140,170,190,0.8) !important;
     color:rgb(255,255,255) !important;
     font-weight:bold !important;

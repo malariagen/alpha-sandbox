@@ -71,7 +71,7 @@ function MakeDrag(ID) {
 }
 */
 
-FloatMaxZindex = 1;
+FloatMaxZindex = 99;
 
 //(function($) {
     $.extend($.fn, {

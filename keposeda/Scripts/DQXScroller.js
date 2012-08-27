@@ -1,12 +1,9 @@
 ﻿
 
-function DQXHScrollBar(iCanvasBaseID) {
-    var that = new DQXCanvasElement()
-    //get the canvas element info
-    that.CanvasBaseID = iCanvasBaseID;
-    that.CanvasCenterElement = $("#" + iCanvasBaseID + "")[0];
-    that.SizeX = that.CanvasCenterElement.width;
-    that.SizeY = that.CanvasCenterElement.height;
+DQX.HScrollBar = function(iCanvasID) {
+    var that = DQX.CanvasElement(iCanvasID)
+    that.SizeX = that.CanvasElement.width;
+    that.SizeY = that.CanvasElement.height;
     that.RangeMin = 0;//zero fraction translates to this value
     that.RangeMax = 1; //one fraction translates to this value
     that.ScrollPos = 0.0; //scroll position, as fraction
@@ -17,7 +14,7 @@ function DQXHScrollBar(iCanvasBaseID) {
     that.zoomdragging = false;
     that.scrollerdragging = false;
 
-    that.RegisterHandlers(that.CanvasCenterElement);
+    that.RegisterHandlers(that.CanvasElement);
 
     that.SetValue = function (iPos, iSize) {
         this.ScrollPos = iPos;
@@ -36,6 +33,14 @@ function DQXHScrollBar(iCanvasBaseID) {
         return Math.log(1 + 100 * zoomfrac) / Math.log(1 + 100);
     }
 
+    that.Resize = function (newsizex) {
+        this.SizeX = newsizex;
+        $(this.CanvasElement).width(newsizex);
+        this.CanvasElement.width = newsizex;
+        this.Draw();
+    }
+
+
     that.DrawTriangle = function(context,psx,dir) {
         var ypc=Math.round(this.SizeY/2);
         var sze=Math.round(this.SizeY/4);
@@ -50,7 +55,7 @@ function DQXHScrollBar(iCanvasBaseID) {
     that.Draw = function () {
         var SepSizeX = 15;
 
-        var centercontext = this.CanvasCenterElement.getContext("2d");
+        var centercontext = this.CanvasElement.getContext("2d");
 
         var backgrad1 = centercontext.createLinearGradient(0, 0, 0, this.SizeY);
         backgrad1.addColorStop(0, "rgb(60,60,60)");
@@ -122,7 +127,7 @@ function DQXHScrollBar(iCanvasBaseID) {
         centercontext.textAlign = 'center';
         centercontext.shadowColor = "black";
         centercontext.shadowBlur = 3;
-        var scalejumps = GetScaleJump(20 / this.SizeX * (this.RangeMax - this.RangeMin));
+        var scalejumps = DQX.DrawUtil.GetScaleJump(20 / this.SizeX * (this.RangeMax - this.RangeMin));
         var i2 = ((this.RangeMax - this.RangeMin)) / scalejumps.Jump1;
         for (var i = 0; i < i2; i++) {
             var x = i * scalejumps.Jump1;
@@ -209,6 +214,19 @@ function DQXHScrollBar(iCanvasBaseID) {
 
     that.OnMouseUp = function (ev) {
     }
+
+    that.OnMouseHover = function (ev) {
+
+        var px = this.GetEventPosX(ev);
+        var sizemouse = false;
+        if ((px >= this.ScrollAreaStartX) && (px <= this.ScrollAreaStartX + this.ScrollAreaSizeX))
+            sizemouse = true;
+        if ((px >= this.ZoomAreaStartX) && (px <= this.ZoomAreaStartX + this.ZoomAreaSizeX))
+            sizemouse=true;
+
+        $('#' + this.CanvasID).css('cursor', sizemouse ? 'w-resize' : 'auto');
+    }
+
 
     return that;
 }

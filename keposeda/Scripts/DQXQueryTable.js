@@ -1,52 +1,59 @@
 ﻿
+//Namespace for query tables
+DQX.QueryTable = {}
 
+DQX.QueryTable.Column = function (iName, iCompID, iTablePart) {
+    var that = {};
+    that.myName = iName;
+    that.myCompID = iCompID;
+    that.TablePart = iTablePart;
+    that.Collapsed = false;
+    that.HyperlinkCallBack = null;
+    this.HyperLinkTarget = null;
 
-function DQXQueryTableColumn(iName, iCompID, iTablePart) {
-    this.myName = iName;
-    this.myCompID = iCompID;
-    this.TablePart = iTablePart;
-    this.Collapsed = false;
-    this.HyperlinkCallBack = null;
+    that.CellToText = function (content) { return content; }
+    that.CellToColor = function (content) { return "white"; }
 
-    this.CellToText = function (content) { return content; }
-    this.CellToColor = function (content) { return "white"; }
-
-    this.MakeHyperlink = function (iCallBack) {
+    that.MakeHyperlink = function (iCallBack, iTarget) {
         this.HyperlinkCallBack = iCallBack;
+        this.HyperLinkTarget = iTarget;
     }
+    return that;
 }
 
-function DQXTableReflectOwnMessage(ID, message1, message2, message3) {
-    return DQXFindTable(ID)._OnOwnMessage(message1,message2, message3);
+DQX.QueryTable._reflectOwnMessage = function(ID, message1, message2, message3) {
+    return DQX.QueryTable.FindTable(ID)._OnOwnMessage(message1, message2, message3);
 }
 
 
-var DQXTableList = [];
+DQX.QueryTable._list = [];
 
 
 //Returns a channelplot by its center canvas id, or return null if not found
-function DQXFindTable(iID) {
-    for (var i in DQXTableList)
-        if (DQXTableList[i].myBaseID == iID)
-            return DQXTableList[i];
+DQX.QueryTable.FindTable = function(iID) {
+    for (var i in DQX.QueryTable._list)
+        if (DQX.QueryTable._list[i].myBaseID == iID)
+            return DQX.QueryTable._list[i];
     return null;
 }
 
 
 
-function DQXQueryTable(iBaseID, iDataFetcher) {
-    DQXTableList.push(this);
-    this.myBaseID = iBaseID;
-    this.myDataFetcher = iDataFetcher;
-    this.myColumns = [];
-    this.mySortOptions = [];
-    this.myPageSize = 20;
-    this.myDataFetcher.Container = this;
+DQX.QueryTable.Table = function (iBaseID, iDataFetcher) {
+    var that = {};
+    DQX.QueryTable._list.push(that);
+    that.myBaseID = iBaseID;
+    that.myDataFetcher = iDataFetcher;
+    that.myColumns = [];
+    that.mySortOptions = [];
+    that.myPageSize = 20;
+    that.myDataFetcher.Container = that;
 
-    this.myOffset = 0;
-    this.TotalRecordCount = -1;//not yet determined
+    that.dataValid = false; //false= does not have valid data
+    that.myOffset = 0;
+    that.TotalRecordCount = -1; //means not yet determined
 
-    this.GetElement = function (extension) {
+    that.GetElement = function (extension) {
         var id = "#" + this.myBaseID + extension;
         var rs = $(id);
         if (rs.length == 0)
@@ -54,33 +61,35 @@ function DQXQueryTable(iBaseID, iDataFetcher) {
         return rs;
     }
 
-    this.AddColumn = function (iCol) {
+    that.AddColumn = function (iCol) {
         this.myDataFetcher.ColumnActivate(iCol.myCompID);
         this.myColumns.push(iCol);
         return iCol;
     }
 
-    this.FindColumn = function (iColID) {
+    that.FindColumn = function (iColID) {
         for (var colnr in this.myColumns)
             if (this.myColumns[colnr].myCompID == iColID)
                 return this.myColumns[colnr];
         return null;
     }
 
-    this.AddSortOption = function (iName, iOption) {//iOption: of type DQXTableSort
+    that.AddSortOption = function (iName, iOption) {//iOption: of type DQXTableSort
         this.mySortOptions.push({ Name: iName, Option: iOption });
         var rs = "";
         for (var optnr in this.mySortOptions) {
-            rs += '<option value="'+optnr+'">'+this.mySortOptions[optnr].Name+'</option>';
+            rs += '<option value="' + optnr + '">' + this.mySortOptions[optnr].Name + '</option>';
         }
         this.GetElement('SortOptions').html(rs);
     }
 
-    this.NotifyDataReady = function () {
+    that.NotifyDataReady = function () {
+        if (this.myDataFetcher.isValid())
+            this.dataValid = true;
         this.Render();
     }
 
-    this._OnOwnMessage = function (message1, message2, message3) {
+    that._OnOwnMessage = function (message1, message2, message3) {
         if (message1 == "First") {
             this.myOffset = 0;
             this.Render();
@@ -113,9 +122,19 @@ function DQXQueryTable(iBaseID, iDataFetcher) {
         if (message1 == "Link") {
             this.FindColumn(message2).HyperlinkCallBack(message3);
         }
+        if (message1 == "MoreLines") {
+            that.myPageSize += 3;
+            this.Render();
+            return false;
+        }
+        if (message1 == "LessLines") {
+            that.myPageSize = Math.max(1, that.myPageSize - 3);
+            this.Render();
+            return false;
+        }
     }
 
-    this._OnChangeSort = function () {
+    that._OnChangeSort = function () {
         //determine sort option
         var sortoptnr = this.GetElement('SortOptions').val();
         var sortdir = this.GetElement('SortDir').attr('checked');
@@ -129,41 +148,72 @@ function DQXQueryTable(iBaseID, iDataFetcher) {
         this.Render();
     }
 
-    this.ReLoad = function () {
-        this.TotalRecordCount = -1;//not yet determined
+    that.ReLoad = function () {
+        this.TotalRecordCount = -1; //means not yet determined
         this.myDataFetcher.ClearData();
         this.myOffset = 0;
         this.Render();
     }
 
+    that.invalidate = function () {
+        if (this.dataValid) {
+            this.dataValid = false;
+            this.Render();
+        }
+    }
 
-    this.Render = function () {
+    that.setQuery = function (iquery) {
+        this.myDataFetcher._UserQuery = iquery;
+        this.dataValid = true;
+    }
+
+
+    that.Render = function () {
 
 
         var row1 = Math.max(0, this.myOffset - 200);
         var row2 = this.myOffset + this.myPageSize + 200;
-        var datacomplete = this.myDataFetcher.IsDataReady(row1, row2);
+        var datacomplete = false;
+
+        if (this.dataValid)
+            datacomplete = this.myDataFetcher.IsDataReady(row1, row2, true);
 
         this.TotalRecordCount = -1;
         if ('TotalRecordCount' in this.myDataFetcher)
             this.TotalRecordCount = this.myDataFetcher.TotalRecordCount;
 
         var rs_pager = "";
-        rs_pager += '<a onclick=\"DQXTableReflectOwnMessage(\'' + this.myBaseID + '\',\'First\')\" href=\"javascript:void(0)\">First</a>'
-        rs_pager += "&nbsp;&nbsp;";
-        rs_pager += '<a onclick=\"DQXTableReflectOwnMessage(\'' + this.myBaseID + '\',\'Back\')\" href=\"javascript:void(0)\">Back</a>'
-        rs_pager += "&nbsp;&nbsp;";
-        rs_pager += '<a onclick=\"DQXTableReflectOwnMessage(\'' + this.myBaseID + '\',\'Forw\')\" href=\"javascript:void(0)\">Forward</a>'
+        var rs_footer = '';
+        rs_pager += '<span style="position:relative;bottom:-8px;">';
+        rs_pager += DQX.DocEl.JavaScriptBitmaplink("Bitmaps/first.png", "First page", "DQX.QueryTable._reflectOwnMessage('" + this.myBaseID + "','First')");
+        rs_pager += DQX.DocEl.JavaScriptBitmaplink("Bitmaps/previous.png", "Previous page", "DQX.QueryTable._reflectOwnMessage('" + this.myBaseID + "','Back')");
+        rs_pager += DQX.DocEl.JavaScriptBitmaplink('Bitmaps/next.png', "Next page", "DQX.QueryTable._reflectOwnMessage('" + this.myBaseID + "','Forw')");
         if (datacomplete) {
-            rs_pager += "&nbsp;&nbsp;";
-            rs_pager += '<a onclick=\"DQXTableReflectOwnMessage(\'' + this.myBaseID + '\',\'Last\')\" href=\"javascript:void(0)\">Last</a>'
+            rs_pager += DQX.DocEl.JavaScriptBitmaplink('Bitmaps/lastpage.png', "Last page", "DQX.QueryTable._reflectOwnMessage('" + this.myBaseID + "','Last')");
         }
-        rs_pager += "&nbsp;&nbsp;Current: ";
-        rs_pager += (this.myOffset + 1) + " - " + (this.myOffset + this.myPageSize);
+        rs_pager += "</span>";
+        if (datacomplete && this.dataValid) {
+            var downloadlink = this.myDataFetcher.CreateDownloadUrl();
+            rs_footer += "<a href=" + downloadlink + ">Download as TAB-delimited file</a>";
+        }
+        else {
+            rs_footer += "&nbsp;";
+        }
+
+        rs_pager += "&nbsp;&nbsp;";
+        rs_pager += DQX.DocEl.JavaScriptBitmaplinkTransparent('Bitmaps/morelines.png', "More lines on page", "DQX.QueryTable._reflectOwnMessage('" + this.myBaseID + "','MoreLines')");
+        rs_pager += "&nbsp;";
+        rs_pager += DQX.DocEl.JavaScriptBitmaplinkTransparent('Bitmaps/lesslines.png', "Less lines on page", "DQX.QueryTable._reflectOwnMessage('" + this.myBaseID + "','LessLines')");
+
+        rs_pager += "&nbsp;&nbsp;&nbsp;Current: ";
+        rs_pager += (this.myOffset + 1) + "-" + (this.myOffset + this.myPageSize);
 
         var rs_table = [];
         for (var tbnr = 0; tbnr <= 1; tbnr++)
-            rs_table[tbnr] = '<table class="fixed">';
+            if (this.dataValid)
+                rs_table[tbnr] = '<table class="DQXQueryTable">';
+            else
+                rs_table[tbnr] = '<table class="DQXQueryTable DQXQueryTableInvalid">';
 
         //write headers
         for (var colnr in this.myColumns) {
@@ -172,17 +222,17 @@ function DQXQueryTable(iBaseID, iDataFetcher) {
             rs_table[tbnr] += "<th>";
             if (!thecol.Collapsed) {
                 rs_table[tbnr] += thecol.myName;
-                rs_table[tbnr] += '&nbsp;<a onclick=\"DQXTableReflectOwnMessage(\'' + this.myBaseID + '\',\'Collapse\',\'' + thecol.myCompID + '\')\" href=\"javascript:void(0)\"><</a>'
+                rs_table[tbnr] += '&nbsp;<a onclick=\"DQX.QueryTable._reflectOwnMessage(\'' + this.myBaseID + '\',\'Collapse\',\'' + thecol.myCompID + '\')\" href=\"javascript:void(0)\"><</a>'
             }
             else
-                rs_table[tbnr] += '&nbsp;<a onclick=\"DQXTableReflectOwnMessage(\'' + this.myBaseID + '\',\'Collapse\',\'' + thecol.myCompID + '\')\" href=\"javascript:void(0)\">></a>'
+                rs_table[tbnr] += '&nbsp;<a onclick=\"DQX.QueryTable._reflectOwnMessage(\'' + this.myBaseID + '\',\'Collapse\',\'' + thecol.myCompID + '\')\" href=\"javascript:void(0)\">></a>'
             rs_table[tbnr] += "</th>";
         }
 
 
-        if (!datacomplete) rs_pager += "&nbsp;FETCHING...";
-        else rs_pager += "; Total: " + this.TotalRecordCount;
-        if (this.FetchFailed) rs_pager += "&nbsp;FETCH FAILED !!!";
+        if ((this.dataValid) && (!datacomplete)) rs_pager += '&nbsp;<span style="background-color:rgb(192,0,0);font-weight:bold">FETCHING...</span>';
+        else rs_pager += "; Total: " + Math.max(0, this.TotalRecordCount);
+        if (this.FetchFailed) rs_pager += "&nbsp;FETCH FAILED !";
 
         for (var rownr0 = 0; rownr0 < this.myPageSize; rownr0++) {
             var rownr = this.myOffset + rownr0;
@@ -209,9 +259,9 @@ function DQXQueryTable(iBaseID, iDataFetcher) {
                     }
                     rs_table[tbnr] += "<td  TITLE='" + cell_title + "' style='background-color:" + cell_color + "'>";
                     if ((thecol.HyperlinkCallBack) && (hascontent))
-                        rs_table[tbnr] += '<a onclick=\"DQXTableReflectOwnMessage(\'' + this.myBaseID + '\',\'Link\',\'' + thecol.myCompID + '\',' + rownr + ')\" href=\"javascript:void(0)\">';
+                        rs_table[tbnr] += '<a class="DQXQueryTableLink" onclick=\"DQX.QueryTable._reflectOwnMessage(\'' + this.myBaseID + '\',\'Link\',\'' + thecol.myCompID + '\',' + rownr + ')\" href=' + thecol.HyperLinkTarget + '>';
                     rs_table[tbnr] += cell_content;
-                    if (thecol.HyperlinkCallBack)
+                    if ((thecol.HyperlinkCallBack) && (hascontent))
                         rs_table[tbnr] += '</a>';
                     rs_table[tbnr] += "</td>";
                 }
@@ -225,10 +275,12 @@ function DQXQueryTable(iBaseID, iDataFetcher) {
         this.GetElement('Body1').html(rs_table[0]);
         this.GetElement('Body2').html(rs_table[1]);
         this.GetElement('Pager').html(rs_pager);
+        this.GetElement('Footer').html(rs_footer);
     }
 
     //Initialise some event handlers
-    this.GetElement("SortOptions").change($.proxy(this._OnChangeSort, this));
-    this.GetElement("SortDir").change($.proxy(this._OnChangeSort, this));
+    that.GetElement("SortOptions").change($.proxy(that._OnChangeSort, that));
+    that.GetElement("SortDir").change($.proxy(that._OnChangeSort, that));
 
+    return that;
 }

@@ -1,177 +1,304 @@
 ﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-
-
 <html xmlns="http://www.w3.org/1999/xhtml">
-
-
 <head>
-
     <meta http-equiv="Expires" content="-1" />
     <meta http-equiv="Pragma" content="no-cache" />
     <meta http-equiv="CACHE-CONTROL" content="NO-CACHE" />
-
     <title></title>
-    <link href="common.css" rel="stylesheet" type="text/css" />
-    <link href="Styles/jquery-ui-1.8.21.custom.css" rel="stylesheet" type="text/css"/>
 
-    <!--[if IE]><script src="excanvas.js"></script><![endif]-->
+    <link href="DQXCommon.css" rel="stylesheet" type="text/css" />
+
+    <!-- jQuery sources -->
     <script src="Scripts/jquery-1.4.1.js" type="text/javascript"></script>
     <script src="Scripts/jquery-ui-1.8.21.custom.min.js" type="text/javascript"></script>
-    <script src="Scripts/base64.js" type="text/javascript"></script>
-
+    <script src="Scripts/jquery.ba-resize.js" type="text/javascript"></script>
     <script src="Scripts/jquery.dragndrop.js?<?=time()?" type="text/javascript"></script>
 
-    <script src="Scripts/Utils.js?<?=time()?" type="text/javascript"></script>
-    <script src="Scripts/DataDecoders.js?<?=time()?" type="text/javascript"></script>
-    <script src="Scripts/DataFetchers.js?<?=time()?" type="text/javascript"></script>
-    <script src="Scripts/ChannelPlotChannel.js?<?=time()?" type="text/javascript"></script>
-    <script src="Scripts/ChannelPlotChannelScale.js?<?=time()?" type="text/javascript"></script>
-    <script src="Scripts/ChannelPlotChannelYVals.js?<?=time()?" type="text/javascript"></script>
-    <script src="Scripts/ChannelPlotChannelAnnotation.js?<?=time()?" type="text/javascript"></script>
-    <script src="Scripts/ChannelPlot.js?<?=time()?" type="text/javascript"></script>
-    <script src="Scripts/ChromoPlotter.js?<?=time()?" type="text/javascript"></script>
 
-    <script src="Scripts/DQXQueryTable.js?<?=time()?" type="text/javascript"></script>
-
+    <!-- DQX general -->
+    <script src="Scripts/base64.js" type="text/javascript"></script>
+    <script src="Scripts/DQXUtils.js?<?=time()?" type="text/javascript"></script>
+    <script src="Scripts/DQXDataDecoders.js?<?=time()?" type="text/javascript"></script>
+    <script src="Scripts/DQXSQL.js?<?=time()?" type="text/javascript"></script>
+    <script src="Scripts/DQXDataFetchers.js?<?=time()?" type="text/javascript"></script>
     <script src="Scripts/DQXScroller.js?<?=time()?" type="text/javascript"></script>
+    <script src="Scripts/DQXDocElement.js?<?=time()?" type="text/javascript"></script>
 
-    <script src="Scripts/Keposeda.js?<?=time()?" type="text/javascript"></script>
-    <script src="Scripts/KeposedaPlot.js?<?=time()?" type="text/javascript"></script>
-    <script src="Scripts/KeposedaTable.js?<?=time()?" type="text/javascript"></script>
+    <!-- DQX chromosome plot -->
+    <script src="Scripts/DQXChannelPlot.js?<?=time()?" type="text/javascript"></script>
+    <script src="Scripts/DQXChannelPlotChannel.js?<?=time()?" type="text/javascript"></script>
+    <script src="Scripts/DQXChannelPlotChannelScale.js?<?=time()?" type="text/javascript"></script>
+    <script src="Scripts/DQXChannelPlotChannelYVals.js?<?=time()?" type="text/javascript"></script>
+    <script src="Scripts/DQXChannelPlotChannelAnnotation.js?<?=time()?" type="text/javascript"></script>
+    <script src="Scripts/DQXChromoPlotter.js?<?=time()?" type="text/javascript"></script>
+
+    <!-- DQX query table & query builder -->
+    <script src="Scripts/DQXQueryTable.js?<?=time()?" type="text/javascript"></script>
+    <script src="Scripts/DQXQueryBuilder.js?<?=time()?" type="text/javascript"></script>
+
+    <!-- DQX high level GUI components -->
+    <script src="Scripts/DQXGuiComponents.js?<?=time()?" type="text/javascript"></script>
+
+    <!-- Specific code for this page -->
+    <script src="Scripts/KPS_BuildChromoView.js?<?=time()?" type="text/javascript"></script>
+    <script src="Scripts/KPS_BuildWINTable.js?<?=time()?" type="text/javascript"></script>
+    <script src="Scripts/KPS_BuildSNPTable.js?<?=time()?" type="text/javascript"></script>
+    <script src="Scripts/KPS_Build.js?<?=time()?" type="text/javascript"></script>
+
 </head>
-
 <body>
 
-<strong>WARNING: Everything on <a href="http://alpha.malariagen.net/">alpha.malariagen.net</a> is an experimental prototype. Web applications may be broken and data may be wrong. Use at your own risk.</strong>
-<p />
+
+    <img src="Bitmaps/malariagen_logo.png" alt="MalariaGEN logo" />
+    <div style="height: 14px"></div>
+    <div style="background-color: rgb(0,0,180); height: 4px"></div>
+    <div style="height: 14px"></div>
+    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras sagittis pharetra
+    enim, at convallis nisl rhoncus quis. Nam arcu magna, pulvinar faucibus commodo
+    eget, ultrices vitae neque. Ut mollis bibendum ultricies. Curabitur varius justo
+    in enim tincidunt pulvinar. Integer semper adipiscing nisi, ut blandit arcu porttitor
+    ut. Phasellus et sem risus. Donec placerat, libero nec posuere commodo, dolor metus
+    hendrerit eros, ut faucibus mi urna id purus. Pellentesque habitant morbi tristique
+    senectus et netus et malesuada fames ac turpis egestas. Vivamus neque urna, rutrum
+    sit amet porta at, volutpat in eros. Phasellus eu elit ante, vel iaculis nisi. Nullam
+    id metus erat. Duis porta fringilla neque, quis hendrerit ante auctor a. Nullam
+    iaculis quam vitae velit aliquam sodales. Class aptent taciti sociosqu ad litora
+    torquent per conubia nostra, per inceptos himenaeos. Mauris eu metus augue, sed
+    euismod erat. Ut vel est enim.
 
 
 
 
-<div style="float:left;width:100%">
-<div class="shadow" style="background-color:#333333;float:left;padding:6px;width:790px">
 
-<div style="float:left;width:100%">
-<div style="color:#BBBBBB;background-color:#333333;float:left;width:778px;height:50px;padding:6px;font-weight:bold;">
-
-
-<select id="Cnv1ChromoPicker" style="background-color:#CCCCCC;border-width:0px">
-  <option value="1">Chromosome 1</option>
-  <option value="2">Chromosome 2</option>
-  <option value="3">Chromosome 3</option>
-  <option value="4">Chromosome 4</option>
-  <option value="5">Chromosome 5</option>
-  <option value="6">Chromosome 6</option>
-  <option value="7">Chromosome 7</option>
-  <option value="8">Chromosome 8</option>
-  <option value="9">Chromosome 9</option>
-  <option value="10">Chromosome 10</option>
-  <option value="11">Chromosome 11</option>
-  <option value="12">Chromosome 12</option>
-  <option value="13">Chromosome 13</option>
-  <option value="14">Chromosome 14</option>
-  <option value="15">Chromosome 15</option>
-  <option value="16">Chromosome 16</option>
-  <option value="17">Chromosome 17</option>
-  <option value="18">Chromosome 18</option>
-  <option value="19">Chromosome 19</option>
-  <option value="20">Chromosome 20</option>
-  <option value="21">Chromosome 21</option>
-  <option value="22">Chromosome 22</option>
-</select> 
-&nbsp;
-<select id="stat" onchange="OnChangeStat()" style="background-color:#CCCCCC;border-width:0px">
-  <option value="IHS">iHS</option>
-  <option value="XPEHH">XP-EHH</option>
-  <option value="BOTH">iHS and XP-EHH</option>
-</select> 
-&nbsp;
-<button type="button" onclick="OnAllPops()">All populations</button>
-&nbsp;
-<button type="button" onclick="OnNoPops()">Clear populations</button>
-
-<p />
-<div id="Controls"></div>
-<p></p>
-
-</div>
-</div>
+    <!-------------- Tabbed environment with the different views -------------------------->
+    <div class="DQXTabSet" style="min-width: 800px;margin-top:20px;">
+        <div class="DQXTabs">
+            <div id="browser" class="DQXTab DQXTabActive">
+                Chromosome browser
+                <span class="DQXInfoButton">HelpChromoBrowser</span>
+            </div>
+            <div id="querywindowsimple" class="DQXTab DQXTabInactive">
+                Significant windows
+                <span class="DQXInfoButton">HelpTableWINSimple</span>
+            </div>
+            <div id="querywindowadvanced" class="DQXTab DQXTabInactive">
+                Advanced window query
+                <span class="DQXInfoButton">HelpTableWINdvanced</span>
+            </div>
+            <div id="querysnpadvanced" class="DQXTab DQXTabInactive">
+                Advanced SNP query
+                <span class="DQXInfoButton">HelpTableSNPAdvanced</span>
+            </div>
+        </div>
 
 
+        <div class="DQXTabBody DQXShadow"><!-- The body of the tabs-->
 
-<div>
-<canvas id="Cnv1Left" width=90 height=450></canvas><canvas id="Cnv1Center" width=700 height=450></canvas>
-</div>
-<div>
-<canvas id="Cnv1HScroller" width=790 height=30></canvas>
-</div>
 
-<div style="float:left;width:100%">
-
-<div style="color:#EEEEBB;background-color:#333333;float:left;width:778px;height:22px;padding:6px;">
-<span>Find gene, SNP or position:</span>&nbsp;&nbsp;
-<input id="Cnv1FindGene" type="text" name="findgene" style="background-color:#CCCCCC;border-width:0px"
-   title="You can enter a gene name, a SNP RS number, or a chromosome position in the format chr5:50000000"/>
-&nbsp;&nbsp;
-<span id="Cnv1GeneHits"></span>
-</div>
-
-</div>
-
-<!-- Closing the shadowed box -->
-</div>
-</div>
-
-<div id="DQXFloatBoxHolder" style="float:left;margin-top:17px;width:100%"></div>
+            <!-- Chromosome browser tab -->
+            <div id="Cbrowser" class="DQXTabContent DQXLightFrame">
+                <div style="padding-top: 5px;padding-bottom:0px;">
+                    <a name="chromoviewer"></a>
+                    <div id='Div1' class="DQXDarkFrame" style="width: 100%">
+                        <div style="padding-top: 6px; padding-left: 6px">
+                            <select id="stat" onchange="OnChangeStat()">
+                                <option value="IHS">iHS statistic</option>
+                                <option value="XPEHH">XP-EHH statistic</option>
+                                <option value="BOTH">iHS and XP-EHH statistics</option>
+                            </select>
+                            &nbsp;
+                            <button type="button" onclick="OnAllPops()">
+                                All populations</button>
+                            &nbsp;
+                            <button type="button" onclick="OnNoPops()">
+                                Clear populations</button>
+                        </div>
+                        <div id='ChromoView' style="padding: 6px;">
+                        </div>
+                    </div>
+                </div>
+            </div>
 
 
 
-
-<!------------------------------------------- The table part --------------------------------------------------->
-
-
-<div class="shadow" style="color:#BBBBBB;background-color:#333333;float:left;width:794px;border-style:solid;border-width:5px;border-color:#333333;padding-bottom:20px;"">
-<h2>Query for significant windows</h2>
-
-Minimum number of
-<select id="QueryStat" style="background-color:#CCCCCC;border-width:0px" onchange="OnUpdateQuery()">
-  <option value="IHS">IHS</option>
-  <option value="XPEHH">XPEHH</option>
-</select> 
-populations in top 1%:  
-<input id="QueryVal" type="text" maxlength="2" size="2" value="0" style="background-color:#CCCCCC;border-width:0px" onkeyup="OnUpdateQuery()"/>
-<p />
-<span id="QueryPopChecks"></span>
-<!--<button type="button" onclick="OnUpdateQuery()">Run query</button>-->
-<p/>
-
-
-<div style="float:left;width:100%;height:30px;">
-<span id="TablePager"></span>
-&nbsp;&nbsp;&nbsp;
-Sort by: <select id="TableSortOptions" style="background-color:#CCCCCC;border-width:0px"></select> 
-&nbsp;
-<input type="checkbox" id="TableSortDir" />Inverted
-</div>
+            <!-- Simple window table tab -->
+            <div id="Cquerywindowsimple" class="DQXTabContent DQXLightFrame">
+                <div style="padding: 5px; padding-top: 5px; padding-bottom:0px;">
+                    <!-- The query elements -->
+                    Minimum number of populations in top 1%:
+                    <input id="QueryVal" type="text" maxlength="2" size="2" value="1" onkeyup="InvalidateQueryWindowSimple()"/>
+                    for
+                    <select id="QueryStat" onchange="InvalidateQueryWindowSimple()">
+                        <option value="IHS">IHS statistics</option>
+                        <option value="XPEHH">XPEHH statistics</option>
+                    </select>
+                    <div style="clear:both;padding:5px;">
+                        <span id="QueryPopChecks" style="clear:both"></span>
+                    </div>
+                    <div style="padding-left:17px;padding-top:15px;padding-bottom:5px;">
+                        <span class="DQXGlowButton" onclick="UpdateQueryWinsSimple()">
+                        Update query results</span>
+                    </div>
+                </div>
+                <!-- The table -->
+                <div id="IDTableWinsSimple" class="DQXDarkFrame" style="padding: 5px;">
+                </div>
+            </div>
 
 
-<div style="float:left;width:100%;">
-<div id="Div1" style="float:left;overflow:auto;width:291px;border-style:solid;border-width:0px;border-right-width:2px;border-color:#444444">
-<div id="TableBody1" style="float:left;"></div>
-</div>
-<div id="Div2" style="float:left;overflow:auto;width:500px;border-style:solid;border-width:0px;border-color:#444444">
-<div id="TableBody2" style="float:left;"></div>
-</div>
-</div>
-</div>
+            <!-- Advanced window table tab -->
+            <div id="Cquerywindowadvanced" class="DQXTabContent DQXLightFrame">
+                <div style="padding: 5px; padding-top: 5px padding-bottom:0px;">
+                    <!-- The query builder element -->
+                    <div id="IDQueryWindowsAdvanced" class="DQXLightFrame" style="overflow: auto;
+                        padding-left: 7px; padding-right: 7px; margin-left:20px;">
+                    </div>
+                    <div style="padding-left:17px;padding-top:15px;padding-bottom:5px;">
+                        <span class="DQXGlowButton" onclick="UpdateQueryWinsAdvanced()">
+                        Update query results</span>
+                    </div>
+                </div>
+                <!-- The table -->
+                <div id="IDTableWinsAdvanced" class="DQXDarkFrame" style="padding: 5px;">
+                </div>
+            </div>
 
-<div style="float:left;width:100%;height:30px;"></div>
+
+            <!-- Advanced snp table tab -->
+            <div id="Cquerysnpadvanced" class="DQXTabContent DQXLightFrame">
+                <div style="padding: 5px; padding-top: 5px padding-bottom:0px;">
+                    <!-- The query builder element -->
+                    <div id="IDQuerySNPAdvanced" class="DQXLightFrame" style="overflow: auto;
+                        padding-left: 7px; padding-right: 7px; margin-left:20px">
+                    </div>
+                    <div style="padding-left:17px;padding-top:15px;padding-bottom:5px;">
+                        <span class="DQXGlowButton" onclick="UpdateQuerySNPAdvanced()">
+                        Update query results</span>
+                    </div>
+                </div>
+                <!-- The table -->
+                <div id="IDTableSNPAdvanced" class="DQXDarkFrame" style="padding: 5px;">
+                </div>
+            </div>
+
+
+        </div>
+    </div>
 
 
 
 
+    <div style="clear: both; width: 100%; height: 30px;">
+    </div>
+
+
+    <!-- Disclaimer -->
+    <div style="background-color: rgb(255,255,190);">
+        <strong>WARNING: Everything on <a href="http://alpha.malariagen.net/">alpha.malariagen.net</a>
+            is an experimental prototype. Web applications may be broken and data may be wrong.
+            Use at your own risk.</strong>
+    </div>
+
+
+
+<!--------------------------- The section with the help content blocks ---------------------------------->
+
+    <div style="display: none">
+
+        <div id="HelpChromoBrowser">
+            <div class="DQXHelp" style="width: 600px">
+                <b>The chromosome browser</b>
+                <p />
+                This shows some help about the chromosome browser
+                <p />
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras sagittis pharetra
+                enim, at convallis nisl rhoncus quis. Nam arcu magna, pulvinar faucibus commodo
+                eget, ultrices vitae neque.
+                <p />
+                Ut mollis bibendum ultricies. Curabitur varius justo in enim tincidunt pulvinar.
+                Integer semper adipiscing nisi, ut blandit arcu porttitor ut. Phasellus et sem risus.
+                <p />
+                <b>Zooming</b><br />
+                You can zoom using the scroll wheel, or by dragging the zoom slider in the bottom left of the image.
+                <p />
+                <b>Scrolling</b><br />
+                You pan the image to a new position by clicking and dragging with the mouse. Alternatively, you can drag the scroll bar at the bottom right to a new position.
+            </div>
+        </div>
+
+
+        <div id="HelpTableWINSimple">
+            <div class="DQXHelp" style="width: 600px">
+                This is some help about the significant window query table
+            </div>
+        </div>
+
+
+        <div id="HelpTableWINdvanced">
+            <div class="DQXHelp" style="width: 600px">
+                This is some help about the interactive query builder for windows
+                <p />
+                <span class="DQXInclude">IncludeHelpQueryBuilder</span>
+            </div>
+        </div>
+
+
+        <div id="HelpTableSNPAdvanced">
+            <div class="DQXHelp" style="width: 600px">
+                This is some help about the interactive query builder for SNPs
+                <p />
+                <span class="DQXInclude">IncludeHelpQueryBuilder</span>
+            </div>
+        </div>
+
+
+        <div id="HelpChromoBrowserFindGene">
+            <div class="DQXHelp" style="width: 600px">
+                The following searches can be entered into this box:<br />
+                <ul>
+                    <li>A gene name</li>
+                    <li>A SNP RS id</li>
+                    <li>A chromosome position in the format <b>chr7:10000000</b></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+
+
+    <!-------------------------------- The section with the include elements ------------------------------------------>
+    <div style="display: none">
+
+        <div id="IncludeHelpQueryBuilder">
+            <h3>
+                How to use the interactive query builder</h3>
+            <img src="Bitmaps/adddown.png" style="float: left" alt="Add Down" />This adds a
+            new statement as an extra condition in the flow. Ut mollis bibendum ultricies. Curabitur
+            varius justo in enim tincidunt pulvinar. Integer semper adipiscing nisi, ut blandit
+            arcu porttitor ut. Phasellus et sem risus.
+            <p />
+            <img src="Bitmaps/addright.png" style="float: left; margin-right: 5px" alt="Add Right" />Phasellus
+            et sem risus. Donec placerat, libero nec posuere commodo, dolor metus hendrerit
+            eros, ut faucibus mi urna id purus. Pellentesque habitant morbi tristique senectus
+            et netus et malesuada fames ac turpis egestas. Vivamus neque urna, rutrum sit amet
+            porta at, volutpat in eros. Phasellus eu elit ante, vel iaculis nisi. Nullam id
+            metus erat.
+            <p />
+            <img src="Bitmaps/close.png" style="float: left; margin-right: 5px" alt="Close" />Phasellus
+            et sem risus. Donec placerat, libero nec posuere commodo, dolor metus hendrerit
+            eros, ut faucibus mi urna id purus. Pellentesque habitant morbi tristique senectus
+            et netus et malesuada fames ac turpis egestas. Vivamus neque urna, rutrum sit amet
+            porta at, volutpat in eros. Phasellus eu elit ante, vel iaculis nisi. Nullam id
+            metus erat.
+        </div>
+
+
+    </div>
+
+
+
+    <!-------------------------------- Container for float boxes --------------------------------->
+    <div id="DQXFloatBoxHolder"></div>
 
 </body>
 </html>
-
-

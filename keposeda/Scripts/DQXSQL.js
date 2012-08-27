@@ -111,7 +111,7 @@ DQX.SQL.WhereClause.FieldOperators = [
 { ID: '>FIELD', name: '> Field',
     Float: true, Integer: true,
     Create: function () { return DQX.SQL.WhereClause.CompareField('>FIELD') }
-},
+}
 
 
 ];

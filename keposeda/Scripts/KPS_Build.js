@@ -104,6 +104,10 @@ function StatVal2ColorXPEHH(vl) {
 }
 
 
+function isCanvasSupported() {
+    var elem = document.createElement('canvas');
+    return !!(elem.getContext && elem.getContext('2d'));
+}
 
 
 $(function () {
@@ -118,7 +122,8 @@ $(function () {
     // Build the components
     //////////////////////////////////////////////////////////////////////////////////////////////
 
-    Build_ChromoView();
+	if (isCanvasSupported())
+		Build_ChromoView();
 
 
     Build_SimpleQueryWins();

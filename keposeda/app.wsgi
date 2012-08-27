@@ -19,11 +19,9 @@ import simplejson
 
 def DownloadTable(meta,returndata,start_response):
     status = '200 OK'
-    output='testit'
-    response_headers = [('Content-type', 'text/plain'),('Content-Disposition','attachment; filename=download.txt'),('Content-Length', str(len(output)))]
+    response_headers = [('Content-type', 'text/plain'),('Content-Disposition','attachment; filename=download.txt')]
     start_response(status, response_headers)
-    return [output]
-    #responders.DownloadTable_Generator(meta,returndata)
+    responders.DownloadTable_Generator(meta,returndata)
 
 
 def Environ2RequestQuery(environ):

@@ -19,7 +19,7 @@ import simplejson
 
 def DownloadTable(meta,returndata):
     status = '200 OK'
-	output='testit'
+    output='testit'
     response_headers = [('Content-type', 'text/plain'),('Content-Disposition','attachment; filename=download.txt'),('Content-Length', str(len(output)))]
     start_response(status, response_headers)
     return [output]

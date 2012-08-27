@@ -39,6 +39,8 @@ def application(environ, start_response):
 
     meta={}
     meta=environ
+	
+	meta['db']='test'
 
     output=""
     try:

@@ -116,7 +116,7 @@ $(function () {
     //Global initialisation of utilities
     DQX.Init();
 
-//    theserverurl = "http://localhost:8000/app01";
+    //theserverurl = "http://localhost:8000/app01";
     theserverurl = "/sandbox/keposeda/app";
 
 
@@ -126,6 +126,14 @@ $(function () {
 
     if (isCanvasSupported())
         Build_ChromoView();
+    else {
+        var rs = "<h3>Web browser compatibility problem</h3>";
+        rs += '<div class="DQXDarkFrameHighlight">';
+        rs += "The chromosome viewer relies on functionality that is not supported by this web browser. In order to be able to use this application, you can download an up-to-date, free web browser such as ";
+        rs += "<a href='https://www.google.com/intl/en/chrome/browser/'>Chrome</a> or <a href='http://www.mozilla.org/en-US/firefox/new/'>FireFox</a>";
+        rs += '</div>';
+        $('#BrowserContainer').html(rs);
+    }
 
 
     Build_SimpleQueryWins();
@@ -142,7 +150,7 @@ $(function () {
     elemTableWindowAdvanced.myTable.myDataFetcher.SetUserQuery(DQX.SQL.WhereClause.None());
     elemTableWindowAdvanced.myTable.Render();
     //make sure that changing the query builder invalidates the table result
-    elemBuilderWindowAdvanced.myBuilder.notifyModified = $.proxy(elemTableWindowAdvanced.myTable.invalidate,elemTableWindowAdvanced.myTable);
+    elemBuilderWindowAdvanced.myBuilder.notifyModified = $.proxy(elemTableWindowAdvanced.myTable.invalidate, elemTableWindowAdvanced.myTable);
 
 
 

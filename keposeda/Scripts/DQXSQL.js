@@ -14,10 +14,14 @@ DQX.SQL.TableColInfo = function (iID, iname, idatatype, ichoicelist) {
     that.name = iname;
     that.datatype = idatatype;
     that.choicelist = ichoicelist;
-    that.IsNumerical = function () {
+
+    //returns true if this column is of numerical type
+    that.isNumerical = function () {
         return (this.datatype == "Float") || (this.datatype == "Integer");
     }
-    that.IsMultipleCoice = function () {
+
+    //returns true of this column contains multiple choice values
+    that.isMultipleCoice = function () {
         return (this.datatype == "MultiChoiceInt");
     }
     return that;
@@ -31,7 +35,8 @@ DQX.SQL.TableColInfo = function (iID, iname, idatatype, ichoicelist) {
 
 DQX.SQL.WhereClause = {};
 
-DQX.SQL.WhereClause.FieldOperators = [
+//A list of all comparison operators that act on a field
+DQX.SQL.WhereClause._fieldComparisonOperators = [
 
 { ID: '=', name: 'Equals',
     String: true, Float: true, Integer: true, MultiChoiceInt: true,
@@ -93,22 +98,26 @@ DQX.SQL.WhereClause.FieldOperators = [
     Create: function () { return DQX.SQL.WhereClause.IsAbsent() }
 },
 
+//test the equality with another database field
 { ID: '=FIELD', name: 'Equals field', MultiChoiceInt: true,
     String: true, Float: true, Integer: true,
     Create: function () { return DQX.SQL.WhereClause.EqualsField() }
 },
 
-{ ID: '<>FIELD', name: 'Differs from field', MultiChoiceInt: true,
+//test the difference with another database field
+{ID: '<>FIELD', name: 'Differs from field', MultiChoiceInt: true,
     String: true, Float: true, Integer: true,
     Create: function () { return DQX.SQL.WhereClause.DiffersField() }
 },
 
-{ ID: '<FIELD', name: '< Field',
+//Performs a < operation with a linear function of another field
+{ID: '<FIELD', name: '< Field',
     Float: true, Integer: true,
     Create: function () { return DQX.SQL.WhereClause.CompareField('<FIELD') }
 },
 
-{ ID: '>FIELD', name: '> Field',
+//Performs a > operation with a linear function of another field
+{ID: '>FIELD', name: '> Field',
     Float: true, Integer: true,
     Create: function () { return DQX.SQL.WhereClause.CompareField('>FIELD') }
 }
@@ -116,48 +125,49 @@ DQX.SQL.WhereClause.FieldOperators = [
 
 ];
 
-DQX.SQL.WhereClause.GetFieldOperatorInfo = function (ID) {
-    for (var nr in DQX.SQL.WhereClause.FieldOperators) {
-        var op = DQX.SQL.WhereClause.FieldOperators[nr];
+//Returns the field comparison operator that corresponds to a specific id
+DQX.SQL.WhereClause.getFieldComparisonOperatorInfo = function (ID) {
+    for (var nr in DQX.SQL.WhereClause._fieldComparisonOperators) {
+        var op = DQX.SQL.WhereClause._fieldComparisonOperators[nr];
         if (op.ID == ID)
             return op;
     }
-    throw "Invalid field operator id " + ID;
+    throw "Invalid field comparison operator id " + ID;
 }
 
-
-DQX.SQL.WhereClause.GetCompatibleFieldOperators = function (datatype) {
+//Returns a list of all field operators that are compatible with an SQL column data type (as defined in DQX.SQL.DataTypes)
+DQX.SQL.WhereClause.getCompatibleFieldComparisonOperators = function (datatype) {
     var lst = [];
-    for (var nr in DQX.SQL.WhereClause.FieldOperators) {
-        var op = DQX.SQL.WhereClause.FieldOperators[nr];
+    for (var nr in DQX.SQL.WhereClause._fieldComparisonOperators) {
+        var op = DQX.SQL.WhereClause._fieldComparisonOperators[nr];
         if (op[datatype])
             lst.push(op);
     }
     return lst;
 }
 
-//A class that Encapsulates the comparison of a field to a fixed value
+//A class that encapsulates the comparison of a field to a fixed value
 DQX.SQL.WhereClause.CompareFixed = function (icolname, icomptype, ivalue) {
     var that = {};
     var fnd = false;
-    for (var opnr = 0; opnr < DQX.SQL.WhereClause.FieldOperators.length; opnr++)
-        if (DQX.SQL.WhereClause.FieldOperators[opnr].ID == icomptype)
+    for (var opnr = 0; opnr < DQX.SQL.WhereClause._fieldComparisonOperators.length; opnr++)
+        if (DQX.SQL.WhereClause._fieldComparisonOperators[opnr].ID == icomptype)
             fnd = true;
     if (!fnd)
         throw "Invalid comparison where clause statement: " + icompoundtype;
-    that.IsCompound = false;
+    that.isCompound = false;
     that.ColName = icolname;
     that.Tpe = icomptype;
     that.CompValue = ivalue;
 
-
+    //Creates the associated controls in the querybuilder GUI
     that._buildStatement = function (ID, elem, querybuilder) {
 
-        if (!querybuilder.HasColumn(this.ColName))
+        if (!querybuilder.hasColumn(this.ColName))
             return;
 
-        var mycol = querybuilder.GetColumn(this.ColName);
-        if (mycol.IsMultipleCoice()) {
+        var mycol = querybuilder.getColumn(this.ColName);
+        if (mycol.isMultipleCoice()) {
             var ctrl_choices = DQX.DocEl.Select(mycol.choicelist, this.CompValue);
             ctrl_choices.setID(querybuilder.getControlID(ID, "Content"));
             ctrl_choices.setWidthPx(150);
@@ -175,6 +185,7 @@ DQX.SQL.WhereClause.CompareFixed = function (icolname, icomptype, ivalue) {
         elem.addElem(compcontent);
     }
 
+    //Fetches the content of this statement from the controls in the querybuilder GUI
     that._fetchStatementContent = function (ID, querybuilder) {
         if ($("#" + querybuilder.getControlID(ID, "Content")).length > 0) {
             this.CompValue = $("#" + querybuilder.getControlID(ID, "Content")).val();
@@ -187,12 +198,13 @@ DQX.SQL.WhereClause.CompareFixed = function (icolname, icomptype, ivalue) {
 //A class that Encapsulates the equality comparison of a field to another field
 DQX.SQL.WhereClause.EqualsField = function () {
     var that = {};
-    that.IsCompound = false;
+    that.isCompound = false;
     that.ColName = "";
     that.ColName2 = "";
     that.Tpe = "=FIELD";
 
 
+    //Creates the associated controls in the querybuilder GUI
     that._buildStatement = function (ID, elem, querybuilder) {
 
         var thecols = [];
@@ -207,6 +219,7 @@ DQX.SQL.WhereClause.EqualsField = function () {
         elem.addElem(ctrl_otherfield);
     }
 
+    //Fetches the content of this statement from the controls in the querybuilder GUI
     that._fetchStatementContent = function (ID, querybuilder) {
         if ($("#"+querybuilder.getControlID(ID,"OtherField")).length > 0) {
             this.ColName2 = $("#"+querybuilder.getControlID(ID,"OtherField")).val();
@@ -218,15 +231,16 @@ DQX.SQL.WhereClause.EqualsField = function () {
 
 
 
-//A class that Encapsulates the differentiqlity comparison of a field to another field
+//A class that Encapsulates the differential comparison of a field to another field
 DQX.SQL.WhereClause.DiffersField = function () {
     var that = {};
-    that.IsCompound = false;
+    that.isCompound = false;
     that.ColName = "";
     that.ColName2 = "";
     that.Tpe = "<>FIELD";
 
 
+    //Creates the associated controls in the querybuilder GUI
     that._buildStatement = function (ID, elem, querybuilder) {
 
         var thecols = [];
@@ -241,6 +255,7 @@ DQX.SQL.WhereClause.DiffersField = function () {
         elem.addElem(ctrl_otherfield);
     }
 
+    //Fetches the content of this statement from the controls in the querybuilder GUI
     that._fetchStatementContent = function (ID, querybuilder) {
         if ($("#"+querybuilder.getControlID(ID,"OtherField")).length > 0) {
             this.ColName2 = $("#"+querybuilder.getControlID(ID,"OtherField")).val();
@@ -254,7 +269,7 @@ DQX.SQL.WhereClause.DiffersField = function () {
 //A class that Encapsulates the numerical comparison of a field to another field
 DQX.SQL.WhereClause.CompareField = function (icomptype) {
     var that = {};
-    that.IsCompound = false;
+    that.isCompound = false;
     that.ColName = "";
     that.ColName2 = "";
     that.Tpe = icomptype;
@@ -262,6 +277,7 @@ DQX.SQL.WhereClause.CompareField = function (icomptype) {
     that.Offset = 0.0;
 
 
+    //Creates the associated controls in the querybuilder GUI
     that._buildStatement = function (ID, elem, querybuilder) {
         var ctrl_factor = DQX.DocEl.Edit(this.Factor);
         ctrl_factor.setID(querybuilder.getControlID(ID,"Factor"));
@@ -274,7 +290,7 @@ DQX.SQL.WhereClause.CompareField = function (icomptype) {
 
         var thecols = [];
         for (var colnr = 0; colnr < querybuilder.myColumns.length; colnr++)
-            if (querybuilder.myColumns[colnr].IsNumerical())
+            if (querybuilder.myColumns[colnr].isNumerical())
                 if (querybuilder.myColumns[colnr].ID != this.ColName)
                     thecols.push({ id: querybuilder.myColumns[colnr].ID, name: querybuilder.myColumns[colnr].name });
         var ctrl_otherfield = DQX.DocEl.Select(thecols, this.ColName2);
@@ -295,6 +311,7 @@ DQX.SQL.WhereClause.CompareField = function (icomptype) {
 
     }
 
+    //Fetches the content of this statement from the controls in the querybuilder GUI
     that._fetchStatementContent = function (ID, querybuilder) {
         if ($("#"+querybuilder.getControlID(ID,"Factor")).length > 0) {
             this.Factor = $("#"+querybuilder.getControlID(ID,"Factor")).val();
@@ -311,7 +328,7 @@ DQX.SQL.WhereClause.CompareField = function (icomptype) {
 //A class that checks for presence of the value
 DQX.SQL.WhereClause.IsPresent = function () {
     var that = {};
-    that.IsCompound = false;
+    that.isCompound = false;
     that.Tpe = "ISPRESENT";
     that._buildStatement = function (ID, elem, querybuilder) {
     }
@@ -324,7 +341,7 @@ DQX.SQL.WhereClause.IsPresent = function () {
 //A class that checks for absence of the value
 DQX.SQL.WhereClause.IsAbsent = function () {
     var that = {};
-    that.IsCompound = false;
+    that.isCompound = false;
     that.Tpe = "ISABSENT";
     that._buildStatement = function (ID, elem, querybuilder) {
     }
@@ -337,7 +354,7 @@ DQX.SQL.WhereClause.IsAbsent = function () {
 //A class that Encapsulates the absence of a where clause
 DQX.SQL.WhereClause.Trivial = function () {
     var that = {};
-    that.IsCompound = false;
+    that.isCompound = false;
     that.Tpe = "";
     return that;
 }
@@ -345,7 +362,7 @@ DQX.SQL.WhereClause.Trivial = function () {
 //A class that Encapsulates a query that should return nothing
 DQX.SQL.WhereClause.None = function () {
     var that = {};
-    that.IsCompound = false;
+    that.isCompound = false;
     that.Tpe = "None";
     that.isNone = true;
     return that;
@@ -358,11 +375,11 @@ DQX.SQL.WhereClause.Compound = function (icompoundtype, components) {
     if ((icompoundtype != 'AND') && (icompoundtype != 'OR'))
         throw "Invalid compound where clause statement: " + icompoundtype;
     var that = {};
-    that.IsCompound = true;
+    that.isCompound = true;
     that.Tpe = icompoundtype;
     that.Components = components;
     if (that.Components == null) that.Components = [];
-    that.AddComponent = function (icomp) {
+    that.addComponent = function (icomp) {
         this.Components.push(icomp);
     }
     return that;
@@ -382,7 +399,7 @@ DQX.SQL.WhereClause.OR = function (components) {
 
 
 //Encodes a whereclause object to an url-friendly string
-DQX.SQL.WhereClause.Encode = function (whc) {
+DQX.SQL.WhereClause.encode = function (whc) {
     var jsonstring = JSON.stringify(whc);
     var st = Base64.encode(jsonstring);
     st = st.replace("+", "-");
@@ -397,13 +414,13 @@ DQX.SQL.WhereClause.Encode = function (whc) {
 
 DQX.SQL.TableSort = function (icollist) {
     var that = {};
-    that.ColumnList = icollist;
+    that.columnList = icollist;
 
     that.toString = function () {
         var rs = "";
-        for (var i in this.ColumnList) {
+        for (var i in this.columnList) {
             if (i > 0) rs += "~";
-            rs += this.ColumnList[i];
+            rs += this.columnList[i];
         }
         return rs;
     }

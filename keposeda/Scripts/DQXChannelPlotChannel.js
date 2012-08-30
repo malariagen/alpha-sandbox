@@ -8,98 +8,98 @@
 DQX.ChannelPlot.Channel = function (imyPlot) {
     var that = {}
     that.myPlot = imyPlot;
-    that.FixedSizeY = -1; //negative value= flexible
+    that.fixedSizeY = -1; //negative value= flexible
 
     //Draws a vertical scale in the left panel of the channel
-    that.DrawVertScale = function (DrawInfo, minvl, maxvl) {
-        var jumps = DQX.DrawUtil.GetScaleJump((maxvl - minvl) / 15);
+    that.drawVertScale = function (drawInfo, minvl, maxvl) {
+        var jumps = DQX.DrawUtil.getScaleJump((maxvl - minvl) / 15);
 
-        DrawInfo.LeftContext.fillStyle = "black";
-        DrawInfo.LeftContext.font = '10px sans-serif';
-        DrawInfo.LeftContext.textBaseline = 'bottom';
-        DrawInfo.LeftContext.textAlign = 'right';
+        drawInfo.leftContext.fillStyle = "black";
+        drawInfo.leftContext.font = '10px sans-serif';
+        drawInfo.leftContext.textBaseline = 'bottom';
+        drawInfo.leftContext.textAlign = 'right';
 
-        DrawInfo.LeftContext.strokeStyle = "black";
-        DrawInfo.CenterContext.strokeStyle = "black";
-        DrawInfo.LeftContext.globalAlpha = 0.6;
-        DrawInfo.CenterContext.globalAlpha = 0.2;
+        drawInfo.leftContext.strokeStyle = "black";
+        drawInfo.centerContext.strokeStyle = "black";
+        drawInfo.leftContext.globalAlpha = 0.6;
+        drawInfo.centerContext.globalAlpha = 0.2;
         for (j = Math.ceil(minvl / jumps.Jump1); j <= Math.floor(maxvl / jumps.Jump1); j++) {
             vl = j * jumps.Jump1;
-            yp = Math.round(DrawInfo.PosY - DrawInfo.SizeY * 0.1 - (vl - minvl) / (maxvl - minvl) * DrawInfo.SizeY * 0.8) - 0.5;
+            yp = Math.round(drawInfo.PosY - drawInfo.sizeY * 0.1 - (vl - minvl) / (maxvl - minvl) * drawInfo.sizeY * 0.8) - 0.5;
             if (j % jumps.JumpReduc == 0) {
-                DrawInfo.LeftContext.beginPath();
-                DrawInfo.LeftContext.moveTo(DrawInfo.LeftSizeX - 8, yp);
-                DrawInfo.LeftContext.lineTo(DrawInfo.LeftSizeX, yp);
-                DrawInfo.LeftContext.stroke();
-                DrawInfo.LeftContext.fillText(vl, DrawInfo.LeftSizeX - 12, yp + 5);
-                DrawInfo.CenterContext.beginPath();
-                DrawInfo.CenterContext.moveTo(0, yp);
-                DrawInfo.CenterContext.lineTo(DrawInfo.SizeX, yp);
-                DrawInfo.CenterContext.stroke();
+                drawInfo.leftContext.beginPath();
+                drawInfo.leftContext.moveTo(drawInfo.LeftSizeX - 8, yp);
+                drawInfo.leftContext.lineTo(drawInfo.LeftSizeX, yp);
+                drawInfo.leftContext.stroke();
+                drawInfo.leftContext.fillText(vl, drawInfo.LeftSizeX - 12, yp + 5);
+                drawInfo.centerContext.beginPath();
+                drawInfo.centerContext.moveTo(0, yp);
+                drawInfo.centerContext.lineTo(drawInfo.sizeX, yp);
+                drawInfo.centerContext.stroke();
             }
             else {
-                DrawInfo.LeftContext.beginPath();
-                DrawInfo.LeftContext.moveTo(DrawInfo.LeftSizeX - 4, yp);
-                DrawInfo.LeftContext.lineTo(DrawInfo.LeftSizeX, yp);
-                DrawInfo.LeftContext.stroke();
+                drawInfo.leftContext.beginPath();
+                drawInfo.leftContext.moveTo(drawInfo.LeftSizeX - 4, yp);
+                drawInfo.leftContext.lineTo(drawInfo.LeftSizeX, yp);
+                drawInfo.leftContext.stroke();
             }
         }
-        DrawInfo.LeftContext.globalAlpha = 1;
-        DrawInfo.CenterContext.globalAlpha = 1;
+        drawInfo.leftContext.globalAlpha = 1;
+        drawInfo.centerContext.globalAlpha = 1;
 
     }
 
 
     //Draws a message in the center panel of the channel
-    that.DrawMessage = function (DrawInfo, txt) {
-        DrawInfo.CenterContext.fillStyle = "black";
-        DrawInfo.CenterContext.globalAlpha = 0.2;
-        DrawInfo.CenterContext.fillRect(0, DrawInfo.PosY - DrawInfo.SizeY, DrawInfo.SizeX, DrawInfo.SizeY);
-        DrawInfo.CenterContext.globalAlpha = 1.0;
+    that.drawMessage = function (drawInfo, txt) {
+        drawInfo.centerContext.fillStyle = "black";
+        drawInfo.centerContext.globalAlpha = 0.2;
+        drawInfo.centerContext.fillRect(0, drawInfo.PosY - drawInfo.sizeY, drawInfo.sizeX, drawInfo.sizeY);
+        drawInfo.centerContext.globalAlpha = 1.0;
 
-        DrawInfo.LeftContext.fillStyle = "black";
-        DrawInfo.LeftContext.globalAlpha = 0.2;
-        DrawInfo.LeftContext.fillRect(0, DrawInfo.PosY - DrawInfo.SizeY, DrawInfo.LeftSizeX, DrawInfo.SizeY);
-        DrawInfo.LeftContext.globalAlpha = 1.0;
+        drawInfo.leftContext.fillStyle = "black";
+        drawInfo.leftContext.globalAlpha = 0.2;
+        drawInfo.leftContext.fillRect(0, drawInfo.PosY - drawInfo.sizeY, drawInfo.LeftSizeX, drawInfo.sizeY);
+        drawInfo.leftContext.globalAlpha = 1.0;
 
-        DrawInfo.CenterContext.fillStyle = "black";
-        DrawInfo.CenterContext.font = '25px sans-serif';
-        DrawInfo.CenterContext.textBaseline = 'bottom';
-        DrawInfo.CenterContext.textAlign = 'center';
-        DrawInfo.CenterContext.globalAlpha = 0.6;
-        DrawInfo.CenterContext.fillText(txt, DrawInfo.SizeX / 2, DrawInfo.PosY - DrawInfo.SizeY / 2 + 12);
-        DrawInfo.CenterContext.globalAlpha = 1.0;
+        drawInfo.centerContext.fillStyle = "black";
+        drawInfo.centerContext.font = '25px sans-serif';
+        drawInfo.centerContext.textBaseline = 'bottom';
+        drawInfo.centerContext.textAlign = 'center';
+        drawInfo.centerContext.globalAlpha = 0.6;
+        drawInfo.centerContext.fillText(txt, drawInfo.sizeX / 2, drawInfo.PosY - drawInfo.sizeY / 2 + 12);
+        drawInfo.centerContext.globalAlpha = 1.0;
     }
 
     //Draws a title in the left panel of the channel
-    that.DrawTitle = function (DrawInfo) {
-        DrawInfo.LeftContext.save();
-        DrawInfo.LeftContext.translate(0, DrawInfo.PosY - DrawInfo.SizeY / 2);
-        DrawInfo.LeftContext.rotate(-Math.PI / 2);
-        DrawInfo.LeftContext.textBaseline = 'top';
-        DrawInfo.LeftContext.textAlign = "center";
-        DrawInfo.LeftContext.font = '14px sans-serif';
-        DrawInfo.LeftContext.fillStyle = "black";
-        if ("Title" in this)
-            DrawInfo.LeftContext.fillText(this.Title, 0, 5);
+    that.drawTitle = function (drawInfo) {
+        drawInfo.leftContext.save();
+        drawInfo.leftContext.translate(0, drawInfo.PosY - drawInfo.sizeY / 2);
+        drawInfo.leftContext.rotate(-Math.PI / 2);
+        drawInfo.leftContext.textBaseline = 'top';
+        drawInfo.leftContext.textAlign = "center";
+        drawInfo.leftContext.font = '14px sans-serif';
+        drawInfo.leftContext.fillStyle = "black";
+        if ("myTitle" in this)
+            drawInfo.leftContext.fillText(this.myTitle, 0, 5);
         if ("SubTitle" in this) {
-            DrawInfo.LeftContext.font = '12px sans-serif';
-            DrawInfo.LeftContext.fillStyle = "rgb(100,100,100)";
-            DrawInfo.LeftContext.fillText(this.SubTitle, 0, 25);
+            drawInfo.leftContext.font = '12px sans-serif';
+            drawInfo.leftContext.fillStyle = "rgb(100,100,100)";
+            drawInfo.leftContext.fillText(this.SubTitle, 0, 25);
         }
-        DrawInfo.LeftContext.restore();
+        drawInfo.leftContext.restore();
     }
 
     //Get tooltip info at a specific point in screen coordinates in the channel
     //Default behaviour: return null. This function can be overriden by a specific implementation of a channel
     //Note that the return object will be digested by the function DrawChannelToolTip
-    that.GetToolTipInfo = function (xp, yp) {
+    that.getToolTipInfo = function (xp, yp) {
         return null;
     }
 
     //Handle a click event inside a channel
     //Default behaviour: do nothing. This function can be overriden by a specific implementation of a channel
-    that.OnClick = function (xp, yp) {
+    that.onClick = function (xp, yp) {
     }
 
     return that;

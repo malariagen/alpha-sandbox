@@ -3,7 +3,9 @@
 DQX.Gui = {};
 
 
-
+//////////////////////////////////////////////////////////////////////////////////////////
+// Base class for high-level GUI components
+//////////////////////////////////////////////////////////////////////////////////////////
 
 DQX.Gui.GuiComponent = function (iid, args) {
     var that = {};
@@ -29,23 +31,32 @@ DQX.Gui.GuiComponent = function (iid, args) {
 }
 
 
+//////////////////////////////////////////////////////////////////////////////////////////
+// Interactive query builder
+//////////////////////////////////////////////////////////////////////////////////////////
+
 DQX.Gui.QueryBuilder = function (iid, args) {
     var that = DQX.Gui.GuiComponent(iid, args);
 
     that.myBuilder = new DQX.QueryBuilder(iid);
 
     that.onResize = function () {
-        this.myBuilder.ReRender();
+        this.myBuilder._reRender();
     }
 
     return that;
 }
 
 
+//////////////////////////////////////////////////////////////////////////////////////////
+// Query table
+//////////////////////////////////////////////////////////////////////////////////////////
+
 DQX.Gui.QueryTable = function (iid, idatafetcher, args) {
     var that = DQX.Gui.GuiComponent(iid, args);
 
     var html = '';
+
 
     {//Create header
         var header = DQX.DocEl.Div();
@@ -68,22 +79,39 @@ DQX.Gui.QueryTable = function (iid, idatafetcher, args) {
 
     {//Create tables
         var holder = DQX.DocEl.Div();
+        //holder.addStyle("overflow", "auto");
 
 
+        //This variant uses a guaranteed fixed % distribution over both parts, and also guarantees that the table stretches the full extent        
+        //        var div1 = DQX.DocEl.Div({ parent: holder });
+        //        div1.makeFloatLeft().addStyle('overflow', 'auto').setWidthPc(args.leftfraction || 50);
+        //        var tablebody1 = DQX.DocEl.Div({ parent: div1, id: that.getSubId("Body1") });
+        //        tablebody1.addStyle("overflow-x", "scroll").addStyle("overflow-y", "hidden");
+        //        tablebody1.addStyle("border-width",'0px');
+        //        tablebody1.addStyle("border-right-width", '2px');
+        //        tablebody1.addStyle("border-style", 'solid');
+        //        tablebody1.addStyle("border-color", 'rgb(60,60,60)');
+        //        var div2 = DQX.DocEl.Div({ parent: holder });
+        //        div2.makeFloatLeft().addStyle('overflow', 'auto').setWidthPc(100 - (args.leftfraction || 50));
+        //        var tablebody2 = DQX.DocEl.Div({ parent: div2, id: that.getSubId("Body2") });
+        //        tablebody2.addStyle("overflow-x", "scroll").addStyle("overflow-y", "hidden");
+        //        
+
+        //This variant uses a maximum % distribution for the left part, and makes the left part never use more than required. It does not guarantee that the table stretches the full extent        
         var div1 = DQX.DocEl.Div({ parent: holder });
-        div1.makeFloatLeft().addStyle('overflow', 'auto').setWidthPc(args.leftfraction || 50);
+        div1.makeFloatLeft().addStyle('overflow', 'auto');
+        div1.addStyle('max-width', (args.leftfraction || 50).toString() + '%');
         var tablebody1 = DQX.DocEl.Div({ parent: div1, id: that.getSubId("Body1") });
         tablebody1.addStyle("overflow-x", "scroll").addStyle("overflow-y", "hidden");
-        tablebody1.addStyle("border-width",'0px');
+        tablebody1.addStyle("border-width", '0px');
         tablebody1.addStyle("border-right-width", '2px');
         tablebody1.addStyle("border-style", 'solid');
         tablebody1.addStyle("border-color", 'rgb(60,60,60)');
-
-
         var div2 = DQX.DocEl.Div({ parent: holder });
-        div2.makeFloatLeft().addStyle('overflow', 'auto').setWidthPc(100 - (args.leftfraction || 50));
+        div2.addStyle('overflow', 'auto'); //.setWidthPc(95);
         var tablebody2 = DQX.DocEl.Div({ parent: div2, id: that.getSubId("Body2") });
         tablebody2.addStyle("overflow-x", "scroll").addStyle("overflow-y", "hidden");
+        tablebody2.setBackgroundColor(DQX.Color(0.7,0.7,0.7));
 
         html += holder;
     }
@@ -98,11 +126,17 @@ DQX.Gui.QueryTable = function (iid, idatafetcher, args) {
 
     that.rootelem.html(html);
 
+
     that.myTable = DQX.QueryTable.Table(iid, idatafetcher);
+
+    DQX.setKeyDownReceiver(iid, $.proxy(that.myTable.onKeyDown, that.myTable));
 
     return that;
 }
 
+//////////////////////////////////////////////////////////////////////////////////////////
+// Chromosome plot
+//////////////////////////////////////////////////////////////////////////////////////////
 
 DQX.Gui.ChromoPlot = function (iid, args) {
     var that = DQX.Gui.GuiComponent(iid, args);
@@ -165,13 +199,19 @@ DQX.Gui.ChromoPlot = function (iid, args) {
 
     that.onResize = function () {
         var width = this.rootelem.width() - that.leftsize - 1;
-        var height = this.myChromoPlot.SizeY;
-        this.myChromoPlot.Resize(width, height);
+        var height = this.myChromoPlot.sizeY;
+        this.myChromoPlot.resize(width, height);
         if (this.myChromoPlot.myHScroller) {
-            this.myChromoPlot.myHScroller.Resize(this.rootelem.width() - 1);
-            this.myChromoPlot.ZoomScrollTo(this.myChromoPlot.myHScroller.ScrollPos, this.myChromoPlot.myHScroller.ScrollSize);
+            this.myChromoPlot.myHScroller.resize(this.rootelem.width() - 1);
+            this.myChromoPlot.zoomScrollTo(this.myChromoPlot.myHScroller.scrollPos, this.myChromoPlot.myHScroller.ScrollSize);
         }
     }
+
+    that.onKeyDown = function (ev) {
+        return this.myChromoPlot.onKeyDown(ev);
+    }
+    DQX.setKeyDownReceiver(iid, $.proxy(that.onKeyDown, that));
+
 
     return that;
 }

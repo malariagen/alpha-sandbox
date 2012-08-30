@@ -6,44 +6,44 @@
 
 DQX.ChannelPlot.ChannelScale = function(imyPlot) {
     var that = DQX.ChannelPlot.Channel(imyPlot);
-    that.FixedSizeY = 25;
+    that.fixedSizeY = 25;
 
-    that.Draw = function (DrawInfo) {
+    that.draw = function (drawInfo) {
         //center background
-        var backgrad = DrawInfo.CenterContext.createLinearGradient(0, DrawInfo.PosY - DrawInfo.SizeY, 0, DrawInfo.PosY);
+        var backgrad = drawInfo.centerContext.createLinearGradient(0, drawInfo.PosY - drawInfo.sizeY, 0, drawInfo.PosY);
         backgrad.addColorStop(0, "rgb(180,180,180)");
         backgrad.addColorStop(1, "rgb(120,120,120)");
-        DrawInfo.CenterContext.fillStyle = backgrad;
-        DrawInfo.CenterContext.fillRect(0, DrawInfo.PosY - DrawInfo.SizeY, DrawInfo.SizeX, DrawInfo.PosY);
+        drawInfo.centerContext.fillStyle = backgrad;
+        drawInfo.centerContext.fillRect(0, drawInfo.PosY - drawInfo.sizeY, drawInfo.sizeX, drawInfo.PosY);
         //left background
-        backgrad = DrawInfo.LeftContext.createLinearGradient(0, DrawInfo.PosY - DrawInfo.SizeY, 0, DrawInfo.PosY);
+        backgrad = drawInfo.leftContext.createLinearGradient(0, drawInfo.PosY - drawInfo.sizeY, 0, drawInfo.PosY);
         backgrad.addColorStop(0, "rgb(150,150,150)");
         backgrad.addColorStop(1, "rgb(100,100,100)");
-        DrawInfo.LeftContext.fillStyle = backgrad;
-        DrawInfo.LeftContext.fillRect(0, DrawInfo.PosY - DrawInfo.SizeY, DrawInfo.LeftSizeX, DrawInfo.PosY);
+        drawInfo.leftContext.fillStyle = backgrad;
+        drawInfo.leftContext.fillRect(0, drawInfo.PosY - drawInfo.sizeY, drawInfo.LeftSizeX, drawInfo.PosY);
 
-        DrawInfo.CenterContext.fillStyle = "black";
-        DrawInfo.CenterContext.font = '10px sans-serif';
-        DrawInfo.CenterContext.textBaseline = 'bottom';
-        DrawInfo.CenterContext.textAlign = 'center';
+        drawInfo.centerContext.fillStyle = "black";
+        drawInfo.centerContext.font = '10px sans-serif';
+        drawInfo.centerContext.textBaseline = 'bottom';
+        drawInfo.centerContext.textAlign = 'center';
 
-        var i1 = Math.round(((-50 + DrawInfo.OffsetX) / DrawInfo.ZoomFactX) / DrawInfo.HorAxisScaleJumps.Jump1);
+        var i1 = Math.round(((-50 + drawInfo.offsetX) / drawInfo.zoomFactX) / drawInfo.HorAxisScaleJumps.Jump1);
         if (i1 < 0) i1 = 0;
-        var i2 = Math.round(((DrawInfo.SizeX + 50 + DrawInfo.OffsetX) / DrawInfo.ZoomFactX) / DrawInfo.HorAxisScaleJumps.Jump1);
+        var i2 = Math.round(((drawInfo.sizeX + 50 + drawInfo.offsetX) / drawInfo.zoomFactX) / drawInfo.HorAxisScaleJumps.Jump1);
 
         for (i = i1; i <= i2; i++) {
-            DrawInfo.CenterContext.beginPath();
-            var value = i * DrawInfo.HorAxisScaleJumps.Jump1;
-            var psx = Math.round((value) * DrawInfo.ZoomFactX - DrawInfo.OffsetX) + 0.5;
-            if ((psx >= -50) && (psx <= DrawInfo.SizeX + 50)) {
-                DrawInfo.CenterContext.moveTo(psx, DrawInfo.PosY - DrawInfo.SizeY);
-                DrawInfo.CenterContext.lineTo(psx, DrawInfo.PosY - DrawInfo.SizeY / 2);
-                DrawInfo.CenterContext.strokeStyle = "gray";
-                if (i % DrawInfo.HorAxisScaleJumps.JumpReduc == 0) {
-                    DrawInfo.CenterContext.strokeStyle = "black";
-                    DrawInfo.CenterContext.fillText(value / 1.0e6, psx, DrawInfo.PosY - 2);
+            drawInfo.centerContext.beginPath();
+            var value = i * drawInfo.HorAxisScaleJumps.Jump1;
+            var psx = Math.round((value) * drawInfo.zoomFactX - drawInfo.offsetX) + 0.5;
+            if ((psx >= -50) && (psx <= drawInfo.sizeX + 50)) {
+                drawInfo.centerContext.moveTo(psx, drawInfo.PosY - drawInfo.sizeY);
+                drawInfo.centerContext.lineTo(psx, drawInfo.PosY - drawInfo.sizeY / 2);
+                drawInfo.centerContext.strokeStyle = "gray";
+                if (i % drawInfo.HorAxisScaleJumps.JumpReduc == 0) {
+                    drawInfo.centerContext.strokeStyle = "black";
+                    drawInfo.centerContext.fillText(value / 1.0e6, psx, drawInfo.PosY - 2);
                 }
-                DrawInfo.CenterContext.stroke();
+                drawInfo.centerContext.stroke();
             }
         }
     }

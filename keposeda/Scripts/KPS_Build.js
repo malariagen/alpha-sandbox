@@ -116,8 +116,8 @@ $(function () {
     //Global initialisation of utilities
     DQX.Init();
 
-    theserverurl = "http://localhost:8000/app01";
-    //theserverurl = "/sandbox/keposeda/app";
+    //theserverurl = "http://localhost:8000/app01";
+    theserverurl = "/sandbox/keposeda/app";
 
 
     //////////////////////////////////////////////////////////////////////////////////////////////

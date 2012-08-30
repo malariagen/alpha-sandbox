@@ -8,7 +8,7 @@ DQX.DataFetcher = {}
 
 DQX.DataFetcher.CurveColumn = function (iEncoding, iColor) {
     var that = {};
-    that.EncodingList = {
+    that.myEncodingList = {
         "String": "ST",    //returns string data
         "Float2": "F2",    //returns floats in 2 base64 bytes
         "Float3": "F3",     //returns floats in 3 base64 bytes
@@ -17,31 +17,31 @@ DQX.DataFetcher.CurveColumn = function (iEncoding, iColor) {
         "IntDiff": "ID"     //returns exact integers as differences with previous values
     }
 
-    if (!(iEncoding in that.EncodingList))
+    if (!(iEncoding in that.myEncodingList))
         throw "Invalid column encoding " + iEncoding;
-    that.EncodingID = that.EncodingList[iEncoding];
+    that.myEncodingID = that.myEncodingList[iEncoding];
 
-    that.ActiveCount = 0;
-    that.Values = []; //holds the currently downloaded values of this column
+    that.myActiveCount = 0;
+    that.myDownloadValues = []; //holds the currently downloaded values of this column
 
-    //PlotHints contain some information on how to draw a column
-    that.PlotHints = {};
-    that.PlotHints.DrawLines = false;
-    that.PlotHints.Color = iColor; //holds the color used to draw this column
+    //myPlotHints contain some information on how to draw a column !!!todo: this isn't the right place, one day we need to move this!
+    that.myPlotHints = {};
+    that.myPlotHints.drawLines = false;
+    that.myPlotHints.Color = iColor; //holds the color used to draw this column
 
 
-    that.ClearData = function () {
-        this.Values = [];
+    that.clearData = function () {
+        this.myDownloadValues = [];
     }
 
-    that.IsActive = function () {
-        return this.ActiveCount > 0;
+    that.isActive = function () {
+        return this.myActiveCount > 0;
     }
 
     //Call this function to let plots connect the dots with lines, if separated up to a given distance
-    that.MakeDrawLines = function (maxdist) {
-        this.PlotHints.DrawLines = true;
-        this.PlotHints.MaxLineDist = maxdist;
+    that.makeDrawLines = function (maxdist) {
+        this.myPlotHints.drawLines = true;
+        this.myPlotHints.maxLineDist = maxdist;
     }
 
     return that;
@@ -58,157 +58,157 @@ DQX.DataFetcher.Curve = function (iserverurl, itablename, ipositionfield) {
     this.serverurl = iserverurl; //The server url to contact for this
     this.tablename = itablename; //The name of the table to fetch from
 
-    this.PositionField = ipositionfield; //The field that contains the position information (use 'LIMIT' for data fetchers that are based on record numbers)
-    this.SortReverse = false;
-    this.UseLimit = (ipositionfield == 'LIMIT'); //if true, position information are record numbers rather than positions in a columnn (used for paged table fetching)
+    this.positionField = ipositionfield; //The field that contains the position information (use 'LIMIT' for data fetchers that are based on record numbers)
+    this.sortReverse = false;
+    this.useLimit = (ipositionfield == 'LIMIT'); //if true, position information are record numbers rather than positions in a columnn (used for paged table fetching)
 
-    this._UserQuery = null; //an optional restricting query, defined as a DQXWhereClause style object
+    this._userQuery = null; //an optional restricting query, defined as a DQXWhereClause style object
 
     //The currently fetched range of data
-    this.CurrentRangeMin = 1000.0;
-    this.CurrentRangeMax = -1000.0;
+    this._currentRangeMin = 1000.0;
+    this._currentRangeMax = -1000.0;
 
-    this.PointsX = []; //X positions of all the currently downloaded points
-    this.Columns = {}; //maps column IDs to DQX.DataFetcher.CurveColumn objects
-    this.TotalRecordCount = -1;
+    this.myDownloadPointsX = []; //X positions of all the currently downloaded points
+    this.myColumns = {}; //maps column IDs to DQX.DataFetcher.CurveColumn objects
+    this.totalRecordCount = -1;
 
-    this.IsFetching = false; //If true, an ajax request was sent out and wasn't finished yet
-    this.FetchFailed = false; //True if an error occurred while fetching the data
+    this._isFetching = false; //If true, an ajax request was sent out and wasn't finished yet
+    this.hasFetchFailed = false; //True if an error occurred while fetching the data
 
     //Removes all downloaded data, forcing a reload
-    this.ClearData = function () {
-        this.CurrentRangeMin = 1000.0;
-        this.CurrentRangeMax = -1000.0;
-        this.PointsX = [];
-        for (var cid in this.Columns)
-            this.Columns[cid].ClearData();
-        this.TotalRecordCount = -1;
-        this.IsFetching = false;
+    this.clearData = function () {
+        this._currentRangeMin = 1000.0;
+        this._currentRangeMax = -1000.0;
+        this.myDownloadPointsX = [];
+        for (var cid in this.myColumns)
+            this.myColumns[cid].clearData();
+        this.totalRecordCount = -1;
+        this._isFetching = false;
     }
 
     //defines a custom query to apply on the data records
-    this.SetUserQuery = function (iquery) {
-        this._UserQuery = iquery;
-        this.ClearData();
+    this.setUserQuery = function (iquery) {
+        this._userQuery = iquery;
+        this.clearData();
     }
 
 
     //adds a column to be fetched, providing a column id and a color
-    this.ColumnAdd = function (cid, encoding, colr) {
-        this.Columns[cid] = DQX.DataFetcher.CurveColumn(encoding, colr);
-        this.ClearData();
-        return this.Columns[cid];
+    this.addFetchColumn = function (cid, encoding, colr) {
+        this.myColumns[cid] = DQX.DataFetcher.CurveColumn(encoding, colr);
+        this.clearData();
+        return this.myColumns[cid];
     }
 
     //removes a column
-    this.ColumnDel = function (cid) {
-        delete this.Columns[cid];
+    this.delFetchColumn = function (cid) {
+        delete this.myColumns[cid];
     }
 
     //call this function to request the presence of a column
-    this.ColumnActivate = function (cid) {
-        if (this.Columns[cid].ActiveCount == 0)
-            this.ClearData();
-        this.Columns[cid].ActiveCount++;
+    this.activateFetchColumn = function (cid) {
+        if (this.myColumns[cid].myActiveCount == 0)
+            this.clearData();
+        this.myColumns[cid].myActiveCount++;
     }
 
     //call this function to stop requesting the presence of a column
-    this.ColumnDesActivate = function (cid) {
-        this.Columns[cid].ActiveCount--;
+    this.deactivateFetchColumn = function (cid) {
+        this.myColumns[cid].myActiveCount--;
     }
 
     //internal
-    this.AjaxResponse_FetchRange = function (resp) {
-        if (!this.IsFetching) return;
-        this.FetchFailed = false;
-        this.IsFetching = false;
-        var keylist = DQX.ParseResponse(resp); //unpack the response
+    this._ajaxResponse_FetchRange = function (resp) {
+        if (!this._isFetching) return;
+        this.hasFetchFailed = false;
+        this._isFetching = false;
+        var keylist = DQX.parseResponse(resp); //unpack the response
 
         if ("Error" in keylist) {
-            this.FetchFailed = true;
-            setTimeout($.proxy(this.Container.NotifyDataReady, this.Container), DQX.timeoutRetry);
+            this.hasFetchFailed = true;
+            setTimeout($.proxy(this.myDataConsumer.notifyDataReady, this.myDataConsumer), DQX.timeoutRetry);
             return;
         }
 
 
         //check that this ajax response contains all required columns (if not, this is likely to be an outdated response)
-        for (var cid in this.Columns)
-            if (this.Columns[cid].IsActive())
+        for (var cid in this.myColumns)
+            if (this.myColumns[cid].isActive())
                 if (!(cid in keylist)) {
-                    this.Container.NotifyDataReady();
+                    this.myDataConsumer.notifyDataReady();
                     return; //if not, we should not proceed with parsing it
                 }
 
         //update the currently downloaded range
-        this.CurrentRangeMin = parseFloat(keylist["start"]);
-        this.CurrentRangeMax = parseFloat(keylist["stop"]);
+        this._currentRangeMin = parseFloat(keylist["start"]);
+        this._currentRangeMax = parseFloat(keylist["stop"]);
 
         if ('TotalRecordCount' in keylist)
-            this.TotalRecordCount = keylist['TotalRecordCount'];
+            this.totalRecordCount = keylist['TotalRecordCount'];
 
         //decode all the downloaded columns
         var b64codec = DQX.B64();
         var vallistdecoder = DQX.ValueListDecoder();
         if (keylist["DataType"] == "Points") {
-            this.PointsX = vallistdecoder.Decode(keylist['XValues']);
-            for (var cid in this.Columns)
-                if (this.Columns[cid].IsActive()) {
-                    this.Columns[cid].Values = vallistdecoder.Decode(keylist[cid]);
+            this.myDownloadPointsX = vallistdecoder.doDecode(keylist['XValues']);
+            for (var cid in this.myColumns)
+                if (this.myColumns[cid].isActive()) {
+                    this.myColumns[cid].myDownloadValues = vallistdecoder.doDecode(keylist[cid]);
                 }
-            //txt = "Fetched points: " + this.PointsX.length + " (" + resp.length / 1000.0 + "Kb, " + Math.round(resp.length / this.PointsX.length * 100) / 100 + "bytes/point)";
+            //txt = "Fetched points: " + this.myDownloadPointsX.length + " (" + resp.length / 1000.0 + "Kb, " + Math.round(resp.length / this.myDownloadPointsX.length * 100) / 100 + "bytes/point)";
             //$("#click2").text(txt);
         }
 
         //tell the consumer of this that the data are ready
-        this.Container.NotifyDataReady();
+        this.myDataConsumer.notifyDataReady();
     }
 
     //internal
-    this.AjaxFailure_FetchRange = function (resp) {
-        this.FetchFailed = true;
-        this.IsFetching = false;
+    this._ajaxFailure_FetchRange = function (resp) {
+        this.hasFetchFailed = true;
+        this._isFetching = false;
         //tell the consumer of this that the data are 'ready'
         //note: this will cause a requery, which is what we want
         //the timout introduces a delay, avoiding that the server is flooded with requeries
-        setTimeout($.proxy(this.Container.NotifyDataReady, this.Container), DQX.timeoutRetry);
+        setTimeout($.proxy(this.myDataConsumer.notifyDataReady, this.myDataConsumer), DQX.timeoutRetry);
     }
 
     this._createActiveColumnListString = function () {
         var collist = "";
-        for (var cid in this.Columns)
-            if (this.Columns[cid].IsActive()) {
+        for (var cid in this.myColumns)
+            if (this.myColumns[cid].isActive()) {
                 if (collist.length > 0) collist += "~";
-                collist += this.Columns[cid].EncodingID;
+                collist += this.myColumns[cid].myEncodingID;
                 collist += cid;
             }
         return collist;
     }
 
     this.isValid = function () {
-        if (this._UserQuery == null) return true;
-        return !this._UserQuery.isNone;
+        if (this._userQuery == null) return true;
+        return !this._userQuery.isNone;
     }
 
     //internal: initiates the ajax data fetching call
-    this.FetchRange = function (rangemin, rangemax, needtotalrecordcount) {
+    this._fetchRange = function (rangemin, rangemax, needtotalrecordcount) {
 
-        if ((this._UserQuery) && (this._UserQuery.isNone)) {//Query indicates that we should fetch nothing!
-            this.FetchFailed = false;
-            this.IsFetching = false;
+        if ((this._userQuery) && (this._userQuery.isNone)) {//Query indicates that we should fetch nothing!
+            this.hasFetchFailed = false;
+            this._isFetching = false;
             range = rangemax - rangemin;
             rangemin -= 1.5 * range;
             rangemax += 1.5 * range;
-            this.CurrentRangeMin = rangemin;
-            this.CurrentRangeMax = rangemax;
-            this.PointsX = [];
-            for (var cid in this.Columns)
-                this.Columns[cid].Values = [];
-            this.TotalRecordCount = 0;
-            setTimeout($.proxy(this.Container.NotifyDataReady, this.Container), DQX.timeoutRetry);
+            this._currentRangeMin = rangemin;
+            this._currentRangeMax = rangemax;
+            this.myDownloadPointsX = [];
+            for (var cid in this.myColumns)
+                this.myColumns[cid].myDownloadValues = [];
+            this.totalRecordCount = 0;
+            setTimeout($.proxy(this.myDataConsumer.notifyDataReady, this.myDataConsumer), DQX.timeoutRetry);
             return;
         }
 
-        if (!this.IsFetching) {
+        if (!this._isFetching) {
             var collist = this._createActiveColumnListString();
             //create some buffer around the requested range. This reduces the number of requests and gives the user a smoother experience when scrolling or zooming out
             range = rangemax - rangemin;
@@ -216,44 +216,44 @@ DQX.DataFetcher.Curve = function (iserverurl, itablename, ipositionfield) {
             rangemax += 1.5 * range;
 
             var qry = DQX.SQL.WhereClause.Trivial();
-            if (!this.UseLimit) {
+            if (!this.useLimit) {
                 //prepare where clause
                 qry = DQX.SQL.WhereClause.AND();
-                qry.AddComponent(DQX.SQL.WhereClause.CompareFixed(this.PositionField, '>=', rangemin));
-                qry.AddComponent(DQX.SQL.WhereClause.CompareFixed(this.PositionField, '<=', rangemax));
-                if (this._UserQuery != null) qry.AddComponent(this._UserQuery);
+                qry.addComponent(DQX.SQL.WhereClause.CompareFixed(this.positionField, '>=', rangemin));
+                qry.addComponent(DQX.SQL.WhereClause.CompareFixed(this.positionField, '<=', rangemax));
+                if (this._userQuery != null) qry.addComponent(this._userQuery);
             }
             else {
-                if (this._UserQuery != null) qry = this._UserQuery;
+                if (this._userQuery != null) qry = this._userQuery;
             }
 
             var qrytype = "qry";
-            if (this.UseLimit) qrytype = "pageqry"
+            if (this.useLimit) qrytype = "pageqry"
 
             //prepare the url
             var myurl = DQX.Url(this.serverurl);
-            myurl.AddQuery("datatype", qrytype);
-            myurl.AddQuery("qry", DQX.SQL.WhereClause.Encode(qry));
-            myurl.AddQuery("tbname", this.tablename);
-            myurl.AddQuery("collist", collist);
-            myurl.AddQuery("posfield", this.PositionField);
-            myurl.AddQuery("order", this.PositionField);
-            myurl.AddQuery("start", rangemin); //not used by server: only used for reflecting info to this client response code
-            myurl.AddQuery("stop", rangemax); //idem
-            myurl.AddQuery("sortreverse", this.SortReverse ? 1 : 0);
-            myurl.AddQuery("needtotalcount", ((this.TotalRecordCount < 0) && (needtotalrecordcount)) ? 1 : 0);
+            myurl.addUrlQueryItem("datatype", qrytype);
+            myurl.addUrlQueryItem("qry", DQX.SQL.WhereClause.encode(qry));
+            myurl.addUrlQueryItem("tbname", this.tablename);
+            myurl.addUrlQueryItem("collist", collist);
+            myurl.addUrlQueryItem("posfield", this.positionField);
+            myurl.addUrlQueryItem("order", this.positionField);
+            myurl.addUrlQueryItem("start", rangemin); //not used by server: only used for reflecting info to this client response code
+            myurl.addUrlQueryItem("stop", rangemax); //idem
+            myurl.addUrlQueryItem("sortreverse", this.sortReverse ? 1 : 0);
+            myurl.addUrlQueryItem("needtotalcount", ((this.totalRecordCount < 0) && (needtotalrecordcount)) ? 1 : 0);
 
 
-            if (this.UseLimit)
-                myurl.AddQuery("limit", rangemin + "~" + rangemax);
+            if (this.useLimit)
+                myurl.addUrlQueryItem("limit", rangemin + "~" + rangemax);
 
             if (collist.length > 0) {//launch the ajax request
-                this.IsFetching = true;
+                this._isFetching = true;
                 var thethis = this;
                 $.ajax({
                     url: myurl.toString(),
-                    success: function (resp) { thethis.AjaxResponse_FetchRange(resp) },
-                    error: function (resp) { thethis.AjaxFailure_FetchRange(resp) }
+                    success: function (resp) { thethis._ajaxResponse_FetchRange(resp) },
+                    error: function (resp) { thethis._ajaxFailure_FetchRange(resp) }
                 });
             }
             else {
@@ -263,112 +263,113 @@ DQX.DataFetcher.Curve = function (iserverurl, itablename, ipositionfield) {
     }
 
 
-    this.CreateDownloadUrl = function () {
+    //Returns the url that can be used to download the data set this fetcher is currently serving
+    this.createDownloadUrl = function () {
         //prepare the url
         var collist = this._createActiveColumnListString();
         var thequery = DQX.SQL.WhereClause.Trivial();
-        if (this._UserQuery != null)
-            thequery = this._UserQuery;
+        if (this._userQuery != null)
+            thequery = this._userQuery;
         var myurl = DQX.Url(this.serverurl);
-        myurl.AddQuery("datatype", "downloadtable");
-        myurl.AddQuery("qry", DQX.SQL.WhereClause.Encode(thequery));
-        myurl.AddQuery("tbname", this.tablename);
-        myurl.AddQuery("collist", collist);
-        myurl.AddQuery("posfield", this.PositionField);
-        myurl.AddQuery("order", this.PositionField);
-        myurl.AddQuery("sortreverse", this.SortReverse ? 1 : 0);
+        myurl.addUrlQueryItem("datatype", "downloadtable");
+        myurl.addUrlQueryItem("qry", DQX.SQL.WhereClause.encode(thequery));
+        myurl.addUrlQueryItem("tbname", this.tablename);
+        myurl.addUrlQueryItem("collist", collist);
+        myurl.addUrlQueryItem("posfield", this.positionField);
+        myurl.addUrlQueryItem("order", this.positionField);
+        myurl.addUrlQueryItem("sortreverse", this.sortReverse ? 1 : 0);
         return myurl.toString();
     }
 
     //Call this to determine if all data in a specific range is ready, and start fetching extra data if necessary
     this.IsDataReady = function (rangemin, rangemax, needtotalrecordcount) {
-        if ((rangemin >= this.CurrentRangeMin) && (rangemax <= this.CurrentRangeMax)) {
+        if ((rangemin >= this._currentRangeMin) && (rangemax <= this._currentRangeMax)) {
             var buffer = (rangemax - rangemin) / 2;
-            if ((rangemin - buffer < this.CurrentRangeMin) || (rangemax + buffer > this.CurrentRangeMax)) {
-                this.FetchRange(rangemin, rangemax, needtotalrecordcount);
+            if ((rangemin - buffer < this._currentRangeMin) || (rangemax + buffer > this._currentRangeMax)) {
+                this._fetchRange(rangemin, rangemax, needtotalrecordcount);
             }
             return true;
         }
         else {
-            this.FetchRange(rangemin, rangemax, needtotalrecordcount);
+            this._fetchRange(rangemin, rangemax, needtotalrecordcount);
             return false;
         }
     }
 
-
-    this.FindIndexByXVal = function (xval) {
+    //For a given X value, returns the index in the current download set
+    this.findIndexByXVal = function (xval) {
         //todo: optimise this using binary intersection
-        if ('PointsX' in this) {
-            for (var trypt in this.PointsX)
-                if (xval == this.PointsX[trypt])
+        if ('myDownloadPointsX' in this) {
+            for (var trypt in this.myDownloadPointsX)
+                if (xval == this.myDownloadPointsX[trypt])
                     return trypt;
         }
         return -1; //means not found
     }
 
     //get point data for a specific column in a specific range
-    this.GetColumnPoints = function (rangemin, rangemax, cid) {
+    this.getColumnPoints = function (rangemin, rangemax, cid) {
         var thedata = {};
         //todo: optimise both loops using binary intersection
-        for (var startpt = 0; (startpt < this.PointsX.length - 1) && (this.PointsX[startpt] < rangemin); startpt++);
-        for (var endpt = this.PointsX.length - 1; (endpt > 0) && (this.PointsX[endpt] > rangemax); endpt--);
+        for (var startpt = 0; (startpt < this.myDownloadPointsX.length - 1) && (this.myDownloadPointsX[startpt] < rangemin); startpt++);
+        for (var endpt = this.myDownloadPointsX.length - 1; (endpt > 0) && (this.myDownloadPointsX[endpt] > rangemax); endpt--);
         if (startpt > 0) startpt--;
-        if (endpt < this.PointsX.length - 1) endpt++;
-        thedata.StartIndex = startpt; //the start index of the returned set in the current load set
-        thedata.XVals = []; //the positions of the points
-        for (var i = startpt; i <= endpt; i++) thedata.XVals.push(this.PointsX[i]);
+        if (endpt < this.myDownloadPointsX.length - 1) endpt++;
+        thedata.startIndex = startpt; //the start index of the returned set in the current load set
+        thedata.xVals = []; //the positions of the points
+        for (var i = startpt; i <= endpt; i++) thedata.xVals.push(this.myDownloadPointsX[i]);
         thedata.YVals = []; //the column values (or 'y' values in most cases)
-        var yvalues = this.Columns[cid];
-        for (var i = startpt; i <= endpt; i++) thedata.YVals.push(yvalues.Values[i]);
+        var yvalues = this.myColumns[cid];
+        for (var i = startpt; i <= endpt; i++) thedata.YVals.push(yvalues.myDownloadValues[i]);
         return thedata;
     }
 
     //get the position for a specific point in the current load set
-    this.GetPosition = function (currentloadindex) {
-        if ((currentloadindex < 0) || (currentloadindex >= this.PointsX.length)) return null;
-        return this.PointsX[currentloadindex];
+    this.getPosition = function (currentloadindex) {
+        if ((currentloadindex < 0) || (currentloadindex >= this.myDownloadPointsX.length)) return null;
+        return this.myDownloadPointsX[currentloadindex];
     }
 
     //get the column value for a specific point in the current load set
-    this.GetColumnPoint = function (currentloadindex, cid) {
-        if ((currentloadindex < 0) || (currentloadindex >= this.PointsX.length)) return null;
-        var mycol = this.Columns[cid];
-        return mycol.Values[currentloadindex];
+    this.getColumnPoint = function (currentloadindex, cid) {
+        if ((currentloadindex < 0) || (currentloadindex >= this.myDownloadPointsX.length)) return null;
+        var mycol = this.myColumns[cid];
+        return mycol.myDownloadValues[currentloadindex];
     }
 
 
     //return the color of a column
-    this.GetColumnColor = function (cid) {
-        return this.Columns[cid].PlotHints.Color;
+    this.getColumnColor = function (cid) {
+        return this.myColumns[cid].myPlotHints.Color;
     }
 
     //return the plot hints of a column
-    this.GetColumnPlotHints = function (cid) {
-        return this.Columns[cid].PlotHints;
+    this.getColumnPlotHints = function (cid) {
+        return this.myColumns[cid].myPlotHints;
     }
 
 
     //internal
-    this.AjaxFailure_FetchPoint = function (resp) {
+    this._ajaxFailure_FetchPoint = function (resp) {
         //todo: what to do here?
-        this.IsFetching = false;
+        this._isFetching = false;
     }
 
     //fetches all information about an individual point
     //whereclause: a DQXWhereClause style object
-    this.FetchFullRecordInfo = function (whereclause, CallbackFunction, FailFunction) {
+    this.fetchFullRecordInfo = function (whereclause, theCallbackFunction, theFailFunction) {
         //prepare the url
         var myurl = DQX.Url(this.serverurl);
-        myurl.AddQuery("datatype", 'recordinfo');
-        myurl.AddQuery("qry", DQX.SQL.WhereClause.Encode(whereclause));
-        myurl.AddQuery("tbname", this.tablename); //tablename to fetch from
-        var AjaxResponse_FetchPoint = function (resp) {
-            CallbackFunction(DQX.ParseResponse(resp).Data);
+        myurl.addUrlQueryItem("datatype", 'recordinfo');
+        myurl.addUrlQueryItem("qry", DQX.SQL.WhereClause.encode(whereclause));
+        myurl.addUrlQueryItem("tbname", this.tablename); //tablename to fetch from
+        var _ajaxResponse_FetchPoint = function (resp) {
+            theCallbackFunction(DQX.parseResponse(resp).Data);
         }
         $.ajax({
             url: myurl.toString(),
-            success: AjaxResponse_FetchPoint,
-            error: FailFunction
+            success: _ajaxResponse_FetchPoint,
+            error: theFailFunction
         });
     }
 
@@ -385,135 +386,135 @@ DQX.DataFetcher.Annot = function (iconfig) {
     this.config = iconfig;
 
 
-    DQX.AssertPresence(this.config, 'serverurl');
-    DQX.AssertPresence(this.config, 'chromnrfield');
-    DQX.AssertPresence(this.config, 'annottablename');
-    DQX.AssertPresence(this.config, 'annotstartfield');
-    DQX.AssertPresence(this.config, 'annotstopfield');
-    DQX.AssertPresence(this.config, 'annotnamefield');
-    DQX.AssertPresence(this.config, 'annotidfield');
+    DQX.assertPresence(this.config, 'serverurl');
+    DQX.assertPresence(this.config, 'chromnrfield');
+    DQX.assertPresence(this.config, 'annottablename');
+    DQX.assertPresence(this.config, 'annotstartfield');
+    DQX.assertPresence(this.config, 'annotstopfield');
+    DQX.assertPresence(this.config, 'annotnamefield');
+    DQX.assertPresence(this.config, 'annotidfield');
 
 
-    this.ChromoNr = 1;
-    this.CurrentRangeMin = 1000.0;
-    this.CurrentRangeMax = -1000.0;
-    this.Start = [];
-    this.Stop = [];
-    this.Name = [];
-    this.ID = [];
-    this.IsFetching = false;
-    this.FetchFailed = false;
+    this.myChromoNr = 1;
+    this._currentRangeMin = 1000.0;
+    this._currentRangeMax = -1000.0;
+    this.myStartList = [];
+    this.myStopList = [];
+    this.myNameList = [];
+    this.myIDList = [];
+    this._isFetching = false;
+    this.hasFetchFailed = false;
 
-    this.ClearData = function () {
-        this.CurrentRangeMin = 1000.0;
-        this.CurrentRangeMax = -1000.0;
-        this.Start = [];
-        this.Stop = [];
-        this.Name = [];
-        this.ID = [];
+    this.clearData = function () {
+        this._currentRangeMin = 1000.0;
+        this._currentRangeMax = -1000.0;
+        this.myStartList = [];
+        this.myStopList = [];
+        this.myNameList = [];
+        this.myIDList = [];
     }
 
     this.AjaxResponse = function (resp) {
-        this.FetchFailed = false;
-        this.IsFetching = false;
+        this.hasFetchFailed = false;
+        this._isFetching = false;
         var vallistdecoder = DQX.ValueListDecoder();
-        var keylist = DQX.ParseResponse(resp);
+        var keylist = DQX.parseResponse(resp);
         if ("Error" in keylist) {
-            this.FetchFailed = true;
-            setTimeout($.proxy(this.Container.NotifyDataReady, this.Container), DQX.timeoutRetry);
+            this.hasFetchFailed = true;
+            setTimeout($.proxy(this.myDataConsumer.notifyDataReady, this.myDataConsumer), DQX.timeoutRetry);
             return;
         }
-        this.CurrentRangeMin = parseFloat(keylist["start"]);
-        this.CurrentRangeMax = parseFloat(keylist["stop"]);
-        this.Start = vallistdecoder.Decode(keylist['Starts']);
-        var sizes = vallistdecoder.Decode(keylist['Sizes']);
-        this.Stop = [];
-        for (var i = 0; i < this.Start.length; i++)
-            this.Stop.push(this.Start[i] + sizes[i]);
-        this.Name = vallistdecoder.Decode(keylist['Names']);
-        this.ID = vallistdecoder.Decode(keylist['IDs']);
-        this.Container.NotifyDataReady();
+        this._currentRangeMin = parseFloat(keylist["start"]);
+        this._currentRangeMax = parseFloat(keylist["stop"]);
+        this.myStartList = vallistdecoder.doDecode(keylist['Starts']);
+        var sizes = vallistdecoder.doDecode(keylist['Sizes']);
+        this.myStopList = [];
+        for (var i = 0; i < this.myStartList.length; i++)
+            this.myStopList.push(this.myStartList[i] + sizes[i]);
+        this.myNameList = vallistdecoder.doDecode(keylist['Names']);
+        this.myIDList = vallistdecoder.doDecode(keylist['IDs']);
+        this.myDataConsumer.notifyDataReady();
     }
 
-    this.AjaxFailure = function (resp) {
-        this.FetchFailed = true;
-        this.IsFetching = false;
-        setTimeout($.proxy(this.Container.NotifyDataReady, this.Container), DQX.timeoutRetry);
+    this._ajaxFailure = function (resp) {
+        this.hasFetchFailed = true;
+        this._isFetching = false;
+        setTimeout($.proxy(this.myDataConsumer.notifyDataReady, this.myDataConsumer), DQX.timeoutRetry);
     }
 
-    this.FetchRange = function (rangemin, rangemax) {
-        if (!this.IsFetching) {
+    this._fetchRange = function (rangemin, rangemax) {
+        if (!this._isFetching) {
             range = rangemax - rangemin;
             rangemin -= range;
             rangemax += range;
             var myurl = DQX.Url(this.config.serverurl);
-            myurl.AddQuery('datatype', 'annot');
-            myurl.AddQuery('chrom', this.ChromoNr);
-            myurl.AddQuery('start', rangemin);
-            myurl.AddQuery('stop', rangemax);
-            myurl.AddQuery('table', this.config.annottablename);
-            myurl.AddQuery('chromnrfield', this.config.chromnrfield);
-            myurl.AddQuery('startfield', this.config.annotstartfield);
-            myurl.AddQuery('stopfield', this.config.annotstopfield);
-            myurl.AddQuery('namefield', this.config.annotnamefield);
-            myurl.AddQuery('idfield', this.config.annotidfield);
-            this.IsFetching = true;
+            myurl.addUrlQueryItem('datatype', 'annot');
+            myurl.addUrlQueryItem('chrom', this.myChromoNr);
+            myurl.addUrlQueryItem('start', rangemin);
+            myurl.addUrlQueryItem('stop', rangemax);
+            myurl.addUrlQueryItem('table', this.config.annottablename);
+            myurl.addUrlQueryItem('chromnrfield', this.config.chromnrfield);
+            myurl.addUrlQueryItem('startfield', this.config.annotstartfield);
+            myurl.addUrlQueryItem('stopfield', this.config.annotstopfield);
+            myurl.addUrlQueryItem('namefield', this.config.annotnamefield);
+            myurl.addUrlQueryItem('idfield', this.config.annotidfield);
+            this._isFetching = true;
             var thethis = this;
             $.ajax({
                 url: myurl.toString(),
                 dataType: 'TEXT',
                 type: 'get',
                 success: function (resp) { thethis.AjaxResponse(resp); },
-                error: function (resp) { thethis.AjaxFailure(resp); }
+                error: function (resp) { thethis._ajaxFailure(resp); }
             });
         }
     }
 
 
     this.IsDataReady = function (rangemin, rangemax) {
-        if ((rangemin >= this.CurrentRangeMin) && (rangemax <= this.CurrentRangeMax)) {
+        if ((rangemin >= this._currentRangeMin) && (rangemax <= this._currentRangeMax)) {
             return true;
         }
         else {
-            this.FetchRange(rangemin, rangemax);
+            this._fetchRange(rangemin, rangemax);
             return false;
         }
     }
 
 
-    this.GetData = function (rangemin, rangemax) {
+    this.getData = function (rangemin, rangemax) {
         var thedata = {};
-        thedata.Start = [];
-        thedata.Stop = [];
-        thedata.Name = [];
-        thedata.ID = [];
-        for (i = 0; i < this.Start.length; i++)
-            if ((this.Stop[i] >= rangemin) && (this.Start[i] <= rangemax)) {
-                thedata.Start.push(this.Start[i]);
-                thedata.Stop.push(this.Stop[i]);
-                thedata.Name.push(this.Name[i]);
-                thedata.ID.push(this.ID[i]);
+        thedata.myStartList = [];
+        thedata.myStopList = [];
+        thedata.myNameList = [];
+        thedata.myIDList = [];
+        for (i = 0; i < this.myStartList.length; i++)
+            if ((this.myStopList[i] >= rangemin) && (this.myStartList[i] <= rangemax)) {
+                thedata.myStartList.push(this.myStartList[i]);
+                thedata.myStopList.push(this.myStopList[i]);
+                thedata.myNameList.push(this.myNameList[i]);
+                thedata.myIDList.push(this.myIDList[i]);
             }
         return thedata;
     }
 
     //fetches all annotation for a single record
-    this.FetchFullAnnotInfo = function (id, CallbackFunction, FailFunction) {
+    this.fetchFullAnnotInfo = function (id, theCallbackFunction, theFailFunction) {
         //prepare the url
 
         var myurl = DQX.Url(this.config.serverurl);
-        myurl.AddQuery('datatype', 'fullannotinfo');
-        myurl.AddQuery('table', this.config.annottablename);
-        myurl.AddQuery('idfield', this.config.annotidfield);
-        myurl.AddQuery('id', id);
-        var AjaxResponse_FetchPoint = function (resp) {
+        myurl.addUrlQueryItem('datatype', 'fullannotinfo');
+        myurl.addUrlQueryItem('table', this.config.annottablename);
+        myurl.addUrlQueryItem('idfield', this.config.annotidfield);
+        myurl.addUrlQueryItem('id', id);
+        var _ajaxResponse_FetchPoint = function (resp) {
             //todo: error handling
-            CallbackFunction(DQX.ParseResponse(resp).Data);
+            theCallbackFunction(DQX.parseResponse(resp).Data);
         }
         $.ajax({
             url: myurl.toString(),
-            success: AjaxResponse_FetchPoint,
-            error: FailFunction
+            success: _ajaxResponse_FetchPoint,
+            error: theFailFunction
         });
     }
 

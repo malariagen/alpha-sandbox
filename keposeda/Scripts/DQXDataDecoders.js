@@ -20,7 +20,7 @@ DQX.B64 = function () {
     }
 
     //Converts a set of 64bit encoded integers to float array, applying a linear mapping using slope and offset
-    that.ArrayB642Float = function (st, bytecount, slope, offset) {
+    that.arrayB642Float = function (st, bytecount, slope, offset) {
         var vals = [];
         var cnt = st.length / bytecount;
         var ps = 0;
@@ -51,7 +51,7 @@ DQX.B64 = function () {
 DQX.ValueListDecoder = function () {
     var that = {};
     that.b64codec = DQX.B64();
-    that.Decode = function (data) {
+    that.doDecode = function (data) {
 
         if (data['Encoding'] == 'IntegerDiffB64') {
             if (data['Data'].length == 0) return [];
@@ -80,7 +80,7 @@ DQX.ValueListDecoder = function () {
             var slope = data['Slope'];
             var bytecount = data['ByteCount'];
             var datastr = data['Data'];
-            var vals = this.b64codec.ArrayB642Float(datastr, bytecount, slope, offset);
+            var vals = this.b64codec.arrayB642Float(datastr, bytecount, slope, offset);
             return vals;
         }
         if (data['Encoding'] == 'Integer') {

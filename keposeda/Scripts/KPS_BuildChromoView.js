@@ -5,13 +5,13 @@
 
 //This creates html content with full information about a single snp
 function CallBackPointInfoFetched_Snp(data) {
-    DQX.StopProcessing();
+    DQX.stopProcessing();
     var snpid = data['snpid'];
     var content = "";
     var url = "http://www.ncbi.nlm.nih.gov/snp/?term=" + snpid + "&SITE=NcbiHome&submit=Go";
     content += '<a href="' + url + '" target="_blank">DbSNP link</a><p>'
 
-    content += myChromoPlot.CreateLinkToRegion(data['chrom'], data['pos'], 0, "Show in plot") + "<p/>";
+    content += myChromoPlot.createLinkToRegion(data['chrom'], data['pos'], 0, "Show in plot") + "<p/>";
 
     content += DQX.HtmlWriteKeyValuePair("Chromosome", data['chrom']) + "<br/>";
     content += DQX.HtmlWriteKeyValuePair("Position", data['pos']) + "<br/>";
@@ -41,22 +41,22 @@ function CallBackPointInfoFetched_Snp(data) {
 
 //This function is hooked to the Snp channel, and responds to a point click event
 function PointClickEvent_Snp(eventinfo) {
-    var snpid = eventinfo.DataFetcher.GetColumnPoint(eventinfo.DownloadIndex, "snpid");
-    DQX.SetProcessing("Downloading...");
-    eventinfo.DataFetcher.FetchFullRecordInfo(
+    var snpid = eventinfo.DataFetcher.getColumnPoint(eventinfo.DownloadIndex, "snpid");
+    DQX.setProcessing("Downloading...");
+    eventinfo.DataFetcher.fetchFullRecordInfo(
         DQX.SQL.WhereClause.CompareFixed('snpid', '=', snpid),
-        CallBackPointInfoFetched_Snp, DQX.CreateFailFunction("Failed to download data")
+        CallBackPointInfoFetched_Snp, DQX.createFailFunction("Failed to download data")
         );
 }
 
 
 //This function is hooked to the Snp channel, and responds to a tooltip request
 function GenerateToolTipInfo_Snp(thefetcher, index, compid) {
-    lines = [{ Text: "SNP " + thefetcher.GetColumnPoint(index, "snpid"), Color: "black"}];
-    for (var compidx in thefetcher.Columns)
+    lines = [{ Text: "SNP " + thefetcher.getColumnPoint(index, "snpid"), Color: "black"}];
+    for (var compidx in thefetcher.myColumns)
         if (compidx != "snpid")
-            if (thefetcher.Columns[compidx].IsActive()) {
-                vl = thefetcher.GetColumnPoint(index, compidx);
+            if (thefetcher.myColumns[compidx].isActive()) {
+                vl = thefetcher.getColumnPoint(index, compidx);
                 var linetext = compidx + "=" + ((vl!=null)?(vl.toFixed(2)):('absent'));
                 var linecolor = "rgb(100,100,100)";
                 if (compidx == compid) linecolor = "rgb(192,0,0)";
@@ -77,7 +77,7 @@ function GenerateToolTipInfo_Snp(thefetcher, index, compid) {
 
 //This creates html content with full information about a single window
 function CallBackPointInfoFetched_Win(data) {
-    DQX.StopProcessing();
+    DQX.stopProcessing();
     var wincenter = parseInt(data['pos']);
     var winsize = parseInt(data['winsize']);
     var content = "";
@@ -88,7 +88,7 @@ function CallBackPointInfoFetched_Win(data) {
         ihs['R('+popname+')'] = (100.0 * data["WIHS_" + popname]).toFixed(2) + "%";
         xpehh['R(' + popname+')'] = (100.0 * data["WXPEHH_" + popname]).toFixed(2) + "%";
     }
-    content += myChromoPlot.CreateLinkToRegion(data['chrom'], wincenter, winsize, "Show in plot") + "<br/>";
+    content += myChromoPlot.createLinkToRegion(data['chrom'], wincenter, winsize, "Show in plot") + "<br/>";
     content += "<br/><b>IHS</b><br/>"
     content += DQX.CreateKeyValueTable(ihs);
     content += "<br/><b>XP-EHH</b><br/>"
@@ -102,12 +102,12 @@ function CallBackPointInfoFetched_Win(data) {
 
 //This function is hooked to the Win channel, and responds to a point click event
 function PointClickEvent_Win(eventinfo) {
-    var pos = eventinfo.DataFetcher.GetPosition(eventinfo.DownloadIndex);
+    var pos = eventinfo.DataFetcher.getPosition(eventinfo.DownloadIndex);
     var qry = DQX.SQL.WhereClause.Compound("AND");
-    qry.AddComponent(DQX.SQL.WhereClause.CompareFixed('chrom', '=', myChromoPlot.CurrentChromoNr));
-    qry.AddComponent(DQX.SQL.WhereClause.CompareFixed('pos', '=', pos));
-    DQX.SetProcessing("Downloading...");
-    eventinfo.DataFetcher.FetchFullRecordInfo(qry, CallBackPointInfoFetched_Win, DQX.CreateFailFunction("Failed to download data"));
+    qry.addComponent(DQX.SQL.WhereClause.CompareFixed('chrom', '=', myChromoPlot.currentChromoNr));
+    qry.addComponent(DQX.SQL.WhereClause.CompareFixed('pos', '=', pos));
+    DQX.setProcessing("Downloading...");
+    eventinfo.DataFetcher.fetchFullRecordInfo(qry, CallBackPointInfoFetched_Win, DQX.createFailFunction("Failed to download data"));
 }
 
 
@@ -118,15 +118,15 @@ function toPercentageString(vl) {
 
 //This function is hooked to the Window channel, and responds to a tooltip request
 function GenerateToolTipInfo_Window(thefetcher, index, compid) {
-    var center = thefetcher.GetPosition(index);
-    var size = thefetcher.GetColumnPoint(index, "winsize");
+    var center = thefetcher.getPosition(index);
+    var size = thefetcher.getColumnPoint(index, "winsize");
     lines = [{ Text: "Window " + ((center - size / 2) / 1.0e6).toFixed(3) + " - " + ((center + size / 2) / 1.0e6).toFixed(3) + "MB",
         Color: "black"
     }];
-    for (var compidx in thefetcher.Columns)
+    for (var compidx in thefetcher.myColumns)
         if (compidx != "winsize")
-            if (thefetcher.Columns[compidx].IsActive()) {
-                vl = thefetcher.GetColumnPoint(index, compidx);
+            if (thefetcher.myColumns[compidx].isActive()) {
+                vl = thefetcher.getColumnPoint(index, compidx);
                 var linetext = 'R('+compidx + ")=" + toPercentageString(vl);
                 var linecolor = "rgb(100,100,100)";
                 if (compidx == compid) linecolor = "rgb(192,0,0)";
@@ -153,11 +153,12 @@ function OnChangeStat() {
         var id = popnamelist[popnr];
         var checkid = "pop_" + popnamelist[popnr];
         var chk = $('#' + checkid).attr('checked');
-        WinChannel.ModifyComponentActiveStatus("WIHS_" + id, chk && showihs);
-        SnpChannel.ModifyComponentActiveStatus("IHS_" + id, chk && showihs);
-        WinChannel.ModifyComponentActiveStatus("WXPEHH_" + id, chk && showxpehh);
-        SnpChannel.ModifyComponentActiveStatus("XPEHH_" + id, chk && showxpehh);
+        WinChannel.modifyComponentActiveStatus("WIHS_" + id, chk && showihs, false);
+        SnpChannel.modifyComponentActiveStatus("IHS_" + id, chk && showihs, false);
+        WinChannel.modifyComponentActiveStatus("WXPEHH_" + id, chk && showxpehh, false);
+        SnpChannel.modifyComponentActiveStatus("XPEHH_" + id, chk && showxpehh, false);
     }
+    myChromoPlot.draw();
 }
 
 //Callback function triggered when the user changed the plot activity status of a single population
@@ -167,13 +168,14 @@ function OnPopClick(event) {
     var id = checkid.split("pop_")[1];
     var chk = $('#' + checkid).attr('checked');
     if ((stat == "IHS") || (stat == "BOTH")) {
-        WinChannel.ModifyComponentActiveStatus("WIHS_" + id, chk);
-        SnpChannel.ModifyComponentActiveStatus("IHS_" + id, chk);
+        WinChannel.modifyComponentActiveStatus("WIHS_" + id, chk, false);
+        SnpChannel.modifyComponentActiveStatus("IHS_" + id, chk, false);
     }
     if ((stat == "XPEHH") || (stat == "BOTH")) {
-        WinChannel.ModifyComponentActiveStatus("WXPEHH_" + id, chk);
-        SnpChannel.ModifyComponentActiveStatus("XPEHH_" + id, chk);
+        WinChannel.modifyComponentActiveStatus("WXPEHH_" + id, chk, false);
+        SnpChannel.modifyComponentActiveStatus("XPEHH_" + id, chk, false);
     }
+    myChromoPlot.draw();
 }
 
 //Callback function triggered when the user pressed the "show all populations" button
@@ -185,11 +187,12 @@ function OnAllPops() {
         var id = popnamelist[popnr];
         var checkid = "pop_" + popnamelist[popnr];
         $('#' + checkid).attr('checked', true);
-        WinChannel.ModifyComponentActiveStatus("WIHS_" + id, showihs);
-        SnpChannel.ModifyComponentActiveStatus("IHS_" + id, showihs);
-        WinChannel.ModifyComponentActiveStatus("WXPEHH_" + id, showxpehh);
-        SnpChannel.ModifyComponentActiveStatus("XPEHH_" + id, showxpehh);
+        WinChannel.modifyComponentActiveStatus("WIHS_" + id, showihs, false);
+        SnpChannel.modifyComponentActiveStatus("IHS_" + id, showihs, false);
+        WinChannel.modifyComponentActiveStatus("WXPEHH_" + id, showxpehh, false);
+        SnpChannel.modifyComponentActiveStatus("XPEHH_" + id, showxpehh, false);
     }
+    myChromoPlot.draw();
 }
 
 //Callback function triggered when the user pressed the "hide all populations" button
@@ -198,11 +201,12 @@ function OnNoPops() {
         var id = popnamelist[popnr];
         var checkid = "pop_" + popnamelist[popnr];
         $('#' + checkid).attr('checked', false);
-        WinChannel.ModifyComponentActiveStatus("WIHS_" + id, false);
-        SnpChannel.ModifyComponentActiveStatus("IHS_" + id, false);
-        WinChannel.ModifyComponentActiveStatus("WXPEHH_" + id, false);
-        SnpChannel.ModifyComponentActiveStatus("XPEHH_" + id, false);
+        WinChannel.modifyComponentActiveStatus("WIHS_" + id, false);
+        SnpChannel.modifyComponentActiveStatus("IHS_" + id, false);
+        WinChannel.modifyComponentActiveStatus("WXPEHH_" + id, false);
+        SnpChannel.modifyComponentActiveStatus("XPEHH_" + id, false);
     }
+    myChromoPlot.draw();
 }
 
 
@@ -261,10 +265,10 @@ function Build_ChromoView() {
 
     var chromosizes = [250, 245, 205, 195, 185, 175, 165, 150, 145, 140, 140, 135, 120, 110, 105, 95, 85, 80, 70, 70, 50, 50];
     for (var chromnr = 0; chromnr < chromosizes.length; chromnr++) {
-        myChromoPlot.AddChromosome("Chromosome " + (chromnr + 1).toString(), chromosizes[chromnr]);
+        myChromoPlot.addChromosome("Chromosome " + (chromnr + 1).toString(), chromosizes[chromnr]);
     }
 
-    myChromoPlot.PopulateChromosomePicker();
+    myChromoPlot.populateChromosomePicker();
 
 
     //This function builds some custom controls that manage what channels are displayed
@@ -277,32 +281,32 @@ function Build_ChromoView() {
 
     //Create the plot channel for the snp data
     SnpChannel = DQX.ChannelPlot.ChannelYVals(myChromoPlot);
-    SnpChannel.Title = "SNPs";
-    SnpChannel.YMinVal = -4.0;
-    SnpChannel.YMaxVal = 4.0;
-    SnpChannel.MinDrawZoomFactX = 1.0 / 16000; //This Y value will not be displayed if the zoom factor drops below this
+    SnpChannel.myTitle = "SNPs";
+    SnpChannel.yMinVal = -4.0;
+    SnpChannel.yMaxVal = 4.0;
+    SnpChannel.minDrawZoomFactX = 1.0 / 16000; //This Y value will not be displayed if the zoom factor drops below this
 
     //Create the data fetcher for the snp data
     snpdatafetcher = new DQX.DataFetcher.Curve(theserverurl, "snps", "pos");
-    myChromoPlot.AddDataFetcher(snpdatafetcher);
+    myChromoPlot.addDataFetcher(snpdatafetcher);
     SnpChannel.GenerateToolTipInfo = GenerateToolTipInfo_Snp;
-    SnpChannel.OnPointClickEvent = PointClickEvent_Snp;
+    SnpChannel.onPointClickEvent = PointClickEvent_Snp;
 
     //Create the columns of the data fetcher
     for (i in popnamelist)
-        snpdatafetcher.ColumnAdd("IHS_" + popnamelist[i], "Float2", popcollist[i]);
+        snpdatafetcher.addFetchColumn("IHS_" + popnamelist[i], "Float2", popcollist[i]);
     for (i in popnamelist)
-        snpdatafetcher.ColumnAdd("XPEHH_" + popnamelist[i], "Float2", popcollist2[i]);
+        snpdatafetcher.addFetchColumn("XPEHH_" + popnamelist[i], "Float2", popcollist2[i]);
 
     //Create components in the plot channel for the fetcher columns
-    for (var yid in snpdatafetcher.Columns)
-        SnpChannel.AddComponent(DQX.ChannelPlot.ChannelYValsComp(snpdatafetcher, yid));
+    for (var yid in snpdatafetcher.myColumns)
+        SnpChannel.addComponent(DQX.ChannelPlot.ChannelYValsComp(snpdatafetcher, yid));
 
     //add snpid column to the datafetcher, needed for the tooltip (but not plotted)
-    snpdatafetcher.ColumnAdd("snpid", "String");
-    snpdatafetcher.ColumnActivate("snpid");
+    snpdatafetcher.addFetchColumn("snpid", "String");
+    snpdatafetcher.activateFetchColumn("snpid");
 
-    myChromoPlot.AddChannel(SnpChannel);
+    myChromoPlot.addChannel(SnpChannel);
 
 
 
@@ -312,43 +316,43 @@ function Build_ChromoView() {
 
     //Create the plot channel for the window data
     WinChannel = DQX.ChannelPlot.ChannelYVals(myChromoPlot);
-    WinChannel.Title = "Window significances";
+    WinChannel.myTitle = "Window significances";
     WinChannel.SubTitle = "-log10(p)";
-    WinChannel.YMinVal = 0.0;
-    WinChannel.YMaxVal = 5.0;
+    WinChannel.yMinVal = 0.0;
+    WinChannel.yMaxVal = 5.0;
 
     //Create the data fetcher for the window data
     windatafetcher = new DQX.DataFetcher.Curve(theserverurl, "windows", "pos");
-    myChromoPlot.AddDataFetcher(windatafetcher);
+    myChromoPlot.addDataFetcher(windatafetcher);
     WinChannel.GenerateToolTipInfo = GenerateToolTipInfo_Window;
-    WinChannel.OnPointClickEvent = PointClickEvent_Win;
+    WinChannel.onPointClickEvent = PointClickEvent_Win;
 
     //Create the columns of the data fetcher
     for (i in popnamelist) {
-        var colinfo = windatafetcher.ColumnAdd("WIHS_" + popnamelist[i], "Float2", popcollist[i]);
-        colinfo.MakeDrawLines(300000.0); //This causes the points to be connected with lines
+        var colinfo = windatafetcher.addFetchColumn("WIHS_" + popnamelist[i], "Float2", popcollist[i]);
+        colinfo.makeDrawLines(300000.0); //This causes the points to be connected with lines
     }
     for (i in popnamelist) {
-        var colinfo = windatafetcher.ColumnAdd("WXPEHH_" + popnamelist[i], "Float2", popcollist2[i]);
-        colinfo.MakeDrawLines(300000.0); //This causes the points to be connected with lines
+        var colinfo = windatafetcher.addFetchColumn("WXPEHH_" + popnamelist[i], "Float2", popcollist2[i]);
+        colinfo.makeDrawLines(300000.0); //This causes the points to be connected with lines
     }
 
     //Create components in the plot channel for the fetcher columns
-    for (var yid in windatafetcher.Columns) {
-        var comp = WinChannel.AddComponent(DQX.ChannelPlot.ChannelYValsComp(windatafetcher, yid));
+    for (var yid in windatafetcher.myColumns) {
+        var comp = WinChannel.addComponent(DQX.ChannelPlot.ChannelYValsComp(windatafetcher, yid));
         comp.YFunction = PVal2Log; //we hook up a function that maps the p values to logs
     }
 
     //add winstop column to the datafetcher, needed for the tooltip (but not plotted)
-    windatafetcher.ColumnAdd("winsize", "IntB64");
-    windatafetcher.ColumnActivate("winsize"); //we need to activate it manually, otherwise it's not fetched automatically
+    windatafetcher.addFetchColumn("winsize", "IntB64");
+    windatafetcher.activateFetchColumn("winsize"); //we need to activate it manually, otherwise it's not fetched automatically
 
-    myChromoPlot.AddChannel(WinChannel);
+    myChromoPlot.addChannel(WinChannel);
 
     //----------------------------------------------------------------
     //--------------- FINALISATION -----------------------------------
     //----------------------------------------------------------------
 
-    myChromoPlot.SetChromosome(1, false, true);
+    myChromoPlot.setChromosome(1, false, true);
     OnAllPops(); //This activates the display of all populations
 }

@@ -20,108 +20,110 @@ XXXChromoPicker : select control
 
 
 //Used as a reflection mechanism
-function GlobalChromPlotterShowRegion(CanvasBaseID, chromnr, pos, size) {
-    DQX.ChannelPlot.Get(CanvasBaseID + "Center").ShowRegion(chromnr, pos, size);
+function _globalChromPlotterShowRegion(CanvasBaseID, chromnr, pos, size) {
+    DQX.ChannelPlot.get(CanvasBaseID + "Center").showRegion(chromnr, pos, size);
     return false;
 }
 
 function ChromoPlotter(imyID, iconfig) {
 
-    DQX.AssertPresence(iconfig, 'serverurl');
-    DQX.AssertPresence(iconfig, 'chromnrfield');
+    DQX.assertPresence(iconfig, 'serverurl');
+    DQX.assertPresence(iconfig, 'chromnrfield');
 
     var that = DQX.ChannelPlot.Plotter(imyID);
     that.chromosomes = [];
     that.config = iconfig;
-    that.ServerUrl = iconfig.serverurl;
-    that.ChromoNrField = iconfig.chromnrfield;
+    that.serverUrl = iconfig.serverurl;
+    that.chromoNrField = iconfig.chromnrfield;
 
 
 
     //######## Functions ############
 
-    that.AddChromosome = function (iname, isize) {//size in megabases
+    //adds a new chromosome to the viewer
+    that.addChromosome = function (iname, isize) {//size in megabases
         this.chromosomes.push( {name: iname, size: isize } );
     }
 
-    that.PopulateChromosomePicker = function () {
+    //fills in the value in the combo box showing the chromosomes
+    that.populateChromosomePicker = function () {
         var rs = '';
         for (var chromnr = 0; chromnr < that.chromosomes.length; chromnr++)
             rs += '<option value="' + (chromnr + 1).toString() + '">' + that.chromosomes[chromnr].name + '</option>';
-        that.GetElement("ChromoPicker").html(rs);
+        that.getElement("ChromoPicker").html(rs);
     }
 
 
 
     //Call this function to switch to another chromosome
-    that.SetChromosome = function (newchromonr, updatepicker, redraw) {
-        if (newchromonr != this.CurrentChromoNr)
-            this.ClearData();
-        this.FullRangeMax = this.chromosomes[newchromonr - 1].size * 1.0E6;
-        this.CurrentChromoNr = newchromonr;
+    that.setChromosome = function (newchromonr, updatepicker, redraw) {
+        if (newchromonr != this.currentChromoNr)
+            this.clearData();
+        this.fullRangeMax = this.chromosomes[newchromonr - 1].size * 1.0E6;
+        this.currentChromoNr = newchromonr;
 
         if (updatepicker)
-            that.GetElement("ChromoPicker").val(newchromonr);
+            that.getElement("ChromoPicker").val(newchromonr);
 
         //Defines the restricting query for all channels
-        var chromoquery = DQX.SQL.WhereClause.CompareFixed(that.ChromoNrField, '=', that.CurrentChromoNr);
+        var chromoquery = DQX.SQL.WhereClause.CompareFixed(that.chromoNrField, '=', that.currentChromoNr);
         for (var fetchnr in this.myDataFetchers)
-            if ('SetUserQuery' in this.myDataFetchers[fetchnr])
-                this.myDataFetchers[fetchnr].SetUserQuery(chromoquery);
+            if ('setUserQuery' in this.myDataFetchers[fetchnr])
+                this.myDataFetchers[fetchnr].setUserQuery(chromoquery);
 
         //set the annotation channel chromosome nr
-        this.annotationchannel.theannotfetcher.ChromoNr = that.CurrentChromoNr;
+        this.annotationchannel.theannotfetcher.myChromoNr = that.currentChromoNr;
         if (redraw) {
-            this.Draw();
-            this.myHScroller.Draw();
+            this.draw();
+            this.myHScroller.draw();
         }
     }
 
     //internal: called as event handler
-    that._OnChangeChromosome = function () {
-        var newnr = parseInt(that.GetElement("ChromoPicker").val());
-        myChromoPlot.SetChromosome(newnr, false);
-        this.ClearData();
-        this.OffsetX = 0;
-        this.myHScroller.RangeMax = this.chromosomes[newnr - 1].size;
-        this.myHScroller.ScrollPos = 0;
-        this.myHScroller.Draw();
-        this.Draw();
+    that._onChangeChromosome = function () {
+        var newnr = parseInt(that.getElement("ChromoPicker").val());
+        myChromoPlot.setChromosome(newnr, false);
+        this.clearData();
+        this.offsetX = 0;
+        this.myHScroller.rangeMax = this.chromosomes[newnr - 1].size;
+        this.myHScroller.scrollPos = 0;
+        this.myHScroller.draw();
+        this.draw();
     }
 
     //Call this function to show a particular region
-    that.ShowRegion = function (chromnr, pos, size) {
-        this.SetChromosome(chromnr, true, false);
+    that.showRegion = function (chromnr, pos, size) {
+        this.setChromosome(chromnr, true, false);
         if (size < 10) size = 10;
-        this.SetMark(pos - size / 2, pos + size / 2);
+        this.setMark(pos - size / 2, pos + size / 2);
         var winsize = size * 6;
         if (winsize < 60000) winsize = 60000;
-        this.SetPosition(pos, winsize);
+        this.setPosition(pos, winsize);
     }
 
     //This function returns a html snippet with a hyperlink that jumps to a region on the chromosome
-    that.CreateLinkToRegion = function (chromnr, pos, size, title) {
-        return DQX.DocEl.JavaScriptlink(title, "GlobalChromPlotterShowRegion('" + this.CanvasBaseID + "'," + chromnr + "," + pos + "," + size + ')').toString() + "&nbsp;";
+    that.createLinkToRegion = function (chromnr, pos, size, title) {
+        return DQX.DocEl.JavaScriptlink(title, "_globalChromPlotterShowRegion('" + this.CanvasBaseID + "'," + chromnr + "," + pos + "," + size + ')').toString() + "&nbsp;";
     }
 
     //internal: request gene list was succesful
-    that._AjaxResponse_FindGene = function (resp) {
-        var keylist = DQX.ParseResponse(resp); //unpack the response
+    that._ajaxResponse_FindGene = function (resp) {
+        var keylist = DQX.parseResponse(resp); //unpack the response
         if ("Error" in keylist) {
-            this.GetElement("GeneHits").html("Failed to fetch data");
+            this.getElement("GeneHits").html("Failed to fetch data");
             return;
         }
         var vallistdecoder = DQX.ValueListDecoder();
-        var genelist = vallistdecoder.Decode(keylist['Hits']);
-        var chromlist = vallistdecoder.Decode(keylist['Chroms']);
-        var startlist = vallistdecoder.Decode(keylist['Starts']);
-        var endlist = vallistdecoder.Decode(keylist['Ends']);
+        var genelist = vallistdecoder.doDecode(keylist['Hits']);
+        var chromlist = vallistdecoder.doDecode(keylist['Chroms']);
+        var startlist = vallistdecoder.doDecode(keylist['Starts']);
+        var endlist = vallistdecoder.doDecode(keylist['Ends']);
         if ((genelist.length > 0) && (genelist[0].length > 0)) {
             var rs = ""
             for (genenr in genelist) {
                 var winsize = endlist[genenr] - startlist[genenr];
                 //if (winsize < 10000) winsize = 10000;
-                rs += this.CreateLinkToRegion(chromlist[genenr], (startlist[genenr] + endlist[genenr]) / 2, winsize, genelist[genenr]) + " "
+                rs += this.createLinkToRegion(chromlist[genenr], (startlist[genenr] + endlist[genenr]) / 2, winsize, genelist[genenr]) + " "
             }
             if (genelist.length >= 6)
                 rs += " ...";
@@ -129,41 +131,41 @@ function ChromoPlotter(imyID, iconfig) {
         else {
             rs = "No hits found";
         }
-        this.GetElement("GeneHits").html(rs);
+        this.getElement("GeneHits").html(rs);
     }
 
     //internal: request gene list has failed
-    that._AjaxFailure_FindGene = function(resp) {
-        this.GetElement("GeneHits").html("Failed to fetch data");
+    that._ajaxFailure_FindGene = function(resp) {
+        this.getElement("GeneHits").html("Failed to fetch data");
     }
 
     //Internal: reacts on a change in the find gene edit box
-    that._OnChangeFindGene = function () {
-        var pattern = this.GetElement("FindGene").val();
+    that._onChangeFindGene = function () {
+        var pattern = this.getElement("FindGene").val();
         if (pattern.length == 0) {
-            this.GetElement("GeneHits").html("");
+            this.getElement("GeneHits").html("");
         }
         else {
-            var myurl = DQX.Url(this.ServerUrl);
-            myurl.AddQuery('datatype', 'findgene');
-            myurl.AddQuery('pattern', pattern);
-            myurl.AddQuery('table', this.config.annottablename);
-            myurl.AddQuery('chromnrfield', this.config.chromnrfield);
-            myurl.AddQuery('startfield', this.config.annotstartfield);
-            myurl.AddQuery('stopfield', this.config.annotstopfield);
-            myurl.AddQuery('namefield', this.config.annotnamefield);
+            var myurl = DQX.Url(this.serverUrl);
+            myurl.addUrlQueryItem('datatype', 'findgene');
+            myurl.addUrlQueryItem('pattern', pattern);
+            myurl.addUrlQueryItem('table', this.config.annottablename);
+            myurl.addUrlQueryItem('chromnrfield', this.config.chromnrfield);
+            myurl.addUrlQueryItem('startfield', this.config.annotstartfield);
+            myurl.addUrlQueryItem('stopfield', this.config.annotstopfield);
+            myurl.addUrlQueryItem('namefield', this.config.annotnamefield);
             if ("altpositionfindtablename" in this.config) {
-                myurl.AddQuery('alttablename', this.config.altpositionfindtablename);
-                myurl.AddQuery('altidfield', this.config.altpositionfindidfield);
-                myurl.AddQuery('altchromnrfield', this.config.altpositionfindchromnrfield);
-                myurl.AddQuery('altposfield', this.config.altpositionfindposfield);
+                myurl.addUrlQueryItem('alttablename', this.config.altpositionfindtablename);
+                myurl.addUrlQueryItem('altidfield', this.config.altpositionfindidfield);
+                myurl.addUrlQueryItem('altchromnrfield', this.config.altpositionfindchromnrfield);
+                myurl.addUrlQueryItem('altposfield', this.config.altpositionfindposfield);
             }
-            this.GetElement("GeneHits").html("Fetching data...");
+            this.getElement("GeneHits").html("Fetching data...");
 
             $.ajax({
                 url: myurl.toString(),
-                success: function (resp) { that._AjaxResponse_FindGene(resp); },
-                error: function (resp) { that._AjaxFailure_FindGene(resp); }
+                success: function (resp) { that._ajaxResponse_FindGene(resp); },
+                error: function (resp) { that._ajaxFailure_FindGene(resp); }
             });
 
         }
@@ -174,20 +176,20 @@ function ChromoPlotter(imyID, iconfig) {
     //######## Initialisation code ############
 
     that.myHScroller = DQX.HScrollBar(imyID + "HScroller");
-    that.CurrentChromoNr = 1;//we start with chromosome 1
+    that.currentChromoNr = 1;//we start with chromosome 1
 
     //Create the annotation channel and the scale channel
     that.annotationchannel = DQX.ChannelPlot.ChannelAnnotation(that);
-    that.AddDataFetcher(that.annotationchannel.theannotfetcher);
-    that.AddChannel(DQX.ChannelPlot.ChannelScale(that));
-    that.AddChannel(that.annotationchannel);
+    that.addDataFetcher(that.annotationchannel.theannotfetcher);
+    that.addChannel(DQX.ChannelPlot.ChannelScale(that));
+    that.addChannel(that.annotationchannel);
 
-    that.PairWithHScroller(that.myHScroller);
+    that.pairWithHScroller(that.myHScroller);
 
     //Initialises some event handlers
-    that.GetElement("ChromoPicker").change($.proxy(that._OnChangeChromosome, that));
-    that.GetElement("FindGene").keyup($.proxy(that._OnChangeFindGene, that));
-    that.GetElement("FindGene").bind('paste', function () { setTimeout($.proxy(that._OnChangeFindGene, that), 50) } );
+    that.getElement("ChromoPicker").change($.proxy(that._onChangeChromosome, that));
+    that.getElement("FindGene").keyup($.proxy(that._onChangeFindGene, that));
+    that.getElement("FindGene").bind('paste', function () { setTimeout($.proxy(that._onChangeFindGene, that), 50) } );
 
 
     return that;

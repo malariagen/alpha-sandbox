@@ -116,8 +116,8 @@ $(function () {
     //Global initialisation of utilities
     DQX.Init();
 
-    //theserverurl = "http://localhost:8000/app01";
-    theserverurl = "/sandbox/keposeda/app";
+    theserverurl = "http://localhost:8000/app01";
+    //theserverurl = "/sandbox/keposeda/app";
 
 
     //////////////////////////////////////////////////////////////////////////////////////////////
@@ -135,31 +135,33 @@ $(function () {
         $('#BrowserContainer').html(rs);
     }
 
-
     Build_SimpleQueryWins();
+
     elemTableWindowSimple = Build_TableWins('IDTableWinsSimple');
-    elemTableWindowSimple.myTable.FindColumn('pos').MakeHyperlink(OnTableClick_WinSimple, "javascript:void(0)");
+    elemTableWindowSimple.myTable.findColumn('pos').MakeHyperlink(OnTableClick_WinSimple, "javascript:void(0)");
     //Automatically run the default query at start (as set on the page html controls)
     UpdateQueryWinsSimple();
 
 
     Build_AdvancedQueryWins();
+
     elemTableWindowAdvanced = Build_TableWins('IDTableWinsAdvanced');
-    elemTableWindowAdvanced.myTable.FindColumn('pos').MakeHyperlink(OnTableClick_WinAdvanced, "javascript:void(0)");
+    elemTableWindowAdvanced.myTable.findColumn('pos').MakeHyperlink(OnTableClick_WinAdvanced, "javascript:void(0)");
     //we start by defining a query that returns nothing
-    elemTableWindowAdvanced.myTable.myDataFetcher.SetUserQuery(DQX.SQL.WhereClause.None());
-    elemTableWindowAdvanced.myTable.Render();
+    elemTableWindowAdvanced.myTable.myDataFetcher.setUserQuery(DQX.SQL.WhereClause.None());
+    elemTableWindowAdvanced.myTable.render();
     //make sure that changing the query builder invalidates the table result
     elemBuilderWindowAdvanced.myBuilder.notifyModified = $.proxy(elemTableWindowAdvanced.myTable.invalidate, elemTableWindowAdvanced.myTable);
 
 
 
     Build_AdvancedQuerySNPs();
+
     elemTableSNPAdvanced = Build_TableSNPs('IDTableSNPAdvanced');
-    elemTableSNPAdvanced.myTable.FindColumn('pos').MakeHyperlink(OnTableClick_SNPAdvanced, "javascript:void(0)");
+    elemTableSNPAdvanced.myTable.findColumn('pos').MakeHyperlink(OnTableClick_SNPAdvanced, "javascript:void(0)");
     //we start by defining a query that returns nothing
-    elemTableSNPAdvanced.myTable.myDataFetcher.SetUserQuery(DQX.SQL.WhereClause.None());
-    elemTableSNPAdvanced.myTable.Render();
+    elemTableSNPAdvanced.myTable.myDataFetcher.setUserQuery(DQX.SQL.WhereClause.None());
+    elemTableSNPAdvanced.myTable.render();
     //make sure that changing the query builder invalidates the table result
     elemBuilderSNPAdvanced.myBuilder.notifyModified = $.proxy(elemTableSNPAdvanced.myTable.invalidate, elemTableSNPAdvanced.myTable);
 

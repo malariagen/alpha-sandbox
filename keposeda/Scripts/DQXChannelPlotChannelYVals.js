@@ -11,12 +11,12 @@
 DQX.ChannelPlot.ChannelYValsComp = function (imyDataFetcher, iYID) {
     var that = {};
     that.myfetcher = imyDataFetcher; //DQX.DataFetcher.Curve used
-    that.YID = iYID; // column id
-    that.Active = false;
+    that.yID = iYID; // column id
+    that.isActive = false;
 
     //return the color used to draw this channel
-    that.GetColor = function () {
-        return this.myfetcher.Columns[this.YID].PlotHints.Color;
+    that.getColor = function () {
+        return this.myfetcher.myColumns[this.yID].myPlotHints.Color;
     }
     return that;
 }
@@ -30,159 +30,176 @@ DQX.ChannelPlot.ChannelYValsComp = function (imyDataFetcher, iYID) {
 
 DQX.ChannelPlot.ChannelYVals = function (imyPlot) {
     var that = DQX.ChannelPlot.Channel(imyPlot);
-    that.YMinVal = 0.0;
-    that.YMaxVal = 1.0;
-    that.Components = {}; //maps components ids to ChannelPlotChannelYValsComp objects
-    that.MinDrawZoomFactX = 0; //if the zoom factor drops below this point, the channel isn't drawn anymore
-    that.AllowToolTipsInCurrentView = true;
+    that.yMinVal = 0.0;
+    that.yMaxVal = 1.0;
+    that.myComponents = {}; //maps components ids to ChannelPlotChannelYValsComp objects
+    that.minDrawZoomFactX = 0; //if the zoom factor drops below this point, the channel isn't drawn anymore
+    that.allowToolTipsInCurrentView = true;
 
-    that.Draw = function (DrawInfo) {
-        var rangemin = this.YMinVal;
-        var rangemax = this.YMaxVal;
-        this.LastDrawInfo = DrawInfo;
+    //returns a list of all fetchers that are currently active in this plot (i.e. correspond to active components)
+    that.getActiveDataFetchers = function () {
+        var lst = [];
+        for (var compid in this.myComponents) {
+            if (this.myComponents[compid].isActive) {
+                var fetcher = this.myComponents[compid].myfetcher;
+                var found = false;
+                for (var i = 0; i < lst.length; i++)
+                    if (fetcher == lst[i])
+                        found = true;
+                if (!found)
+                    lst.push(fetcher);
+            }
+        }
+        return lst;
+    }
 
-        //Draw the left panel
-        this.DrawVertScale(DrawInfo, rangemin, rangemax);
-        this.DrawTitle(DrawInfo);
+
+    that.draw = function (drawInfo) {
+        var rangemin = this.yMinVal;
+        var rangemax = this.yMaxVal;
+        this.lastDrawInfo = drawInfo;
+
+        //draw the left panel
+        this.drawVertScale(drawInfo, rangemin, rangemax);
+        this.drawTitle(drawInfo);
 
         var hasdata = false;
-        for (var compid in this.Components)
-            if (this.Components[compid].Active)
+        for (var compid in this.myComponents)
+            if (this.myComponents[compid].isActive)
                 hasdata = true;
 
-        if (DrawInfo.ZoomFactX < this.MinDrawZoomFactX) {
+        if (drawInfo.zoomFactX < this.minDrawZoomFactX) {
             if (!hasdata)
-                this.DrawMessage(DrawInfo, "");
+                this.drawMessage(drawInfo, "");
             else
-                this.DrawMessage(DrawInfo, "Zoom in to see " + this.Title);
+                this.drawMessage(drawInfo, "Zoom in to see " + this.myTitle);
             return;
         }
         if (!hasdata) return;
 
 
-        DrawInfo.CenterContext.strokeStyle = "black";
-        this.PosMin = Math.round((-50 + DrawInfo.OffsetX) / DrawInfo.ZoomFactX);
-        this.PosMax = Math.round((DrawInfo.SizeX + 50 + DrawInfo.OffsetX) / DrawInfo.ZoomFactX);
+        drawInfo.centerContext.strokeStyle = "black";
+        this.PosMin = Math.round((-50 + drawInfo.offsetX) / drawInfo.zoomFactX);
+        this.PosMax = Math.round((drawInfo.sizeX + 50 + drawInfo.offsetX) / drawInfo.zoomFactX);
 
+        var fetcherlist = this.getActiveDataFetchers();
         var alldataready = true;
         var fetcherror = false;
-        for (var compid in this.Components) {
-            if (this.Components[compid].Active) {
-                if (!this.Components[compid].myfetcher.IsDataReady(this.PosMin, this.PosMax, false))
-                    alldataready = false;
-                if (this.Components[compid].myfetcher.FetchFailed)
-                    fetcherror = true;
-            }
+        for (var fetchnr = 0; fetchnr < fetcherlist.length; fetchnr++) {
+            if (!fetcherlist[fetchnr].IsDataReady(this.PosMin, this.PosMax, false))
+                alldataready = false;
+            if (fetcherlist[fetchnr].hasFetchFailed)
+                fetcherror = true;
         }
         if (!alldataready) {
-            DrawInfo.CenterContext.fillStyle = "rgb(0,192,0)";
-            DrawInfo.CenterContext.font = '25px sans-serif';
-            DrawInfo.CenterContext.textBaseline = 'bottom';
-            DrawInfo.CenterContext.textAlign = 'center';
-            DrawInfo.CenterContext.fillText("Fetching data...", DrawInfo.SizeX / 2, DrawInfo.PosY - DrawInfo.SizeY + 30);
+            drawInfo.centerContext.fillStyle = "rgb(0,192,0)";
+            drawInfo.centerContext.font = '25px sans-serif';
+            drawInfo.centerContext.textBaseline = 'bottom';
+            drawInfo.centerContext.textAlign = 'center';
+            drawInfo.centerContext.fillText("Fetching data...", drawInfo.sizeX / 2, drawInfo.PosY - drawInfo.sizeY + 30);
         }
         if (fetcherror) {
-            DrawInfo.CenterContext.fillStyle = "rgb(255,0,0)";
-            DrawInfo.CenterContext.font = '25px sans-serif';
-            DrawInfo.CenterContext.textBaseline = 'bottom';
-            DrawInfo.CenterContext.textAlign = 'center';
-            DrawInfo.CenterContext.fillText("Fetch failed!", DrawInfo.SizeX / 2, DrawInfo.PosY - DrawInfo.SizeY + 60);
+            drawInfo.centerContext.fillStyle = "rgb(255,0,0)";
+            drawInfo.centerContext.font = '25px sans-serif';
+            drawInfo.centerContext.textBaseline = 'bottom';
+            drawInfo.centerContext.textAlign = 'center';
+            drawInfo.centerContext.fillText("Fetch failed!", drawInfo.sizeX / 2, drawInfo.PosY - drawInfo.sizeY + 60);
         }
         var NrPointsDrawn = 0;
-        for (var compid in this.Components) {
-            var comp = this.Components[compid];
-            if (comp.Active) {
-                var points = comp.myfetcher.GetColumnPoints(this.PosMin, this.PosMax, comp.YID);
-                var xvals = points.XVals;
+        for (var compid in this.myComponents) {
+            var comp = this.myComponents[compid];
+            if (comp.isActive) {
+                var points = comp.myfetcher.getColumnPoints(this.PosMin, this.PosMax, comp.yID);
+                var xvals = points.xVals;
                 var yvals = points.YVals;
                 var psz = 3;
                 if (xvals.length > 10000) psz = 2;
                 NrPointsDrawn += xvals.length;
-                var plothints = comp.myfetcher.GetColumnPlotHints(comp.YID);
-                var HasYFunction = "YFunction" in comp;
+                var plothints = comp.myfetcher.getColumnPlotHints(comp.yID);
+                var hasYFunction = "YFunction" in comp;
 
-                if (plothints.DrawLines) {//draw connecting lines
-                    DrawInfo.CenterContext.strokeStyle = comp.myfetcher.GetColumnColor(comp.YID);
-                    DrawInfo.CenterContext.globalAlpha = 0.4;
-                    DrawInfo.CenterContext.beginPath();
+                if (plothints.drawLines) {//draw connecting lines
+                    drawInfo.centerContext.strokeStyle = comp.myfetcher.getColumnColor(comp.yID);
+                    drawInfo.centerContext.globalAlpha = 0.4;
+                    drawInfo.centerContext.beginPath();
                     var thefirst = true;
-                    var maxlinedist = comp.myfetcher.GetColumnPlotHints(comp.YID).MaxLineDist;
+                    var maxlinedist = comp.myfetcher.getColumnPlotHints(comp.yID).maxLineDist;
                     for (i = 0; i < xvals.length; i++) {
                         if (yvals[i] != null) {
                             var x = xvals[i];
                             var y = yvals[i];
-                            if (HasYFunction)
+                            if (hasYFunction)
                                 y = comp.YFunction(y);
-                            var psx = x * DrawInfo.ZoomFactX - DrawInfo.OffsetX;
-                            psy = DrawInfo.PosY - DrawInfo.SizeY * 0.1 - (y - rangemin) / (rangemax - rangemin) * DrawInfo.SizeY * 0.8;
+                            var psx = x * drawInfo.zoomFactX - drawInfo.offsetX;
+                            psy = drawInfo.PosY - drawInfo.sizeY * 0.1 - (y - rangemin) / (rangemax - rangemin) * drawInfo.sizeY * 0.8;
                             if ((!thefirst) && (x - xlast > maxlinedist))
                                 thefirst = true;
-                            if (thefirst) DrawInfo.CenterContext.moveTo(psx, psy);
-                            else DrawInfo.CenterContext.lineTo(psx, psy);
+                            if (thefirst) drawInfo.centerContext.moveTo(psx, psy);
+                            else drawInfo.centerContext.lineTo(psx, psy);
                             thefirst = false;
                             var xlast = x;
                         }
                     }
-                    DrawInfo.CenterContext.stroke();
-                    DrawInfo.CenterContext.globalAlpha = 1.0;
+                    drawInfo.centerContext.stroke();
+                    drawInfo.centerContext.globalAlpha = 1.0;
                 }
 
-                if (true) {//Draw points
-                    DrawInfo.CenterContext.fillStyle = comp.myfetcher.GetColumnColor(comp.YID);
+                if (true) {//draw points
+                    drawInfo.centerContext.fillStyle = comp.myfetcher.getColumnColor(comp.yID);
                     for (i = 0; i < xvals.length; i++) {
                         if (yvals[i] != null) {
                             var x = xvals[i];
                             var y = yvals[i];
-                            if (HasYFunction)
+                            if (hasYFunction)
                                 y = comp.YFunction(y);
-                            var psx = x * DrawInfo.ZoomFactX - DrawInfo.OffsetX;
-                            var psy = DrawInfo.PosY - DrawInfo.SizeY * 0.1 - (y - rangemin) / (rangemax - rangemin) * DrawInfo.SizeY * 0.8;
-                            if ((!DrawInfo.MarkPresent) || (x < DrawInfo.MarkPos1) || (x > DrawInfo.MarkPos2))
-                                DrawInfo.CenterContext.fillRect(Math.round(psx) - 1, Math.round(psy) - 1, psz, psz);
+                            var psx = x * drawInfo.zoomFactX - drawInfo.offsetX;
+                            var psy = drawInfo.PosY - drawInfo.sizeY * 0.1 - (y - rangemin) / (rangemax - rangemin) * drawInfo.sizeY * 0.8;
+                            if ((!drawInfo._markPresent) || (x < drawInfo._markPos1) || (x > drawInfo._markPos2))
+                                drawInfo.centerContext.fillRect(Math.round(psx) - 1, Math.round(psy) - 1, psz, psz);
                             else
-                                DrawInfo.CenterContext.fillarc(Math.round(psx), Math.round(psy), 3, 0, Math.PI * 2, true);
+                                drawInfo.centerContext.fillarc(Math.round(psx), Math.round(psy), 3, 0, Math.PI * 2, true);
                         }
                     }
                 }
 
             }
         }
-        this.AllowToolTipsInCurrentView = NrPointsDrawn < 5000;
+        this.allowToolTipsInCurrentView = NrPointsDrawn < 5000;
     }
 
     //returns information about the point closest to a screen position, or null if nothing is sufficiently close
-    that.GetPointAtScreenPos = function (xp, yp) {
-        if (!("LastDrawInfo" in this))
+    that.getPointAtScreenPos = function (xp, yp) {
+        if (!("lastDrawInfo" in this))
             return null;
-        if (this.LastDrawInfo.ZoomFactX < this.MinDrawZoomFactX)
+        if (this.lastDrawInfo.zoomFactX < this.minDrawZoomFactX)
             return null;
-        var rangemin = this.YMinVal;
-        var rangemax = this.YMaxVal;
+        var rangemin = this.yMinVal;
+        var rangemax = this.yMaxVal;
 
         var mindst = 12;
         var theresponse = null;
-        for (var compid in this.Components) {
-            var comp = this.Components[compid];
-            if (comp.Active) {
-                var HasYFunction = "YFunction" in comp;
-                var points = comp.myfetcher.GetColumnPoints(this.PosMin, this.PosMax, comp.YID);
-                var xvals = points.XVals;
+        for (var compid in this.myComponents) {
+            var comp = this.myComponents[compid];
+            if (comp.isActive) {
+                var hasYFunction = "YFunction" in comp;
+                var points = comp.myfetcher.getColumnPoints(this.PosMin, this.PosMax, comp.yID);
+                var xvals = points.xVals;
                 var yvals = points.YVals;
                 for (i = 0; i < xvals.length; i++) {
                     if (yvals[i] != null) {
                         var x = xvals[i];
                         var y = yvals[i];
-                        if (HasYFunction)
+                        if (hasYFunction)
                             y = comp.YFunction(y);
-                        var psx = Math.round(x * this.LastDrawInfo.ZoomFactX - this.LastDrawInfo.OffsetX);
-                        var psy = Math.round(/*this.LastDrawInfo.PosY -*/this.LastDrawInfo.SizeY * 0.1 + (y - rangemin) / (rangemax - rangemin) * this.LastDrawInfo.SizeY * 0.8);
+                        var psx = Math.round(x * this.lastDrawInfo.zoomFactX - this.lastDrawInfo.offsetX);
+                        var psy = Math.round(/*this.lastDrawInfo.PosY -*/this.lastDrawInfo.sizeY * 0.1 + (y - rangemin) / (rangemax - rangemin) * this.lastDrawInfo.sizeY * 0.8);
                         var dst = Math.abs(psx - xp) + Math.abs(psy - yp);
                         if (dst < mindst) {
                             mindst = dst;
                             theresponse = {};
                             theresponse.DataFetcher = comp.myfetcher;
-                            theresponse.DownloadIndex = points.StartIndex + i;
-                            theresponse.CompID = comp.YID;
+                            theresponse.DownloadIndex = points.startIndex + i;
+                            theresponse.CompID = comp.yID;
                             theresponse.PosX = psx;
                             theresponse.PosY = psy;
                         }
@@ -195,63 +212,63 @@ DQX.ChannelPlot.ChannelYVals = function (imyPlot) {
 
 
     //returns the tooptip at a specific point in screen coordinates (null if none)
-    that.GetToolTipInfo = function (xp, yp) {
+    that.getToolTipInfo = function (xp, yp) {
         if (!("GenerateToolTipInfo" in this))
             return null;
-        if (!this.AllowToolTipsInCurrentView)
+        if (!this.allowToolTipsInCurrentView)
             return null;
-        var pointinfo = this.GetPointAtScreenPos(xp, yp);
+        var pointinfo = this.getPointAtScreenPos(xp, yp);
         var thetip = null;
         if (pointinfo != null) {
             var thetip = {};
             thetip.xp = pointinfo.PosX;
             thetip.yp = pointinfo.PosY;
-            thetip.lines = this.GenerateToolTipInfo(pointinfo.DataFetcher, pointinfo.DownloadIndex, pointinfo.CompID); //todo: use same object as in OnClick
+            thetip.lines = this.GenerateToolTipInfo(pointinfo.DataFetcher, pointinfo.DownloadIndex, pointinfo.CompID); //todo: use same object as in onClick
         }
         return thetip;
     }
 
-    that.OnClick = function (xp, yp) {
-        var pointinfo = this.GetPointAtScreenPos(xp, yp);
+    that.onClick = function (xp, yp) {
+        var pointinfo = this.getPointAtScreenPos(xp, yp);
         if (pointinfo != null) {
-            if ("OnPointClickEvent" in this)
-                this.OnPointClickEvent(pointinfo);
+            if ("onPointClickEvent" in this)
+                this.onPointClickEvent(pointinfo);
         }
     }
 
 
 
     //add a nw component to the plot
-    that.AddComponent = function (icomp) {
-        this.Components[icomp.YID] = icomp;
+    that.addComponent = function (icomp) {
+        this.myComponents[icomp.yID] = icomp;
         return icomp;
     }
 
     //response function that handles a click on a component visibility checkbox
-    that.OnCompClick = function (event) {
+    that.onCompClick = function (event) {
         var checkid = event.target.id;
         var id = checkid.split("CompCheck_")[1];
         var chk = $('#' + checkid).attr('checked');
-        this.ModifyComponentActiveStatus(id, chk);
+        this.modifyComponentActiveStatus(id, chk, true);
     }
 
-    //internal
-    that.ModifyComponentActiveStatus = function (cmpid, newstatus) {
-        if (this.Components[cmpid].Active == newstatus) return;
-        this.Components[cmpid].Active = newstatus;
+    that.modifyComponentActiveStatus = function (cmpid, newstatus, redraw) {
+        if (this.myComponents[cmpid].isActive == newstatus) return;
+        this.myComponents[cmpid].isActive = newstatus;
         if (newstatus)
-            this.Components[cmpid].myfetcher.ColumnActivate(cmpid);
+            this.myComponents[cmpid].myfetcher.activateFetchColumn(cmpid);
         else
-            this.Components[cmpid].myfetcher.ColumnDesActivate(cmpid);
-        this.myPlot.Draw();
+            this.myComponents[cmpid].myfetcher.deactivateFetchColumn(cmpid);
+        if (redraw)
+            this.myPlot.draw();
     }
 
 
     //A convenience function:
     //This function automatically generates the html elements inside a div that allow the user to control the visibility of the components
-    that.CreateActiveComponentsController = function (divid, colcount) {
+    that.createActiveComponentsController = function (divid, colcount) {
         var compkeys = []
-        for (var compkey in this.Components)
+        for (var compkey in this.myComponents)
             compkeys.push(compkey);
         rs = "<table>";
         for (var rownr = 0; rownr < compkeys.length / colcount; rownr++) {
@@ -261,11 +278,11 @@ DQX.ChannelPlot.ChannelYVals = function (imyPlot) {
                 var compnr = rownr * colcount + colnr;
                 if (compnr < compkeys.length) {
                     var yid = compkeys[compnr];
-                    var comp = this.Components[yid];
+                    var comp = this.myComponents[yid];
                     var checkid = "CompCheck_" + yid;
                     //                    rs += "<div>";
                     rs += '<input type="checkbox" id="' + checkid + '" name="' + checkid + '" value="' + checkid + '"/>';
-                    rs += '<span style="background:' + comp.GetColor() + ';">&nbsp;&nbsp;&nbsp;</span>&nbsp;';
+                    rs += '<span style="background:' + comp.getColor() + ';">&nbsp;&nbsp;&nbsp;</span>&nbsp;';
                     rs += yid;
                     //                    rs += "</div>";
                 }
@@ -277,10 +294,10 @@ DQX.ChannelPlot.ChannelYVals = function (imyPlot) {
 
         $("#" + divid).html(rs);
 
-        for (var compkey in this.Components) {
-            var yid = this.Components[compkey].YID;
+        for (var compkey in this.myComponents) {
+            var yid = this.myComponents[compkey].yID;
             var checkid = "CompCheck_" + yid;
-            $("#" + checkid).click($.proxy(that.OnCompClick, that));
+            $("#" + checkid).click($.proxy(that.onCompClick, that));
         }
 
     }

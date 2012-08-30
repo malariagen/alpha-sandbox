@@ -11,8 +11,11 @@ body
 	color:#000000;
 	font-size:9pt;
 	font-family: Verdana, Arial, Helvetica, sans-serif;
-    margin: 30px;
-    margin-bottom:20px;
+    margin-left: 30px;
+    margin-right: 30px;
+    margin-top:0px;
+    margin-bottom:0px;
+/*    margin-bottom:20px;*/
 	height:100%;
 }
 
@@ -54,7 +57,7 @@ body
     border-style: solid;
     border-collapse:collapse;
     border-color: rgb(60,60,60);
-    width:100%;
+ /*   width:100%;*/
 }
 
 .DQXQueryTable th
@@ -375,3 +378,14 @@ body
     -ms-filter: "progid:DXImageTransform.Microsoft.Shadow(Strength=4, Direction=135, Color='#000000')";
     filter: progid:DXImageTransform.Microsoft.Shadow(Strength=4, Direction=135, Color='#000000');
 }
+
+
+/* SVG elements */
+
+.piepart 
+{
+    stroke:black; 
+    stroke-width:1;
+    fill-opacity: 0.5;
+}
+

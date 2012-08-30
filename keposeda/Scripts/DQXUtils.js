@@ -20,7 +20,7 @@ String.prototype.DQXformat = function (args) {
 
 
 //A helper function that can be called to throw an error if an object does not have a specific member
-DQX.AssertPresence = function (obj, memb) {
+DQX.assertPresence = function (obj, memb) {
     if (!(memb in obj))
         throw "Expected member '" + memb + "'";
 }
@@ -35,36 +35,39 @@ DQX.random = function() {
 }
 
 
-DQX.ParseResponse = function(resp) {
+DQX.parseResponse = function(resp) {
     lst = JSON.parse(resp);
     return lst;
 }
 
 
-DQX.CurrentProcessingID = null;
+DQX._currentProcessingID = null;
 
-DQX.SetProcessing = function(msg) {
-    DQX.CurrentProcessingID=DQX.CreateFloatBox(msg, "");
+//Draws a message on the screen indicating that some processing is being done
+DQX.setProcessing = function(msg) {
+    DQX._currentProcessingID=DQX.CreateFloatBox(msg, "");
 }
 
-DQX.StopProcessing = function() {
-    if (DQX.CurrentProcessingID!=null)
-        $("#" + DQX.CurrentProcessingID).remove();
-    DQX.CurrentProcessingID = null;
+//Removes the processing message
+DQX.stopProcessing = function () {
+    if (DQX._currentProcessingID!=null)
+        $("#" + DQX._currentProcessingID).remove();
+    DQX._currentProcessingID = null;
 }
 
-
-DQX.CreateFailFunction = function(msg) {
+//Creates a function that reports a failire
+DQX.createFailFunction = function(msg) {
     return function () { alert(msg); };
 }
 
-//Encapsulates the creation of an url with query strings
+//A class that encapsulates the creation of an url with query strings
 DQX.Url = function (iname) {
     var that = {};
     that.name = iname;
     that.queryitems = []
 
-    that.AddQuery = function (iname, icontent) {
+    //add a query item to the url
+    that.addUrlQueryItem = function (iname, icontent) {
         this.queryitems.push({ name: iname, content: icontent });
     }
 
@@ -95,23 +98,25 @@ DQX.Color = function (r, g, b, a) {
     that.a = (typeof a == 'undefined') ? 1 : a;
     that.f = 1.0;
 
-    that.GetR = function () { return this.r / this.f; }
-    that.GetG = function () { return this.g / this.f; }
-    that.GetB = function () { return this.b / this.f; }
-    that.GetA = function () { return this.a / this.f; }
+    that.getR = function () { return this.r / this.f; }
+    that.getG = function () { return this.g / this.f; }
+    that.getB = function () { return this.b / this.f; }
+    that.getA = function () { return this.a / this.f; }
 
     that.toString = function () {
         if (this.a > 0.999)
-            return 'rgb(' + Math.round(this.GetR() * 255) + ',' + Math.round(this.GetG() * 255) + ',' + Math.round(this.GetB() * 255) + ')';
+            return 'rgb(' + Math.round(this.getR() * 255) + ',' + Math.round(this.getG() * 255) + ',' + Math.round(this.getB() * 255) + ')';
         else
-            return 'rgb(' + this.GetR().toFixed(3) + ',' + this.GetG().toFixed(3) + ',' + this.GetB().toFixed(3) + ',' + this.GetA().toFixed(3) + ')';
+            return 'rgb(' + this.getR().toFixed(3) + ',' + this.getG().toFixed(3) + ',' + this.getB().toFixed(3) + ',' + this.getA().toFixed(3) + ')';
     }
 
+    //Returns a darkened version of the color, amount between 0 and 1
     that.darken = function (amount) {
         var fc = 1.0 - amount;
         return DQX.Color(fc * this.r, fc * this.g, fc * this.b, this.a);
     }
 
+    //Returns a lightened version of the color, amount between 0 and 1
     that.lighten = function (amount) {
         var fc = amount;
         return DQX.Color((1-fc) * this.r + fc, (1-fc) * this.g + fc, (1-fc) * this.b + fc, this.a);
@@ -120,7 +125,8 @@ DQX.Color = function (r, g, b, a) {
     return that;
 }
 
-DQX.ParseColor = function (colorstring, faildefault) {
+//converts a html color string to a DQX.Color
+DQX.parseColorString = function (colorstring, faildefault) {
     var parts = colorstring.match(/^rgb\((\d+),\s*(\d+),\s*(\d+)\)$/);
     if ((parts) && (parts.length >= 2) && (parts[1].length > 0) && (parts[2].length > 0) && (parts[3].length > 0))
         return DQX.Color(parseFloat(parts[1]) / 255.0, parseFloat(parts[2]) / 255.0, parseFloat(parts[3]) / 255.0);
@@ -142,13 +148,15 @@ DQX.ObjectMapper.Add = function (obj) {
     obj._MapIdx = DQX.ObjectMapper._idx;
     DQX.ObjectMapper._idx++;
 }
-DQX.ObjectMapper.Get = function (idx) {
+DQX.ObjectMapper.get = function (idx) {
     return DQX.ObjectMapper.Objects[idx];
 }
 
 //Use this function to generate a html-compatible function call string that calls a function in an object instance
 DQX.ObjectMapper.CreateCallBackFunctionString = function (obj, functionname, arg) {
-    var rs = "DQX.ObjectMapper.Get(" + obj._MapIdx + ")." + functionname + "(" + arg.toString() + ")";
+    if (!('_MapIdx' in obj))
+        throw "Object was not added to DQX.ObjectMapper";
+    var rs = "DQX.ObjectMapper.get(" + obj._MapIdx + ")." + functionname + "(" + arg.toString() + ")";
     return rs;
 }
 
@@ -158,12 +166,15 @@ DQX.ObjectMapper.CreateCallBackFunctionString = function (obj, functionname, arg
 
 
 //Use this to get screen mouse positions at any moment
-DQX.MousePosX = 0;
-DQX.MousePosY = 0;
+DQX.mousePosX = 0;
+DQX.mousePosY = 0;
+
+DQX._mouseEventReceiverList = [];
 
 
-
-DQX.MouseEventReceiverList = [];
+/////////////////////////////////////////////////////////////////////////////////////
+// The global DQX startup function
+/////////////////////////////////////////////////////////////////////////////////////
 
 DQX.Init = function () {
 
@@ -171,43 +182,28 @@ DQX.Init = function () {
         timeout:DQX.timeoutAjax
     });
 
-    $(document).mouseup(DQX.HandleMouseUp);
-    $(document).mousemove(DQX.HandleMouseMove);
+    $(document).mouseup(DQX._handleMouseUp);
+    $(document).mousemove(DQX._handleMouseMove);
     $(document).mousemove(function (e) {
-        DQX.MousePosX = e.pageX; DQX.MousePosY = e.pageY;
+        DQX.mousePosX = e.pageX; DQX.mousePosY = e.pageY;
     });
+
+    $(document).keydown(DQX._handleKeyDown);
 }
 
-
+//Show a help box corresponding to a help id item in the DOM
 DQX.showHelp = function (id) {
     if ($('#' + id).length == 0) throw "Broken help link " + id;
     var helpcontent = $('#' + id).html();
     DQX.CreateFloatBox("Help", helpcontent, "Help");
 }
 
-DQX.updateURL = function(currUrl, param, paramVal) {
-    var url = currUrl
-    var newAdditionalURL = "";
-    var tempArray = url.split("?");
-    var baseURL = tempArray[0];
-    var aditionalURL = tempArray[1];
-    var temp = "";
-    if (aditionalURL) {
-        var tempArray = aditionalURL.split("&");
-        for (i = 0; i < tempArray.length; i++) {
-            if (tempArray[i].split('=')[0] != param) {
-                newAdditionalURL += temp + tempArray[i];
-                temp = "&";
-            }
-        }
-    }
-    var rows_txt = temp + "" + param + "=" + paramVal;
-    var finalURL = baseURL + "?" + newAdditionalURL + rows_txt;
-    return finalURL;
-}
 
 
+/////////////////////////////////////////////////////////////////////////////////////
 //This function should be called *after* the creation of all initial dynamic html
+/////////////////////////////////////////////////////////////////////////////////////
+
 DQX.initPostCreate = function () {
 
     // Initialise functionality for tabbed environments
@@ -249,52 +245,82 @@ DQX.initPostCreate = function () {
 
 }
 
-DQX.AddMouseEventReceiver = function (obj) {
-   this.MouseEventReceiverList.push(obj);
+DQX._keyReceivers = {};
+
+DQX._handleKeyDown = function (ev) {
+    for (var id in DQX._keyReceivers)
+        if (DQX._keyReceivers[id])
+            if (DQX._keyReceivers[id](ev)) {
+                return false;
+            }
+}
+
+DQX.setKeyDownReceiver = function (elemID, fn) {
+    var theElem = elemID;
+    $('#' + elemID).mouseover(function (ev) {
+        DQX._registerKeyReceiver(theElem, fn); 
+    });
+    $('#' + elemID).mouseout(function (ev) {
+        DQX._unregisterKeyReceiver(theElem);
+    });
+}
+
+DQX._registerKeyReceiver = function(theElem, fn) {
+    DQX._keyReceivers[theElem] = fn;
+}
+
+DQX._unregisterKeyReceiver = function (theElem) {
+    delete DQX._keyReceivers[theElem];
+} 
+
+
+
+DQX.addMouseEventReceiver = function (obj) {
+   this._mouseEventReceiverList.push(obj);
 }
 
 
 
 
-DQX.HandleMouseUp = function(ev) {
-    for (var i in DQX.MouseEventReceiverList) {
-        if (DQX.MouseEventReceiverList[i]._mousedown) {
-            DQX.MouseEventReceiverList[i].OnMouseUp(ev);
-            DQX.MouseEventReceiverList[i]._mousedown = false;
+DQX._handleMouseUp = function(ev) {
+    for (var i in DQX._mouseEventReceiverList) {
+        if (DQX._mouseEventReceiverList[i]._mousedown) {
+            DQX._mouseEventReceiverList[i]._onMouseUp(ev);
+            DQX._mouseEventReceiverList[i]._mousedown = false;
         }
     }
 }
 
 
-DQX.FindMouseEventReceiver = function(iCanvasID) {
-    for (var i in DQX.MouseEventReceiverList)
-        if (DQX.MouseEventReceiverList[i].CanvasID == iCanvasID)
-            return DQX.MouseEventReceiverList[i];
+DQX._findMouseEventReceiver = function(iCanvasID) {
+    for (var i in DQX._mouseEventReceiverList)
+        if (DQX._mouseEventReceiverList[i].myCanvasID == iCanvasID)
+            return DQX._mouseEventReceiverList[i];
     return null;
 }
 
 
-DQX.LastMouseHoverTarget = null;
+DQX._lastMouseHoverTarget = null;
 
 
-DQX.HandleMouseMove = function(ev) {
+DQX._handleMouseMove = function(ev) {
     //first try and see if this is a mousedown event
-    for (var i in DQX.MouseEventReceiverList) {
-        if (DQX.MouseEventReceiverList[i]._mousedown) {
-            DQX.MouseEventReceiverList[i].OnMouseMove(ev);
+    for (var i in DQX._mouseEventReceiverList) {
+        if (DQX._mouseEventReceiverList[i]._mousedown) {
+            DQX._mouseEventReceiverList[i]._onMouseMove(ev);
             return;
         }
     }
     //if not, handle as a mouse hover event
-    var thetarget = DQX.FindMouseEventReceiver(ev.target.id);
+    var thetarget = DQX._findMouseEventReceiver(ev.target.id);
     if (thetarget != null) {
-        thetarget.OnMouseHover(ev);
-        DQX.LastMouseHoverTarget = thetarget;
+        thetarget._onMouseHover(ev);
+        DQX._lastMouseHoverTarget = thetarget;
     }
     else {
-        if (DQX.LastMouseHoverTarget != null)
-            DQX.LastMouseHoverTarget.OnLeaveMouse(ev);
-        DQX.LastMouseHoverTarget = null;
+        if (DQX._lastMouseHoverTarget != null)
+            DQX._lastMouseHoverTarget.onLeaveMouse(ev);
+        DQX._lastMouseHoverTarget = null;
     }
 }
 
@@ -305,38 +331,40 @@ DQX.HandleMouseMove = function(ev) {
 // It provides some basic functionality
 //////////////////////////////////////////////////////////////////////////////////
 
-DQX.CanvasElement = function (iCanvasID) {
+DQX.myCanvasElement = function (iCanvasID) {
     var that = {};
-    that.CanvasID = iCanvasID;
-    that.CanvasElement = $("#" + iCanvasID + "")[0];
+    that.myCanvasID = iCanvasID;
+    that.myCanvasElement = $("#" + iCanvasID + "")[0];
 
-
-    that.RegisterHandlers = function (el) {
-        DQX.AddMouseEventReceiver(this);
-        $(el).mousedown($.proxy(this._OnMouseDown, this));
+    //Call this function to register the required handlers for this element
+    that.registerHandlers = function (el) {
+        DQX.addMouseEventReceiver(this);
+        $(el).mousedown($.proxy(this._handleOnMouseDown, this));
     }
 
-    that._OnMouseDown = function (ev) {
+    that._handleOnMouseDown = function (ev) {
         this._mousedown = true;
-        this.OnMouseDown(ev);
+        this._onMouseDown(ev);
         ev.returnValue = false;
         return false;
 
     }
 
-    that.GetEventPosX = function (ev) {
-        return ev.pageX - $(this.CanvasElement).offset().left;
+    //From an event with position information, returns the X position relative to the canvas
+    that.getEventPosX = function (ev) {
+        return ev.pageX - $(this.myCanvasElement).offset().left;
     }
 
-    that.GetEventPosY = function (ev) {
-        return ev.pageY - $(this.CanvasElement).offset().top;
+    //From an event with position information, returns the Y position relative to the canvas
+    that.getEventPosY = function (ev) {
+        return ev.pageY - $(this.myCanvasElement).offset().top;
     }
 
-    that.OnMouseHover = function (ev) { } //you can override this
-    that.OnLeaveMouse = function (ev) { } //you can override this
-    that.OnMouseDown = function (ev) { } //you can override this
-    that.OnMouseUp = function (ev) { } //you can override this
-    that.OnMouseMove = function (ev) { } //you can override this
+    that._onMouseHover = function (ev) { } //you can override this
+    that.onLeaveMouse = function (ev) { } //you can override this
+    that._onMouseDown = function (ev) { } //Called when the mouse is pressed down (you can override this)
+    that._onMouseUp = function (ev) { } //Called when the mouse is released (you can override this)
+    that._onMouseMove = function (ev) { } //Called when the mouse is moved *while pressed down* (you can override this)
 
     return that;
 }
@@ -349,7 +377,7 @@ DQX.CanvasElement = function (iCanvasID) {
 
 
 // Produces a minor/major scale tick set that matches the desired minor jump distance as close as possible
-DQX.DrawUtil.GetScaleJump = function(DesiredJump1) {
+DQX.DrawUtil.getScaleJump = function(DesiredJump1) {
     var JumpPrototypes = [{ Jump1: 1, JumpReduc: 5 }, { Jump1: 2, JumpReduc: 5 }, { Jump1: 5, JumpReduc: 4}];
     var mindist = 1.0e99;
     var bestjump;
@@ -370,19 +398,19 @@ DQX.DrawUtil.GetScaleJump = function(DesiredJump1) {
 }
 
 //Draws a tooltip in a canvas drawing context
-DQX.DrawUtil.DrawChannelToolTip = function(context, ToolTipInfo) {
-    var xp = ToolTipInfo.xp + 0.5;
-    var yp = ToolTipInfo.yp + 1 + 0.5;
+DQX.DrawUtil.DrawChannelToolTip = function(context, _toolTipInfo) {
+    var xp = _toolTipInfo.xp + 0.5;
+    var yp = _toolTipInfo.yp + 1 + 0.5;
 
     //Determine x size
     context.font = 'bold 12px sans-serif';
     context.textBaseline = 'top';
     context.textAlign = 'left';
     var xlen = 10;
-    for (var linenr in ToolTipInfo.lines)
-        xlen = Math.max(xlen, context.measureText(ToolTipInfo.lines[linenr].Text).width);
+    for (var linenr in _toolTipInfo.lines)
+        xlen = Math.max(xlen, context.measureText(_toolTipInfo.lines[linenr].Text).width);
     xlen += 2;
-    var ylen = ToolTipInfo.lines.length * 16 + 6;
+    var ylen = _toolTipInfo.lines.length * 16 + 6;
 
     var dff = 20;
     context.globalAlpha = 1;
@@ -410,8 +438,8 @@ DQX.DrawUtil.DrawChannelToolTip = function(context, ToolTipInfo) {
 
 
 
-    for (var linenr in ToolTipInfo.lines) {
-        var line = ToolTipInfo.lines[linenr];
+    for (var linenr in _toolTipInfo.lines) {
+        var line = _toolTipInfo.lines[linenr];
         context.fillStyle = line.Color;
         context.fillText(line.Text, xp - 3, yp + dff + 3 + linenr * 16);
     }
@@ -455,16 +483,16 @@ DQX.CloseFloatBox = function(index) {
 DQX._tabIndex = 0;
 
 
-DQX.CreateFloatBox = function (Title, Body, classExtension) {
+DQX.CreateFloatBox = function (iTitle, iBody, iClassExtension) {
 
-    if (typeof classExtension == 'undefined') classExtension = '';
+    if (typeof iClassExtension == 'undefined') iClassExtension = '';
 
     if ($('#DQXFloatBoxHolder').length == 0)
         throw "Document should have a div DQXFloatBoxHolder";
 
     //we create the float box close to the current cursor
-    var posx = DQX.MousePosX + 10;
-    var posy = DQX.MousePosY + 10;
+    var posx = DQX.mousePosX + 10;
+    var posy = DQX.mousePosY + 10;
 
     posx = Math.min(posx, $(window).width()-400);
     posy = Math.min(posy, $(window).height() - 100);
@@ -473,18 +501,18 @@ DQX.CreateFloatBox = function (Title, Body, classExtension) {
     DQX._tabIndex++;
     var ID = "DQXFlt" + DQX._tabIndex;
     var thebox = DQX.DocEl.Div({ id: ID });
-    thebox.setCssClass("DQXFloatBox" + (classExtension.length > 0 ? (" DQXFloatBox" + classExtension) : ""));
+    thebox.setCssClass("DQXFloatBox" + (iClassExtension.length > 0 ? (" DQXFloatBox" + iClassExtension) : ""));
     thebox.addStyle("position", "absolute");
     thebox.addStyle("left", posx + 'px');
     thebox.addStyle("top", posy + 'px');
 
     var theheader = DQX.DocEl.Div({ id: ID + 'Handler', parent: thebox });
-    theheader.setCssClass("DQXFloatBoxHeader" + (classExtension.length > 0 ? (" DQXFloatBoxHeader" + classExtension) : ""));
-    theheader.addElem(Title);
+    theheader.setCssClass("DQXFloatBoxHeader" + (iClassExtension.length > 0 ? (" DQXFloatBoxHeader" + iClassExtension) : ""));
+    theheader.addElem(iTitle);
 
     var thebody = DQX.DocEl.Div({ parent: thebox });
-    thebody.setCssClass("DQXFloatBoxContent" + (classExtension.length > 0 ? (" DQXFloatBoxContent" + classExtension) : ""));
-    thebody.addElem(Body);
+    thebody.setCssClass("DQXFloatBoxContent" + (iClassExtension.length > 0 ? (" DQXFloatBoxContent" + iClassExtension) : ""));
+    thebody.addElem(iBody);
 
     var thecloser = DQX.DocEl.JavaScriptBitmaplink("Bitmaps/close.png", "Close", "DQX.CloseFloatBox('" + ID + "')");
     thebox.addElem(thecloser);

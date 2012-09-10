@@ -146,20 +146,23 @@ DQX.ChannelPlot.ChannelYVals = function (imyPlot) {
 
                 if (true) {//draw points
                     drawInfo.centerContext.fillStyle = comp.myfetcher.getColumnColor(comp.yID);
+                    drawInfo.centerContext.strokeStyle = comp.myfetcher.getColumnColor(comp.yID);
+                    drawInfo.centerContext.beginPath();
                     for (i = 0; i < xvals.length; i++) {
                         if (yvals[i] != null) {
                             var x = xvals[i];
                             var y = yvals[i];
                             if (hasYFunction)
                                 y = comp.YFunction(y);
-                            var psx = x * drawInfo.zoomFactX - drawInfo.offsetX;
-                            var psy = drawInfo.PosY - drawInfo.sizeY * 0.1 - (y - rangemin) / (rangemax - rangemin) * drawInfo.sizeY * 0.8;
-                            if ((!drawInfo._markPresent) || (x < drawInfo._markPos1) || (x > drawInfo._markPos2))
-                                drawInfo.centerContext.fillRect(Math.round(psx) - 1, Math.round(psy) - 1, psz, psz);
-                            else
-                                drawInfo.centerContext.fillarc(Math.round(psx), Math.round(psy), 3, 0, Math.PI * 2, true);
+                            var psx = Math.round(x * drawInfo.zoomFactX - drawInfo.offsetX);
+                            var psy = Math.round(drawInfo.PosY - drawInfo.sizeY * 0.1 - (y - rangemin) / (rangemax - rangemin) * drawInfo.sizeY * 0.8);
+                            drawInfo.centerContext.moveTo(psx - 2, psy-0.5);
+                            drawInfo.centerContext.lineTo(psx + 1, psy-0.5);
+                            drawInfo.centerContext.moveTo(psx-0.5, psy - 2);
+                            drawInfo.centerContext.lineTo(psx-0.5, psy + 1);
                         }
                     }
+                    drawInfo.centerContext.stroke();
                 }
 
             }
